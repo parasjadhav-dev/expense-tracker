@@ -5,6 +5,7 @@ import {
   deleteExpense,
   type DeleteExpenseState,
 } from "@/app/(app)/expenses/actions";
+import { button } from "@/lib/ui";
 
 const initialState: DeleteExpenseState = { status: "idle" };
 
@@ -34,7 +35,7 @@ export function DeleteExpenseButton({
       <button
         type="button"
         onClick={() => dialogRef.current?.showModal()}
-        className="text-sm font-medium text-red-600 underline underline-offset-4 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+        className="rounded-md px-2 py-1 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950"
       >
         Delete
       </button>
@@ -47,7 +48,7 @@ export function DeleteExpenseButton({
           // Only the backdrop has the dialog itself as its target.
           if (event.target === event.currentTarget) event.currentTarget.close();
         }}
-        className="m-auto w-[min(92vw,24rem)] rounded-xl bg-white p-0 text-zinc-950 shadow-xl backdrop:bg-black/50 dark:bg-zinc-900 dark:text-zinc-50"
+        className="m-auto w-[min(92vw,24rem)] rounded-2xl bg-white p-0 text-zinc-950 shadow-2xl backdrop:bg-zinc-950/50 backdrop:backdrop-blur-[2px] dark:bg-zinc-900 dark:text-zinc-50"
       >
         <form action={formAction} className="p-6 text-left">
           <input type="hidden" name="id" value={id} />
@@ -56,11 +57,11 @@ export function DeleteExpenseButton({
           </h2>
           <p
             data-testid="delete-summary"
-            className="mt-2 text-sm text-zinc-700 dark:text-zinc-300"
+            className="mt-2 rounded-lg bg-zinc-50 px-3 py-2 text-sm text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
           >
             {summary}
           </p>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
             This can&apos;t be undone.
           </p>
           {state.status === "error" && state.message ? (
@@ -73,15 +74,11 @@ export function DeleteExpenseButton({
               type="button"
               autoFocus
               onClick={() => dialogRef.current?.close()}
-              className="h-10 rounded-md border border-zinc-300 px-4 text-sm font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+              className={button("secondary")}
             >
               Cancel
             </button>
-            <button
-              type="submit"
-              disabled={pending}
-              className="h-10 rounded-md bg-red-600 px-4 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-60"
-            >
+            <button type="submit" disabled={pending} className={button("danger")}>
               {pending ? "Deleting..." : "Delete"}
             </button>
           </div>

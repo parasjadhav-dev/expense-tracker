@@ -7,6 +7,12 @@ import {
   parseExpenseSubmission,
   type ExpenseFormState,
 } from "@/lib/expense-form";
+import {
+  SAVE_FAILED_MESSAGE,
+  expenseFormValues,
+  logActionError,
+  revalidateExpensePages,
+} from "@/lib/action-errors";
 import { formatPaise } from "@/lib/money";
 
 export async function createExpense(
@@ -19,14 +25,34 @@ export async function createExpense(
   if (!session?.user?.id) redirect("/login?callbackUrl=/expenses/new");
   const userId = session.user.id;
 
-  const result = await parseExpenseSubmission(formData, userId);
+  let result: Awaited<ReturnType<typeof parseExpenseSubmission>>;
+  try {
+    result = await parseExpenseSubmission(formData, userId);
+  } catch (error) {
+    logActionError("createExpense", error);
+    return {
+      status: "error",
+      message: SAVE_FAILED_MESSAGE,
+      values: expenseFormValues(formData),
+    };
+  }
   if (!result.ok) return result.state;
   const { amount, date, note, categoryId, categoryName } = result.data;
 
-  await db.expense.create({
-    data: { amount, date, note, userId, categoryId },
-  });
+  try {
+    await db.expense.create({
+      data: { amount, date, note, userId, categoryId },
+    });
+  } catch (error) {
+    logActionError("createExpense", error);
+    return {
+      status: "error",
+      message: SAVE_FAILED_MESSAGE,
+      values: expenseFormValues(formData),
+    };
+  }
 
+  revalidateExpensePages();
   return {
     status: "success",
     message: `Saved ${formatPaise(amount)} in ${categoryName}.`,

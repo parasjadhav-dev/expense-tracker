@@ -1,6 +1,12 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import {
+  SAVE_FAILED_MESSAGE,
+  expenseFormValues,
+  logActionError,
+  revalidateExpensePages,
+} from "@/lib/action-errors";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import {
@@ -19,28 +25,45 @@ export async function updateExpense(
   if (!session?.user?.id) redirect(`/login?callbackUrl=/expenses/${id}/edit`);
   const userId = session.user.id;
 
-  const result = await parseExpenseSubmission(formData, userId);
+  let result: Awaited<ReturnType<typeof parseExpenseSubmission>>;
+  try {
+    result = await parseExpenseSubmission(formData, userId);
+  } catch (error) {
+    logActionError("updateExpense", error);
+    return {
+      status: "error",
+      message: SAVE_FAILED_MESSAGE,
+      values: expenseFormValues(formData),
+    };
+  }
   if (!result.ok) return result.state;
   const { amount, date, note, categoryId } = result.data;
 
   // Ownership check and write in one statement. note is set to null when blank
   // so clearing the field really clears it.
-  const { count } = await db.expense.updateMany({
-    where: { id, userId },
-    data: { amount, date, note: note ?? null, categoryId },
-  });
+  let count: number;
+  try {
+    ({ count } = await db.expense.updateMany({
+      where: { id, userId },
+      data: { amount, date, note: note ?? null, categoryId },
+    }));
+  } catch (error) {
+    logActionError("updateExpense", error);
+    return {
+      status: "error",
+      message: SAVE_FAILED_MESSAGE,
+      values: expenseFormValues(formData),
+    };
+  }
   if (count === 0) {
     return {
       status: "error",
       message: "This expense no longer exists.",
-      values: {
-        amount: String(formData.get("amount") ?? ""),
-        categoryId: String(formData.get("categoryId") ?? ""),
-        date: String(formData.get("date") ?? ""),
-        note: String(formData.get("note") ?? ""),
-      },
+      values: expenseFormValues(formData),
     };
   }
+
+  revalidateExpensePages();
 
   // Show the list for the edited expense's month, so a date change that moves
   // it to another month does not look like it disappeared.

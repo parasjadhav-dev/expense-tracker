@@ -128,3 +128,35 @@
     @apply font-sans;
   }
 }
+
+/* Chart colours. Values come from the validated reference palette; the dark set
+   uses the same hue stepped for the dark surface. They follow the project's
+   class-based dark mode (.dark), like the rest of the theme. */
+.viz-root {
+  --viz-series-1: #2a78d6;
+  --viz-other: #898781;
+  --viz-text-primary: #0b0b0b;
+  --viz-text-secondary: #52514e;
+  --viz-baseline: #c3c2b7;
+  --viz-hover: rgba(11, 11, 11, 0.05);
+}
+
+.dark .viz-root {
+  --viz-series-1: #3987e5;
+  --viz-other: #898781;
+  --viz-text-primary: #f0efec;
+  --viz-text-secondary: #c3c2b7;
+  --viz-baseline: #383835;
+  --viz-hover: rgba(255, 255, 255, 0.06);
+}
+
+/* More chart roles, used by the trend chart. */
+.viz-root {
+  --viz-grid: #e1e0d9;
+  --viz-surface: #ffffff;
+}
+
+.dark .viz-root {
+  --viz-grid: #2c2c2a;
+  --viz-surface: #09090b;
+}

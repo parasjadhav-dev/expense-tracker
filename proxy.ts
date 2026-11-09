@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { safeCallbackUrl } from "@/lib/redirect";
 
-const AUTH_PAGES = ["/login", "/sign-up"];
+// Pages for visitors who are not logged in. A logged-in user is sent on to the
+// app: "/" is the public landing page.
+const AUTH_PAGES = ["/", "/login", "/sign-up"];
 
 // Optimistic checks, run before a route renders:
 // - logged-out visitors to protected routes go to the login page
@@ -31,5 +33,12 @@ export default auth((request) => {
 });
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/expenses/:path*", "/login", "/sign-up"],
+  matcher: [
+    "/dashboard/:path*",
+    "/expenses/:path*",
+    "/budgets/:path*",
+    "/",
+    "/login",
+    "/sign-up",
+  ],
 };

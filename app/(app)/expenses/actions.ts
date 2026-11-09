@@ -1,8 +1,12 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import {
+  DELETE_FAILED_MESSAGE,
+  logActionError,
+  revalidateExpensePages,
+} from "@/lib/action-errors";
 import { db } from "@/lib/db";
 
 export type DeleteExpenseState = {
@@ -27,10 +31,16 @@ export async function deleteExpense(
 
   // The id comes from the browser, so ownership is part of the delete itself:
   // it can only ever match an expense belonging to the signed-in user.
-  const { count } = await db.expense.deleteMany({ where: { id, userId } });
+  let count: number;
+  try {
+    ({ count } = await db.expense.deleteMany({ where: { id, userId } }));
+  } catch (error) {
+    logActionError("deleteExpense", error);
+    return { status: "error", message: DELETE_FAILED_MESSAGE };
+  }
 
   // Refresh the list and totals either way, so a stale row disappears too.
-  revalidatePath("/expenses");
+  revalidateExpensePages();
 
   if (count === 0) {
     return { status: "error", message: "This expense no longer exists." };

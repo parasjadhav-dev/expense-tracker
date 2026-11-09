@@ -63,5 +63,10 @@ model Budget {
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   category Category? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
+  // Postgres treats NULLs as distinct, so this does not stop two overall budgets
+  // (categoryId NULL) for the same user and month. A partial unique index,
+  // "Budget_overall_userId_month_key", does that. Prisma cannot express it here,
+  // so it lives only in the migration 20261109120000_overall_budget_unique. Apply
+  // migrations with `prisma migrate deploy`; `db push` would not create it.
   @@unique([userId, categoryId, month])
 }

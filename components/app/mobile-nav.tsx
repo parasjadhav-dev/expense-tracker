@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import { Logo } from "@/components/ui/logo";
 import { NavLinks } from "./nav-links";
 
 // Phone-width top bar. The menu is tied to the page it was opened on, so it
@@ -14,13 +15,10 @@ export function MobileNav({ children }: { children: React.ReactNode }) {
   const open = openOn === pathname;
 
   return (
-    <header className="border-b border-zinc-200 bg-white md:hidden dark:border-zinc-800 dark:bg-zinc-950">
+    <header className="sticky top-0 z-30 border-b border-zinc-200/80 bg-white/90 backdrop-blur md:hidden dark:border-zinc-800 dark:bg-zinc-950/90">
       <div className="flex h-14 items-center justify-between px-4">
-        <Link
-          href="/dashboard"
-          className="text-base font-semibold tracking-tight text-zinc-950 dark:text-zinc-50"
-        >
-          Expense Tracker
+        <Link href="/dashboard" aria-label="Expense Tracker home">
+          <Logo />
         </Link>
         <button
           type="button"
@@ -28,7 +26,7 @@ export function MobileNav({ children }: { children: React.ReactNode }) {
           aria-expanded={open}
           aria-controls="mobile-menu"
           onClick={() => setOpenOn(open ? null : pathname)}
-          className="inline-flex size-10 items-center justify-center rounded-md text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+          className="inline-flex size-10 items-center justify-center rounded-lg text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
         >
           {open ? (
             <X className="size-5" aria-hidden="true" />

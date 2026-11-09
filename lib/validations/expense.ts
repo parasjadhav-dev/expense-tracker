@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { parseRupeesToPaise } from "@/lib/money";
+import { todayInAppZone } from "@/lib/time";
 
-const AMOUNT_MESSAGES = {
+export const AMOUNT_MESSAGES = {
   invalid: "Enter an amount like 199 or 199.50.",
   zero: "Amount must be greater than zero.",
   too_large: "Amount is too large.",
@@ -21,13 +22,11 @@ export function parseDateOnly(value: string): Date | null {
   return date;
 }
 
+// The latest allowed date is today in the app time zone (see lib/time.ts), the
+// same calendar the dashboard and budgets use, so an expense can never land in a
+// month the dashboard does not show yet.
 function latestAllowedDate(): Date {
-  // Allow up to tomorrow (UTC) so users ahead of the server clock can still
-  // enter "today".
-  const now = new Date();
-  return new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1),
-  );
+  return new Date(`${todayInAppZone()}T00:00:00.000Z`);
 }
 
 export const expenseSchema = z.object({

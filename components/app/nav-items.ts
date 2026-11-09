@@ -1,4 +1,10 @@
-import { LayoutDashboard, List, Plus, type LucideIcon } from "lucide-react";
+import {
+  LayoutDashboard,
+  List,
+  Plus,
+  Wallet,
+  type LucideIcon,
+} from "lucide-react";
 
 export type NavItem = {
   href: string;
@@ -6,9 +12,9 @@ export type NavItem = {
   icon: LucideIcon;
 };
 
-// Add Budgets here when that page exists, so there are no dead links.
 export const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/expenses", label: "Expenses", icon: List },
   { href: "/expenses/new", label: "Add expense", icon: Plus },
+  { href: "/budgets", label: "Budgets", icon: Wallet },
 ];
