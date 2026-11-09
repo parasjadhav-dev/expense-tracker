@@ -37,6 +37,7 @@ export const config = {
     "/dashboard/:path*",
     "/expenses/:path*",
     "/budgets/:path*",
+    "/recurring/:path*",
     "/",
     "/login",
     "/sign-up",

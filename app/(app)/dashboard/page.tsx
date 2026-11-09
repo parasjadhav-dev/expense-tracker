@@ -13,6 +13,7 @@ import { TrendChart } from "@/components/app/trend-chart";
 import { PageHeader } from "@/components/ui/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { auth } from "@/lib/auth";
+import { generateDueExpenses } from "@/lib/recurring-db";
 import { daysLeftInMonth, safeToSpend } from "@/lib/budget";
 import { loadMonthBudgets } from "@/lib/budget-summary";
 import { buildCategoryBreakdown } from "@/lib/category-breakdown";
@@ -96,6 +97,8 @@ async function DashboardContent({
     redirect("/login?callbackUrl=/dashboard");
   }
   const userId = session.user.id;
+  // Adds any recurring expenses that have come due since the last visit.
+  await generateDueExpenses(userId);
 
   // The current month in the app time zone, so the numbers match what the user
   // sees on the calendar.

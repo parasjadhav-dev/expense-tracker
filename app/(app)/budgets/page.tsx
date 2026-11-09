@@ -8,6 +8,7 @@ import { SpendingOverview } from "@/components/app/spending-overview";
 import { PageHeader } from "@/components/ui/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { auth } from "@/lib/auth";
+import { generateDueExpenses } from "@/lib/recurring-db";
 import { checkBudgetMonth } from "@/lib/validations/budget";
 import { daysLeftInMonth, safeToSpend } from "@/lib/budget";
 import { loadMonthBudgets } from "@/lib/budget-summary";
@@ -64,6 +65,8 @@ async function BudgetsContent({ searchParams }: { searchParams: SearchParams }) 
   const session = await auth();
   if (!session?.user?.id) redirect("/login?callbackUrl=/budgets");
   const userId = session.user.id;
+  // Adds any recurring expenses that have come due since the last visit.
+  await generateDueExpenses(userId);
 
   const params = await searchParams;
   // No month, an empty one, or an invalid one all mean the current month.

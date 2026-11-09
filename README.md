@@ -3,10 +3,9 @@
 A budget-focused expense tracker built with Next.js, TypeScript, Prisma and PostgreSQL.
 Set category budgets, get overspend alerts, and see your daily safe-to-spend amount.
 
-> **Status: Week 1 of 3 complete, Week 2 in progress.** Accounts, full expense
-> management, budgets with progress bars and alerts, and a dashboard with summary cards
-> (spent, remaining, safe to spend per day) work.
-> Two charts are on the dashboard (spending by category and a six-month trend); CSV import,
+> **Status: Weeks 1 and 2 complete, Week 3 in progress.** Accounts, expense management,
+> budgets with alerts and safe-to-spend, a dashboard with charts and a month selector, and
+> CSV import (with auto-categorisation, a review step and duplicate detection) work. Automated
 > tests and deployment are still to come.
 > See [Progress](#progress) for exactly what is and is not built.
 
@@ -16,13 +15,19 @@ Set category budgets, get overspend alerts, and see your daily safe-to-spend amo
 |---|---|---|
 | Week 1: Foundation | Sign-up, login/logout, protected routes, responsive layout, add / list / filter / edit / delete expenses | **Done** |
 | Week 2: Budgets and dashboard | Monthly and per-category budgets, progress bars, overspend alerts, safe-to-spend per day, summary cards, charts | **In progress:** budgets, progress bars, alerts, safe-to-spend, the summary cards and both charts (category breakdown, six-month trend) and the dashboard month selector (earlier months, via `?month=YYYY-MM`) are done, and empty, loading and error states are done; only the Week 2 review is left |
-| Week 3: Import, tests, deploy | CSV import with auto-categorisation, Vitest unit tests, Vercel deployment | Not started |
+| Week 3: Import, tests, deploy | CSV import with auto-categorisation, Vitest unit tests, Vercel deployment | **In progress:** CSV import (parsing, auto-categorisation, review and fix, duplicate detection) is done; Vitest tests and deployment are not |
 | Final: Polish | Screenshots, live link, README finish | Not started |
 
 ### What works today
 
 - **Interface:** a public landing page, split-screen login and sign-up, an app shell with a sidebar (mobile menu on phones), a dashboard with a two-column chart grid plus recent expenses and budget status, expense forms next to a list of recent expenses, loading skeletons and a styled 404. Logged-in visitors to `/` go straight to the dashboard.
 - **Empty, loading and error states:** every page has an empty state that says what is missing and offers the next step; loading skeletons keep the page's shape while data streams in; if the database is unavailable a page shows a "Something went wrong" card with Try again (the sidebar stays), and a failed save shows a message and keeps what was typed. Error details are logged on the server and never shown.
+- **CSV import** (`/expenses/import`, from the Expenses page): upload a bank or UPI statement and review it before anything is saved.
+  - Parsing (papaparse) finds the header row, handles Debit/Credit columns or one Amount column (with a Dr/Cr type, a minus sign or a Dr/Cr suffix), and reads dates like 2026-11-09, 09/11/2026 (day first) and 9-Nov-2026. Money-in rows are ignored; rows it cannot read are listed with the reason.
+  - Categories are suggested from the description with keyword rules (Swiggy is Food, Uber is Travel, and so on), matched to your own category names; anything unmatched goes to "Other", or you choose one.
+  - The preview lets you change any category, untick rows, or set a category for all selected rows.
+  - Rows with the same date, amount and description as an existing expense are marked "Already added" and left out, so importing the same file twice adds nothing. A genuine repeat purchase in one file is kept. The server checks again when you confirm.
+  - Limits: 800 KB and 2,000 rows per file. A sample file is at `public/sample-statement.csv`.
 - **Accounts:** email and password sign-up (Zod validation, bcrypt hashing), login and logout with Auth.js, sessions that survive a reload.
 - **Protected routes:** `/dashboard`, `/expenses/*` and `/budgets` redirect logged-out visitors to the login page and back again afterwards. Logged-in users are kept out of the login and sign-up pages.
 - **Expenses:**
@@ -51,8 +56,8 @@ Set category budgets, get overspend alerts, and see your daily safe-to-spend amo
 
 ### Not built yet
 
-- CSV import, recurring expenses, Google login.
-- Automated tests. Behaviour so far has been checked by hand and with browser-driven scripts; Vitest is planned for Week 3.
+- Recurring expenses, Google login.
+- More automated tests. `npm test` runs 210 unit tests for money handling, the budget helpers, "today" and "this month" in different time zones, and the categorisation rules. The CSV import and recurring-expense logic have no Vitest tests yet. Screens and database writes were checked with browser-driven scripts that are not part of the repo.
 
 ## Tech stack
 
@@ -65,7 +70,7 @@ Set category budgets, get overspend alerts, and see your daily safe-to-spend amo
 | Validation | Zod 4 |
 | UI | Tailwind CSS 4, Base UI, lucide-react, Inter font |
 | Charts | Recharts |
-| Tests (planned) | Vitest |
+| Tests | Vitest (unit tests for the pure logic in `lib/`) |
 | Hosting (planned) | Vercel |
 
 ## Getting started
@@ -99,8 +104,22 @@ npm run dev                 # http://localhost:3000
 | `npm run build` | Generate the Prisma client, then build for production |
 | `npm start` | Run the production build |
 | `npm run lint` | Run ESLint |
+| `npm test` | Run the unit tests once (`npm run test:watch` re-runs them as you edit) |
 
 The generated Prisma client (`src/generated/prisma`) is not committed. `npm install` and `npm run build` both generate it, so a fresh clone builds without extra steps.
+
+### Running the tests
+
+Tests live next to the code they check, as `lib/*.test.ts`, and import with the same `@/` paths as the app. They need no database or browser.
+
+| File | What it covers |
+|---|---|
+| `lib/money.test.ts` | Rupees to paise, formatting, rejected amounts |
+| `lib/budget.test.ts` | Percent used, the 80% and 100% thresholds, summaries, alerts, days left in a month, safe to spend per day (including over budget, the last day and leap years) |
+| `lib/time.test.ts` | "Today" and "this month" around midnight in several time zones |
+| `lib/auto-categorize.test.ts` | Known and unknown merchants, whole-word matching, rule priority, and checks on the rule table itself |
+
+`package.json` overrides `rollup` with its WebAssembly build (`@rollup/wasm-node`). Vitest's bundler normally loads a native add-on, and on machines where Windows Application Control blocks unsigned native files that fails with "An Application Control policy has blocked this file". The WebAssembly build behaves the same and works everywhere; it is only used when running tests, not by the app or `next build`.
 
 ### Demo account
 

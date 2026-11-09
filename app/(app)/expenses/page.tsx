@@ -2,8 +2,9 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
-import { Plus, SearchX } from "lucide-react";
+import { Plus, SearchX, Upload } from "lucide-react";
 import { auth } from "@/lib/auth";
+import { generateDueExpenses } from "@/lib/recurring-db";
 import { DeleteExpenseButton } from "@/components/app/delete-expense-button";
 import { PageHeader } from "@/components/ui/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -58,10 +59,16 @@ export default function ExpensesPage({
           title="Expenses"
           description="Every expense, filtered by month and category."
           actions={
-            <Link href="/expenses/new" className={button("primary")}>
-              <Plus className="size-4" aria-hidden="true" />
-              Add expense
-            </Link>
+            <>
+              <Link href="/expenses/import" className={button("secondary")}>
+                <Upload className="size-4" aria-hidden="true" />
+                Import CSV
+              </Link>
+              <Link href="/expenses/new" className={button("primary")}>
+                <Plus className="size-4" aria-hidden="true" />
+                Add expense
+              </Link>
+            </>
           }
         />
         <Suspense
@@ -85,6 +92,8 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
   const session = await auth();
   if (!session?.user?.id) redirect("/login?callbackUrl=/expenses");
   const userId = session.user.id;
+  // Adds any recurring expenses that have come due since the last visit.
+  await generateDueExpenses(userId);
 
   const params = await searchParams;
   const month = resolveMonth(first(params.month));

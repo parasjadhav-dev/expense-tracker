@@ -22,6 +22,7 @@ model User {
   categories Category[]
   expenses   Expense[]
   budgets    Budget[]
+  recurring  RecurringExpense[]
 }
 
 model Category {
@@ -30,9 +31,10 @@ model Category {
   userId    String
   createdAt DateTime @default(now())
 
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expenses Expense[]
-  budgets  Budget[]
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expenses  Expense[]
+  budgets   Budget[]
+  recurring RecurringExpense[]
 
   @@unique([userId, name])
 }
@@ -47,10 +49,38 @@ model Expense {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  // Set on expenses created from a recurring item: which item, and for which
+  // month ("2026-11"). The pair is unique, so a month is never created twice.
+  recurringId    String?
+  recurringMonth String?
 
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category  Category          @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  recurring RecurringExpense? @relation(fields: [recurringId], references: [id], onDelete: SetNull)
+
+  @@unique([recurringId, recurringMonth])
   @@index([userId, date])
+}
+
+// An expense that repeats on one day of every month (rent, a subscription).
+// Expenses are created for it as each due date arrives; see lib/recurring.ts.
+model RecurringExpense {
+  id                 String   @id @default(cuid())
+  amount             Int // in paise
+  note               String?
+  dayOfMonth         Int // 1-31; a shorter month uses its last day
+  startMonth         String // "2026-11": the first month it runs
+  lastGeneratedMonth String // newest month already handled; the month before startMonth when new
+  active             Boolean  @default(true)
+  userId             String
+  categoryId         String
+  createdAt          DateTime @default(now())
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  expenses Expense[]
+
+  @@index([userId])
 }
 
 model Budget {
