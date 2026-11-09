@@ -30,7 +30,7 @@ export default function RecurringPage() {
         />
         <Suspense
           fallback={
-            <div className="grid gap-4 md:gap-5 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)]">
+            <div className="grid gap-4 md:gap-5 xl:grid-cols-[minmax(0,32rem)_minmax(0,1fr)]">
               <Skeleton className="h-[480px] rounded-2xl" />
               <Skeleton className="h-[480px] rounded-2xl" />
             </div>
@@ -63,7 +63,7 @@ async function RecurringContent() {
   ]);
 
   return (
-    <div className="grid items-start gap-4 md:gap-5 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)]">
+    <div className="grid items-start gap-4 md:gap-5 xl:grid-cols-[minmax(0,32rem)_minmax(0,1fr)]">
       <section className={`${card} p-6`} aria-labelledby="add-recurring">
         <h2
           id="add-recurring"
