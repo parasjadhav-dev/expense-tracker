@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { NavLinks } from "./nav-links";
 
 // Phone-width top bar. The menu is tied to the page it was opened on, so it
@@ -20,6 +21,8 @@ export function MobileNav({ children }: { children: React.ReactNode }) {
         <Link href="/dashboard" aria-label="Expense Tracker home">
           <Logo />
         </Link>
+        <div className="flex items-center gap-1">
+        <ThemeToggle className="size-10" />
         <button
           type="button"
           aria-label={open ? "Close menu" : "Open menu"}
@@ -34,6 +37,7 @@ export function MobileNav({ children }: { children: React.ReactNode }) {
             <Menu className="size-5" aria-hidden="true" />
           )}
         </button>
+        </div>
       </div>
       {open ? (
         <div

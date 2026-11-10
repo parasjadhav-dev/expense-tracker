@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { DashboardPreview } from "@/components/marketing/dashboard-preview";
 import { Logo } from "@/components/ui/logo";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { button, card, iconChip } from "@/lib/ui";
 
 // The public home page. Logged-in visitors never see it: proxy.ts sends them
@@ -56,6 +57,7 @@ export default function Home() {
           <Logo />
         </Link>
         <nav aria-label="Account" className="flex items-center gap-2">
+          <ThemeToggle />
           <Link href="/login" className={button("secondary", "sm")}>
             Log in
           </Link>

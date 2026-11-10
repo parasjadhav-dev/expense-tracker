@@ -1,6 +1,7 @@
 import { BarChart3, BellRing, Target } from "lucide-react";
 import { DashboardPreview } from "@/components/marketing/dashboard-preview";
 import { Logo } from "@/components/ui/logo";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 const POINTS = [
   { icon: Target, text: "Budgets for the month and for each category" },
@@ -54,7 +55,8 @@ export function AuthShell({
         <DashboardPreview className="relative max-w-md" />
       </div>
 
-      <div className="flex flex-col justify-center px-6 py-10 sm:px-12">
+      <div className="relative flex flex-col justify-center px-6 py-10 sm:px-12">
+        <ThemeToggle className="absolute right-4 top-4" />
         <div className="mx-auto w-full max-w-sm">
           <div className="mb-10 lg:hidden">
             <Logo />
