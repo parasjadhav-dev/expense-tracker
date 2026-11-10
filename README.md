@@ -77,7 +77,7 @@ The data shown is a demo account, not real spending.
 ### Not built yet
 
 - Recurring expenses, Google login.
-- More automated tests. `npm test` runs 257 unit tests for money handling, the budget helpers, "today" and "this month" in different time zones, the categorisation rules, the password rules, the reset-link helpers and the email wording. The CSV import and recurring-expense logic have no Vitest tests yet. Screens and database writes were checked with browser-driven scripts that are not part of the repo.
+- More automated tests. `npm test` runs 265 unit tests for money handling, the budget helpers, "today" and "this month" in different time zones, the categorisation rules, the password rules, the reset-link helpers and the email wording. The CSV import and recurring-expense logic have no Vitest tests yet. Screens and database writes were checked with browser-driven scripts that are not part of the repo.
 
 ## Tech stack
 

@@ -9,9 +9,9 @@ import {
   generateResetToken,
   hashResetToken,
   RESET_WINDOW_MS,
-  resetEmail,
   resetExpiry,
 } from "@/lib/password-reset";
+import { resetEmail } from "@/lib/reset-email";
 import { forgotPasswordSchema } from "@/lib/validations/auth";
 
 export type ForgotPasswordState = {
@@ -39,7 +39,10 @@ export async function requestPasswordReset(
   const { email } = parsed.data;
 
   try {
-    const user = await db.user.findUnique({ where: { email }, select: { id: true } });
+    const user = await db.user.findUnique({
+      where: { email },
+      select: { id: true, name: true },
+    });
 
     if (user) {
       const now = new Date();
@@ -69,7 +72,10 @@ export async function requestPasswordReset(
 
         const appUrl = process.env.AUTH_URL || "http://localhost:3000";
         try {
-          await sendEmail({ to: email, ...resetEmail(buildResetUrl(appUrl, token)) });
+          await sendEmail({
+            to: email,
+            ...resetEmail({ resetUrl: buildResetUrl(appUrl, token), name: user.name }),
+          });
         } catch (error) {
           // Not shown to the visitor: it would reveal that the account exists.
           logActionError("requestPasswordReset:email", error);

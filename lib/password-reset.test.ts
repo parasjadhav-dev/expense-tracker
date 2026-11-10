@@ -7,7 +7,6 @@ import {
   generateResetToken,
   hashResetToken,
   isResetUsable,
-  resetEmail,
   resetExpiry,
 } from "@/lib/password-reset";
 import { forgotPasswordSchema, resetPasswordSchema } from "@/lib/validations/auth";
@@ -100,21 +99,6 @@ describe("buildResetUrl", () => {
     const token = generateResetToken();
     const url = new URL(buildResetUrl("https://a.b", token));
     expect(url.searchParams.get("token")).toBe(token);
-  });
-});
-
-describe("resetEmail", () => {
-  const url = "https://a.b/reset-password?token=abc";
-  const mail = resetEmail(url);
-
-  it("contains the link in both the text and html versions", () => {
-    expect(mail.text).toContain(url);
-    expect(mail.html).toContain(url);
-  });
-
-  it("says how long the link works and what to do if it was not you", () => {
-    expect(mail.text).toMatch(/30 minutes/);
-    expect(mail.text).toMatch(/not you/i);
   });
 });
 
