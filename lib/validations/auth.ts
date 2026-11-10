@@ -47,6 +47,30 @@ export const changePasswordSchema = z
 
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
 
+export const forgotPasswordSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .pipe(z.email("Enter a valid email address.").max(254, "Email must be 254 characters or fewer.")),
+});
+
+// Set a new password from a reset link. The token is checked against the
+// database; here it only has to be present and a sensible size.
+export const resetPasswordSchema = z
+  .object({
+    token: z.string().min(20, "This reset link is not valid.").max(200, "This reset link is not valid."),
+    newPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters.")
+      .max(72, "Password must be 72 characters or fewer."),
+    confirmPassword: z.string().min(1, "Type the new password again."),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "The two passwords do not match.",
+  });
+
 export const loginSchema = z.object({
   email: z.string().trim().toLowerCase().min(1, "Enter your email address."),
   password: z.string().min(1, "Enter your password."),

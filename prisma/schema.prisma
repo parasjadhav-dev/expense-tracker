@@ -23,6 +23,22 @@ model User {
   expenses   Expense[]
   budgets    Budget[]
   recurring  RecurringExpense[]
+  passwordResets PasswordResetToken[]
+}
+
+// A one-time "forgot password" link. Only a SHA-256 hash of the token is stored,
+// so a database leak does not hand out working reset links.
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  userId    String
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Category {

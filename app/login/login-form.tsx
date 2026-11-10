@@ -1,8 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { login, type LoginState } from "./actions";
-import { button, input, label } from "@/lib/ui";
+import { button, input, label, link } from "@/lib/ui";
 
 const initialState: LoginState = { status: "idle" };
 
@@ -38,9 +39,14 @@ export function LoginForm({ callbackUrl }: { callbackUrl: string }) {
       </div>
 
       <div>
-        <label htmlFor="password" className={label}>
-          Password
-        </label>
+        <div className="flex items-center justify-between gap-2">
+          <label htmlFor="password" className={label}>
+            Password
+          </label>
+          <Link href="/forgot-password" className={`${link} text-sm`}>
+            Forgot password?
+          </Link>
+        </div>
         <input
           id="password"
           name="password"

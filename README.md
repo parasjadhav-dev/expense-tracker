@@ -77,7 +77,7 @@ The data shown is a demo account, not real spending.
 ### Not built yet
 
 - Recurring expenses, Google login.
-- More automated tests. `npm test` runs 221 unit tests for money handling, the budget helpers, "today" and "this month" in different time zones, the categorisation rules and the password rules. The CSV import and recurring-expense logic have no Vitest tests yet. Screens and database writes were checked with browser-driven scripts that are not part of the repo.
+- More automated tests. `npm test` runs 241 unit tests for money handling, the budget helpers, "today" and "this month" in different time zones, the categorisation rules, the password rules and the reset-link helpers. The CSV import and recurring-expense logic have no Vitest tests yet. Screens and database writes were checked with browser-driven scripts that are not part of the repo.
 
 ## Tech stack
 
@@ -112,6 +112,8 @@ npm run dev                 # http://localhost:3000
 | `DATABASE_URL` | PostgreSQL connection string. Use `sslmode=verify-full`. |
 | `AUTH_SECRET` | Signs session cookies. Generate one with `openssl rand -base64 32`. |
 | `AUTH_URL` | Public URL of the app. `http://localhost:3000` locally; the live URL when deployed. |
+| `RESEND_API_KEY` | Needed in production for forgot-password emails (sent with [Resend](https://resend.com)). Without it, local development prints the reset link in the server log instead. |
+| `EMAIL_FROM` | Optional. Sender, for example `Expense Tracker <noreply@yourdomain.com>`. Defaults to Resend's `onboarding@resend.dev`, which only delivers to your own Resend account email until you verify a domain. |
 | `APP_TIME_ZONE` | Optional. IANA time zone that decides what "today" and "this month" mean. Defaults to `Asia/Kolkata`. |
 
 `.env` is git-ignored. Never commit real credentials.
@@ -187,7 +189,7 @@ proxy.ts                 route protection (the Next 16 name for middleware)
 
 ## Known limitations
 
-- No rate limiting on login or sign-up, no email verification and no "forgot password" email reset. Changing your password while logged in works (Account page), but other devices stay logged in until their session expires.
+- Forgot-password emails are limited to 3 per account per hour, but login and sign-up have no rate limiting yet, and there is no email verification. After a password change or reset, other devices stay logged in until their session expires.
 - Sign-up reveals whether an email is already registered.
 - The expense list shows the latest 100 matches (the total still covers all of them); there is no pagination.
 - `npm audit` reports findings in development tooling (`shadcn`, `eslint-config-next`, `typescript-eslint`).
