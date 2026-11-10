@@ -9,6 +9,26 @@ Set category budgets, get overspend alerts, and see your daily safe-to-spend amo
 > tests and deployment are still to come.
 > See [Progress](#progress) for exactly what is and is not built.
 
+## Screenshots
+
+| Dashboard (light) | Dashboard (dark) |
+|---|---|
+| ![Dashboard in light mode](docs/screenshots/dashboard-light.png) | ![Dashboard in dark mode](docs/screenshots/dashboard-dark.png) |
+
+| Budgets and alerts | CSV import review |
+|---|---|
+| ![Budgets page](docs/screenshots/budgets.png) | ![CSV import preview](docs/screenshots/import-preview.png) |
+
+| Expenses | Recurring expenses |
+|---|---|
+| ![Expenses list](docs/screenshots/expenses.png) | ![Recurring expenses](docs/screenshots/recurring.png) |
+
+| Phone (light) | Phone (dark) |
+|---|---|
+| <img src="docs/screenshots/dashboard-mobile-light.png" width="260" alt="Dashboard on a phone, light"> | <img src="docs/screenshots/dashboard-mobile-dark.png" width="260" alt="Dashboard on a phone, dark"> |
+
+The data shown is a demo account, not real spending.
+
 ## Progress
 
 | Phase | Scope | Status |
