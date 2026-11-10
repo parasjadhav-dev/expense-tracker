@@ -1,7 +1,11 @@
 "use server";
 
 import bcrypt from "bcryptjs";
+import { after } from "next/server";
 import { z } from "zod";
+import { logActionError } from "@/lib/action-errors";
+import { sendEmail } from "@/lib/email";
+import { welcomeEmail } from "@/lib/welcome-email";
 import { Prisma } from "@/src/generated/prisma/client";
 import { db } from "@/lib/db";
 import { DEFAULT_CATEGORIES } from "@/lib/default-categories";
@@ -81,6 +85,19 @@ export async function signUp(
     }
     throw error;
   }
+
+  // Send the welcome email after the response, so sign-up is not slowed down.
+  // If it fails, the account still exists: the failure is only logged.
+  after(async () => {
+    try {
+      await sendEmail({
+        to: email,
+        ...welcomeEmail({ name, appUrl: process.env.AUTH_URL || "http://localhost:3000" }),
+      });
+    } catch (error) {
+      logActionError("signUp:welcomeEmail", error);
+    }
+  });
 
   return {
     status: "success",

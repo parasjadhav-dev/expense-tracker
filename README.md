@@ -77,7 +77,7 @@ The data shown is a demo account, not real spending.
 ### Not built yet
 
 - Recurring expenses, Google login.
-- More automated tests. `npm test` runs 249 unit tests for money handling, the budget helpers, "today" and "this month" in different time zones, the categorisation rules, the password rules and the reset-link helpers. The CSV import and recurring-expense logic have no Vitest tests yet. Screens and database writes were checked with browser-driven scripts that are not part of the repo.
+- More automated tests. `npm test` runs 257 unit tests for money handling, the budget helpers, "today" and "this month" in different time zones, the categorisation rules, the password rules, the reset-link helpers and the email wording. The CSV import and recurring-expense logic have no Vitest tests yet. Screens and database writes were checked with browser-driven scripts that are not part of the repo.
 
 ## Tech stack
 
@@ -112,7 +112,7 @@ npm run dev                 # http://localhost:3000
 | `DATABASE_URL` | PostgreSQL connection string. Use `sslmode=verify-full`. |
 | `AUTH_SECRET` | Signs session cookies. Generate one with `openssl rand -base64 32`. |
 | `AUTH_URL` | Public URL of the app. `http://localhost:3000` locally; the live URL when deployed. |
-| `SMTP_USER`, `SMTP_PASSWORD` | Forgot-password emails through any SMTP account. A free Gmail account works: turn on 2-step verification and create an [app password](https://myaccount.google.com/apppasswords). Optional `SMTP_HOST` (default `smtp.gmail.com`) and `SMTP_PORT` (default `465`). Without email settings, local development prints the reset link in the server log; production needs them. |
+| `SMTP_USER`, `SMTP_PASSWORD` | Forgot-password and welcome emails through any SMTP account. A free Gmail account works: turn on 2-step verification and create an [app password](https://myaccount.google.com/apppasswords). Optional `SMTP_HOST` (default `smtp.gmail.com`) and `SMTP_PORT` (default `465`). Without email settings, local development prints the reset link in the server log; production needs them. |
 | `RESEND_API_KEY` | Alternative to SMTP: send through [Resend](https://resend.com). It only delivers to your own account email until you verify a domain. |
 | `EMAIL_FROM` | Optional sender, for example `Expense Tracker <you@gmail.com>`. Gmail only sends as your own address. |
 | `APP_TIME_ZONE` | Optional. IANA time zone that decides what "today" and "this month" mean. Defaults to `Asia/Kolkata`. |
