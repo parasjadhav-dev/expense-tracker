@@ -3,6 +3,7 @@ import {
   List,
   Plus,
   Repeat,
+  UserCog,
   Wallet,
   type LucideIcon,
 } from "lucide-react";
@@ -19,4 +20,5 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/expenses/new", label: "Add expense", icon: Plus },
   { href: "/budgets", label: "Budgets", icon: Wallet },
   { href: "/recurring", label: "Recurring", icon: Repeat },
+  { href: "/settings", label: "Account", icon: UserCog },
 ];

@@ -77,7 +77,7 @@ The data shown is a demo account, not real spending.
 ### Not built yet
 
 - Recurring expenses, Google login.
-- More automated tests. `npm test` runs 210 unit tests for money handling, the budget helpers, "today" and "this month" in different time zones, and the categorisation rules. The CSV import and recurring-expense logic have no Vitest tests yet. Screens and database writes were checked with browser-driven scripts that are not part of the repo.
+- More automated tests. `npm test` runs 221 unit tests for money handling, the budget helpers, "today" and "this month" in different time zones, the categorisation rules and the password rules. The CSV import and recurring-expense logic have no Vitest tests yet. Screens and database writes were checked with browser-driven scripts that are not part of the repo.
 
 ## Tech stack
 
@@ -187,11 +187,10 @@ proxy.ts                 route protection (the Next 16 name for middleware)
 
 ## Known limitations
 
-- No rate limiting on login or sign-up, no email verification and no password reset.
+- No rate limiting on login or sign-up, no email verification and no "forgot password" email reset. Changing your password while logged in works (Account page), but other devices stay logged in until their session expires.
 - Sign-up reveals whether an email is already registered.
 - The expense list shows the latest 100 matches (the total still covers all of them); there is no pagination.
 - `npm audit` reports findings in development tooling (`shadcn`, `eslint-config-next`, `typescript-eslint`).
   None are in runtime dependencies, and none have been force-fixed.
 - `next-auth` v5 is still a beta release.
-- Dark-mode styles exist (they follow the `.dark` class) but nothing switches them on yet: there is no theme toggle and the app does not follow the OS setting.
 - Category chart colours are fixed per chart, not per category: the bars are one hue because a donut or pie with stable per-category colours cannot keep every neighbouring pair of slices distinguishable. Identity comes from the labels.

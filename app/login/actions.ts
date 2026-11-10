@@ -27,12 +27,18 @@ export async function login(
     return { status: "error", message: parsed.error.issues[0].message, values };
   }
 
+  // Go straight to the dashboard when there is no page to return to. Sending
+  // users to "/" and letting the proxy bounce them on left the address bar
+  // showing "/" while the dashboard was on screen.
+  const callbackUrl = safeCallbackUrl(formData.get("callbackUrl"));
+  const redirectTo = callbackUrl === "/" ? "/dashboard" : callbackUrl;
+
   try {
     // On success this throws Next's redirect, which must not be caught here.
     await signIn("credentials", {
       email: parsed.data.email,
       password: parsed.data.password,
-      redirectTo: safeCallbackUrl(formData.get("callbackUrl")),
+      redirectTo,
     });
   } catch (error) {
     if (error instanceof AuthError) {
