@@ -13,28 +13,24 @@ import {
 } from "recharts";
 import { niceTicks } from "@/lib/chart-scale";
 import type { MonthlyTrend, TrendPoint } from "@/lib/monthly-trend";
+import { formatMinorCompact, type CurrencyCode } from "@/lib/currency";
 import { formatPaise } from "@/lib/money";
 import { button } from "@/lib/ui";
 
 const CHART_HEIGHT = 240;
-const LABEL_WIDTH = 82; // room for the right-most value label, which ends at the last point
-
-// Axis ticks only: ₹10K, ₹1.5L. Exact values are in the labels, tooltip and table.
-const compact = new Intl.NumberFormat("en-IN", {
-  style: "currency",
-  currency: "INR",
-  notation: "compact",
-  maximumFractionDigits: 1,
-});
+const MIN_AXIS_WIDTH = 52; // room for ticks like "₹40K"; wider symbols ("AED 40K") get more
+const AXIS_CHAR_WIDTH = 7.6; // rough width of one 12px character
 
 type DotProps = { cx?: number; cy?: number; index?: number };
 
 function ChartTooltip({
   active,
   payload,
+  currency,
 }: {
   active?: boolean;
   payload?: readonly { payload?: TrendPoint }[];
+  currency: CurrencyCode;
 }) {
   const point = active ? payload?.[0]?.payload : undefined;
   if (!point) return null;
@@ -45,7 +41,7 @@ function ChartTooltip({
       className="rounded-md bg-white px-3 py-2 text-sm shadow-md ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-700"
     >
       <p className="font-semibold text-zinc-950 dark:text-zinc-50">
-        {formatPaise(point.amount)}
+        {formatPaise(point.amount, currency)}
       </p>
       <p className="mt-0.5 flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-300">
         <span
@@ -66,12 +62,24 @@ function ChartTooltip({
 // progress, so its marker is hollow; the tooltip and the note below say so too.
 // Only the latest point and the peak carry a value label: the axis, tooltip and
 // table view carry the rest.
-export function TrendChart({ trend }: { trend: MonthlyTrend }) {
+export function TrendChart({
+  trend,
+  currency,
+}: {
+  trend: MonthlyTrend;
+  currency: CurrencyCode;
+}) {
   const [showTable, setShowTable] = useState(false);
   const { points, peakIndex, total } = trend;
   const last = points.length - 1;
   // Round numbers from zero up to just past the peak: 0 / 5K / 10K / 15K.
   const ticks = niceTicks(trend.max);
+  // Axis ticks only (₹10K, ₹1.5L, $15K). Exact values are in the labels, tooltip and table.
+  const tickLabel = (value: number) => formatMinorCompact(value, currency);
+  const axisWidth = Math.max(
+    MIN_AXIS_WIDTH,
+    Math.ceil(Math.max(...ticks.map((tick) => tickLabel(tick).length)) * AXIS_CHAR_WIDTH) + 6,
+  );
   const current = points.find((p) => p.isCurrent);
 
   // A peak label next to the latest label would collide, so it is left to the
@@ -79,7 +87,7 @@ export function TrendChart({ trend }: { trend: MonthlyTrend }) {
   const showPeakLabel = peakIndex >= 0 && peakIndex < last - 1;
 
   const summary = `Monthly spending, last ${points.length} months: ${points
-    .map((p) => `${p.longLabel} ${formatPaise(p.amount)}${p.isCurrent ? " so far" : ""}`)
+    .map((p) => `${p.longLabel} ${formatPaise(p.amount, currency)}${p.isCurrent ? " so far" : ""}`)
     .join(", ")}.`;
 
   const renderDot = (props: DotProps) => {
@@ -119,7 +127,7 @@ export function TrendChart({ trend }: { trend: MonthlyTrend }) {
         fontWeight={600}
         style={{ fill: "var(--viz-text-primary)" }}
       >
-        {formatPaise(Number(value))}
+        {formatPaise(Number(value), currency)}
       </text>
     );
   };
@@ -162,7 +170,7 @@ export function TrendChart({ trend }: { trend: MonthlyTrend }) {
                   ) : null}
                 </th>
                 <td className="py-2 text-right tabular-nums">
-                  {formatPaise(point.amount)}
+                  {formatPaise(point.amount, currency)}
                 </td>
               </tr>
             ))}
@@ -172,7 +180,7 @@ export function TrendChart({ trend }: { trend: MonthlyTrend }) {
               <th scope="row" className="py-2 pr-3 text-left">
                 Total, {points.length} months
               </th>
-              <td className="py-2 text-right tabular-nums">{formatPaise(total)}</td>
+              <td className="py-2 text-right tabular-nums">{formatPaise(total, currency)}</td>
             </tr>
           </tfoot>
         </table>
@@ -198,17 +206,17 @@ export function TrendChart({ trend }: { trend: MonthlyTrend }) {
                 tick={{ fill: "var(--viz-text-secondary)", fontSize: 12 }}
               />
               <YAxis
-                width={LABEL_WIDTH - 30}
+                width={axisWidth}
                 tickLine={false}
                 axisLine={false}
                 domain={[0, ticks[ticks.length - 1]]}
                 ticks={ticks}
-                tickFormatter={(value) => compact.format(Number(value) / 100)}
+                tickFormatter={(value) => tickLabel(Number(value))}
                 tick={{ fill: "var(--viz-text-secondary)", fontSize: 12 }}
               />
               <Tooltip
                 cursor={{ stroke: "var(--viz-baseline)", strokeWidth: 1 }}
-                content={<ChartTooltip />}
+                content={<ChartTooltip currency={currency} />}
                 isAnimationActive={false}
               />
               <Area
@@ -238,7 +246,7 @@ export function TrendChart({ trend }: { trend: MonthlyTrend }) {
 
       {current ? (
         <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
-          {current.longLabel} is still in progress: {formatPaise(current.amount)}{" "}
+          {current.longLabel} is still in progress: {formatPaise(current.amount, currency)}{" "}
           so far.
         </p>
       ) : null}

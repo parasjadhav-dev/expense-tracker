@@ -6,6 +6,7 @@ import {
   saveOverallBudgetAction,
   type BudgetFormState,
 } from "@/app/(app)/budgets/actions";
+import { currencySymbol, type CurrencyCode } from "@/lib/currency";
 import { button, input, label } from "@/lib/ui";
 
 const initialState: BudgetFormState = { status: "idle" };
@@ -14,8 +15,10 @@ const initialState: BudgetFormState = { status: "idle" };
 export function BudgetForm({
   month,
   initialAmount,
+  currency,
 }: {
   month: string;
+  currency: CurrencyCode;
   // Rupees as text, e.g. "30000.00". Undefined when no budget is set yet.
   initialAmount?: string;
 }) {
@@ -54,7 +57,7 @@ export function BudgetForm({
 
       <div>
         <label htmlFor="amount" className={label}>
-          Monthly budget (₹)
+          Monthly budget ({currencySymbol(currency)})
         </label>
         <input
           id="amount"

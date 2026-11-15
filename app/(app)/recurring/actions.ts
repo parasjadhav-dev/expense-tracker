@@ -11,6 +11,8 @@ import {
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { currentMonth, shiftMonth } from "@/lib/expense-filters";
+import { getUserCurrency } from "@/lib/currency-db";
+import { DEFAULT_CURRENCY } from "@/lib/currency";
 import { formatPaise } from "@/lib/money";
 import { lastMonthAfterResume } from "@/lib/recurring";
 import type {
@@ -88,9 +90,11 @@ export async function createRecurring(
     const added = await generateDueExpenses(userId);
     refresh();
 
+    // The save already succeeded, so a failed lookup must not turn it into an error.
+    const currency = await getUserCurrency(userId).catch(() => DEFAULT_CURRENCY);
     return {
       status: "success",
-      message: `Saved ${formatPaise(amount)} every month on day ${dayOfMonth}.${
+      message: `Saved ${formatPaise(amount, currency)} every month on day ${dayOfMonth}.${
         added > 0
           ? ` ${added} ${added === 1 ? "expense was" : "expenses were"} added up to today.`
           : ""

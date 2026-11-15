@@ -8,6 +8,8 @@ import { SAVE_FAILED_MESSAGE, logActionError } from "@/lib/action-errors";
 import { saveCategoryBudgets, saveOverallBudget } from "@/lib/budgets";
 import { db } from "@/lib/db";
 import { formatMonth } from "@/lib/expense-filters";
+import { getUserCurrency } from "@/lib/currency-db";
+import { DEFAULT_CURRENCY } from "@/lib/currency";
 import { formatPaise, parseRupeesToPaise } from "@/lib/money";
 import { AMOUNT_MESSAGES } from "@/lib/validations/expense";
 import {
@@ -62,9 +64,11 @@ export async function saveOverallBudgetAction(
   }
   revalidatePath("/budgets");
 
+  // The save already succeeded, so a failed lookup must not turn it into an error.
+  const currency = await getUserCurrency(userId).catch(() => DEFAULT_CURRENCY);
   return {
     status: "success",
-    message: `Budget for ${formatMonth(month)} set to ${formatPaise(amount)}.`,
+    message: `Budget for ${formatMonth(month)} set to ${formatPaise(amount, currency)}.`,
   };
 }
 

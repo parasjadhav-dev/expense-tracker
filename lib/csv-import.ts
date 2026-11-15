@@ -1,4 +1,5 @@
 import Papa from "papaparse";
+import { CURRENCY_CODES } from "@/lib/currency";
 import { MAX_IMPORT_ROWS } from "@/lib/import-limits";
 import { parseRupeesToPaise } from "@/lib/money";
 
@@ -12,7 +13,7 @@ import { parseRupeesToPaise } from "@/lib/money";
 // - "Debit / Credit" columns, or one "Amount" column with a Dr/Cr type column,
 //   a minus sign, or a Dr/Cr suffix;
 // - dates like 2026-11-09, 09/11/2026 (day first), 9-Nov-2026 and Nov 9, 2026;
-// - amounts like 1,234.50, ₹1,234.50, Rs. 99 and (250.00).
+// - amounts like 1,234.50, ₹1,234.50, $99, 99 USD, Rs. 99 and (250.00).
 // Only money going out becomes an expense. Credits are counted and ignored.
 
 export { MAX_IMPORT_BYTES, MAX_IMPORT_ROWS } from "@/lib/import-limits";
@@ -139,7 +140,15 @@ type Money =
   | { kind: "zero" }
   | { kind: "ok"; paise: number; negative: boolean; side: "dr" | "cr" | null };
 
-// "1,234.50", "₹ 99", "Rs. 99.00", "(250.00)", "-250", "250.00 Dr", "Cr 100".
+// A currency marker in front of or behind an amount is dropped: ₹ $ € £ ₱ ₦, "Rs.",
+// "RM", prefixed dollars (US$, A$, C$, NZ$, S$) and any currency code we support
+// (INR, USD, EUR...). Statements are read the same whichever currency the user
+// has chosen; the number is what counts.
+const CODES = CURRENCY_CODES.join("|");
+const CURRENCY_PREFIX = new RegExp(`^(?:(?:US|A|C|NZ|S)?\\$|[₹€£₱₦]|rs\\.?|rm|${CODES})\\s*`, "i");
+const CURRENCY_SUFFIX = new RegExp(`\\s*(?:${CODES})$`, "i");
+
+// "1,234.50", "₹ 99", "$99.00", "Rs. 99.00", "(250.00)", "-250", "250.00 Dr", "Cr 100".
 export function parseMoney(raw: string): Money {
   let text = raw.trim();
   if (!text) return { kind: "empty" };
@@ -168,7 +177,7 @@ export function parseMoney(raw: string): Money {
   } else if (text.startsWith("+")) {
     text = text.slice(1);
   }
-  text = text.replace(/^(₹|rs\.?|inr)\s*/i, "").replace(/\s+/g, "");
+  text = text.replace(CURRENCY_PREFIX, "").replace(CURRENCY_SUFFIX, "").replace(/\s+/g, "");
 
   if (text === "") return { kind: "empty" };
   const parsed = parseRupeesToPaise(text);

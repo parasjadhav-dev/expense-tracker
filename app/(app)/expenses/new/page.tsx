@@ -6,6 +6,7 @@ import { RecentExpenses } from "@/components/app/recent-expenses";
 import { PageHeader } from "@/components/ui/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { auth } from "@/lib/auth";
+import { getUserCurrency } from "@/lib/currency-db";
 import { todayInAppZone } from "@/lib/time";
 import { ensureDefaultCategories } from "@/lib/categories";
 import { db } from "@/lib/db";
@@ -47,6 +48,7 @@ async function NewExpenseContent() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login?callbackUrl=/expenses/new");
   const userId = session.user.id;
+  const currency = await getUserCurrency(userId);
 
   await ensureDefaultCategories(userId);
   const [categories, recent] = await Promise.all([
@@ -65,6 +67,7 @@ async function NewExpenseContent() {
           today={todayInAppZone()}
           categories={categories}
           action={createExpense}
+          currency={currency}
           submitLabel="Save expense"
           pendingLabel="Saving..."
         />
@@ -73,6 +76,7 @@ async function NewExpenseContent() {
         id="recent-added"
         title="Recent expenses"
         items={recent}
+        currency={currency}
         emptyText="Nothing here yet. Your latest expenses will show up here as you add them."
         footerHref="/expenses"
         footerLabel="View all"

@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { auth } from "@/lib/auth";
 import { ensureDefaultCategories } from "@/lib/categories";
+import { getUserCurrency } from "@/lib/currency-db";
 import { db } from "@/lib/db";
 import { button } from "@/lib/ui";
 
@@ -50,6 +51,7 @@ async function ImportContent() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login?callbackUrl=/expenses/import");
   const userId = session.user.id;
+  const currency = await getUserCurrency(userId);
 
   await ensureDefaultCategories(userId);
   const categories = await db.category.findMany({
@@ -58,5 +60,5 @@ async function ImportContent() {
     select: { id: true, name: true },
   });
 
-  return <ImportFlow categories={categories} />;
+  return <ImportFlow categories={categories} currency={currency} />;
 }

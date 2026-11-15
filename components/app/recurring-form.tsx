@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { createRecurring } from "@/app/(app)/recurring/actions";
 import type { RecurringFormState } from "@/lib/recurring-form";
+import { currencySymbol, type CurrencyCode } from "@/lib/currency";
 import { button, input, label } from "@/lib/ui";
 
 type Category = { id: string; name: string };
@@ -14,7 +15,9 @@ export function RecurringForm({
   categories,
   month,
   minMonth,
+  currency,
 }: {
+  currency: CurrencyCode;
   categories: Category[];
   month: string; // the current month: the default first month and the latest allowed
   minMonth: string; // the earliest first month (12 months back)
@@ -49,7 +52,7 @@ export function RecurringForm({
       >
         <div>
           <label htmlFor="amount" className={label}>
-            Amount (₹)
+            Amount ({currencySymbol(currency)})
           </label>
           <input
             id="amount"

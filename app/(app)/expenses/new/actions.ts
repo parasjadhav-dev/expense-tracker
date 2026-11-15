@@ -13,6 +13,8 @@ import {
   logActionError,
   revalidateExpensePages,
 } from "@/lib/action-errors";
+import { getUserCurrency } from "@/lib/currency-db";
+import { DEFAULT_CURRENCY } from "@/lib/currency";
 import { formatPaise } from "@/lib/money";
 
 export async function createExpense(
@@ -53,9 +55,11 @@ export async function createExpense(
   }
 
   revalidateExpensePages();
+  // The save already succeeded, so a failed lookup must not turn it into an error.
+  const currency = await getUserCurrency(userId).catch(() => DEFAULT_CURRENCY);
   return {
     status: "success",
-    message: `Saved ${formatPaise(amount)} in ${categoryName}.`,
+    message: `Saved ${formatPaise(amount, currency)} in ${categoryName}.`,
     savedAt: Date.now(),
   };
 }

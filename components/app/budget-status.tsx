@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Target } from "lucide-react";
 import type { BudgetSummary } from "@/lib/budget";
+import type { CurrencyCode } from "@/lib/currency";
 import { formatMonth } from "@/lib/expense-filters";
 import { button, card, iconChip } from "@/lib/ui";
 import { BudgetProgress } from "./budget-progress";
@@ -12,9 +13,11 @@ const MAX_ROWS = 5;
 export function BudgetStatus({
   month,
   summary,
+  currency,
 }: {
   month: string;
   summary: BudgetSummary;
+  currency: CurrencyCode;
 }) {
   const withLimit = summary.categories
     .filter((category) => category.budget !== null)
@@ -65,6 +68,7 @@ export function BudgetStatus({
               key={category.categoryId}
               label={category.name}
               line={category}
+              currency={currency}
             />
           ))}
         </div>

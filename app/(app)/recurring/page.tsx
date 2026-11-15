@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { auth } from "@/lib/auth";
 import { ensureDefaultCategories } from "@/lib/categories";
+import { getUserCurrency } from "@/lib/currency-db";
 import { db } from "@/lib/db";
 import { currentMonth, shiftMonth } from "@/lib/expense-filters";
 import { formatDay } from "@/lib/format";
@@ -49,6 +50,7 @@ async function RecurringContent() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login?callbackUrl=/recurring");
   const userId = session.user.id;
+  const currency = await getUserCurrency(userId);
 
   await ensureDefaultCategories(userId);
   await generateDueExpenses(userId);
@@ -75,6 +77,7 @@ async function RecurringContent() {
           categories={categories}
           month={month}
           minMonth={shiftMonth(month, -12)}
+          currency={currency}
         />
       </section>
 
@@ -126,7 +129,7 @@ async function RecurringContent() {
                       </p>
                     </div>
                     <p className="shrink-0 text-sm font-semibold tabular-nums text-zinc-950 dark:text-zinc-50">
-                      {formatPaise(item.amount)}
+                      {formatPaise(item.amount, currency)}
                     </p>
                   </div>
                   <div className="flex flex-wrap items-center justify-between gap-3">

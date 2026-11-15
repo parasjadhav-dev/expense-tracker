@@ -1,5 +1,7 @@
 // Amounts are stored as integer paise (₹199.50 -> 19950). Parsing uses string
 // math, never floating point, so values like 0.1 + 0.2 cannot drift.
+import { formatMinor, type CurrencyCode } from "@/lib/currency";
+
 
 // Largest value the Int column holds (PostgreSQL INTEGER).
 export const MAX_PAISE = 2_147_483_647;
@@ -30,9 +32,8 @@ export function paiseToRupeesInput(paise: number): string {
   return `${whole}.${fraction}`;
 }
 
-export function formatPaise(paise: number): string {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-  }).format(paise / 100);
+// 19950 -> "₹199.50" for rupees, "$199.50" for dollars, and so on. The currency
+// is required so no screen can quietly show the wrong symbol.
+export function formatPaise(paise: number, currency: CurrencyCode): string {
+  return formatMinor(paise, currency);
 }

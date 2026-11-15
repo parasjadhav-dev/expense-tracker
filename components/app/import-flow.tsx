@@ -14,6 +14,7 @@ import {
   MAX_IMPORT_ROWS,
 } from "@/lib/import-limits";
 import type { ConfirmState, PreviewRow, PreviewState } from "@/lib/import-types";
+import type { CurrencyCode } from "@/lib/currency";
 import { formatPaise } from "@/lib/money";
 import { button, card, iconChip } from "@/lib/ui";
 
@@ -24,7 +25,13 @@ const selectClass =
 
 // Upload a statement, check the rows, save. The server reads the file; nothing
 // is stored until the user confirms.
-export function ImportFlow({ categories }: { categories: Category[] }) {
+export function ImportFlow({
+  categories,
+  currency,
+}: {
+  categories: Category[];
+  currency: CurrencyCode;
+}) {
   const [preview, previewAction, previewPending] = useActionState<PreviewState, FormData>(
     previewImport,
     { status: "idle" },
@@ -37,6 +44,7 @@ export function ImportFlow({ categories }: { categories: Category[] }) {
         key={preview.token}
         preview={preview}
         categories={categories}
+        currency={currency}
         onReset={() => setDismissed(preview.token)}
       />
     );
@@ -184,10 +192,12 @@ type Edit = { categoryId: string | null; include: boolean };
 function PreviewStep({
   preview,
   categories,
+  currency,
   onReset,
 }: {
   preview: Extract<PreviewState, { status: "preview" }>;
   categories: Category[];
+  currency: CurrencyCode;
   onReset: () => void;
 }) {
   const [edits, setEdits] = useState<Record<number, Edit>>(() =>
@@ -201,7 +211,12 @@ function PreviewStep({
   );
 
   if (confirm.status === "done") {
-    return <DoneStep result={confirm} total={preview.rows.length} onReset={onReset} />;
+    return <DoneStep
+        result={confirm}
+        total={preview.rows.length}
+        currency={currency}
+        onReset={onReset}
+      />;
   }
 
   const selected = preview.rows.filter((row) => edits[row.id].include);
@@ -332,6 +347,7 @@ function PreviewStep({
               row={row}
               edit={edits[row.id]}
               categories={categories}
+              currency={currency}
               onChange={(change) => update(row.id, change)}
             />
           ))}
@@ -344,7 +360,7 @@ function PreviewStep({
         <div className="min-w-0 text-sm" aria-live="polite">
           <p className="font-medium text-zinc-950 dark:text-zinc-50" data-testid="import-summary-line">
             {selected.length} of {preview.rows.length} selected ·{" "}
-            <span className="tabular-nums">{formatPaise(totalPaise)}</span>
+            <span className="tabular-nums">{formatPaise(totalPaise, currency)}</span>
           </p>
           {missing > 0 ? (
             <p className="text-red-700 dark:text-red-300" data-testid="import-missing">
@@ -377,11 +393,13 @@ function ImportRowItem({
   row,
   edit,
   categories,
+  currency,
   onChange,
 }: {
   row: PreviewRow;
   edit: Edit;
   categories: Category[];
+  currency: CurrencyCode;
   onChange: (change: Partial<Edit>) => void;
 }) {
   const description = row.note || "(no description)";
@@ -418,7 +436,7 @@ function ImportRowItem({
         </p>
       </div>
       <p className="shrink-0 text-right text-sm font-semibold tabular-nums text-zinc-950 md:order-3 md:w-28 dark:text-zinc-50">
-        {formatPaise(row.amount)}
+        {formatPaise(row.amount, currency)}
       </p>
       <div className="basis-full md:order-4 md:w-48 md:basis-auto">
         <label htmlFor={`category-${row.id}`} className="sr-only">
@@ -452,10 +470,12 @@ function ImportRowItem({
 function DoneStep({
   result,
   total,
+  currency,
   onReset,
 }: {
   result: Extract<ConfirmState, { status: "done" }>;
   total: number;
+  currency: CurrencyCode;
   onReset: () => void;
 }) {
   const nothingNew = result.imported === 0;
@@ -476,7 +496,7 @@ function DoneStep({
       <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
         {nothingNew
           ? `All ${total} ${total === 1 ? "row was" : "rows were"} already in your account, so nothing was added.`
-          : `${formatPaise(result.totalPaise)} added.${
+          : `${formatPaise(result.totalPaise, currency)} added.${
               result.duplicates > 0
                 ? ` ${result.duplicates} ${result.duplicates === 1 ? "row was" : "rows were"} left out because ${result.duplicates === 1 ? "it was" : "they were"} already saved.`
                 : ""

@@ -16,6 +16,7 @@ import {
   type BreakdownRow,
   type CategoryBreakdown,
 } from "@/lib/category-breakdown";
+import type { CurrencyCode } from "@/lib/currency";
 import { formatPaise } from "@/lib/money";
 import { button } from "@/lib/ui";
 
@@ -36,9 +37,11 @@ function fillFor(row: BreakdownRow): string {
 function ChartTooltip({
   active,
   payload,
+  currency,
 }: {
   active?: boolean;
   payload?: readonly { payload?: BreakdownRow }[];
+  currency: CurrencyCode;
 }) {
   const row = active ? payload?.[0]?.payload : undefined;
   if (!row) return null;
@@ -49,7 +52,7 @@ function ChartTooltip({
       className="rounded-md bg-white px-3 py-2 text-sm shadow-md ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-700"
     >
       <p className="font-semibold text-zinc-950 dark:text-zinc-50">
-        {formatPaise(row.amount)}
+        {formatPaise(row.amount, currency)}
       </p>
       <p className="mt-0.5 flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-300">
         <span
@@ -72,14 +75,16 @@ function ChartTooltip({
 export function CategoryChart({
   monthLabel,
   breakdown,
+  currency,
 }: {
   monthLabel: string;
   breakdown: CategoryBreakdown;
+  currency: CurrencyCode;
 }) {
   const [showTable, setShowTable] = useState(false);
   const { rows, allRows, total } = breakdown;
 
-  const labels = rows.map((row) => formatPaise(row.amount));
+  const labels = rows.map((row) => formatPaise(row.amount, currency));
   const longestLabel = Math.max(...labels.map((label) => label.length));
   const longestName = Math.max(...rows.map((row) => shortName(row.name).length));
   const rightMargin = Math.ceil(longestLabel * CHAR_WIDTH) + 12;
@@ -87,7 +92,7 @@ export function CategoryChart({
   const height = rows.length * ROW_HEIGHT + 12;
 
   const summary = `Spending by category for ${monthLabel}: ${rows
-    .map((row) => `${row.name} ${formatPaise(row.amount)} (${formatTenths(row.tenths)})`)
+    .map((row) => `${row.name} ${formatPaise(row.amount, currency)} (${formatTenths(row.tenths)})`)
     .join(", ")}.`;
 
   return (
@@ -131,7 +136,7 @@ export function CategoryChart({
                   {row.name}
                 </th>
                 <td className="py-2 pr-3 text-right tabular-nums">
-                  {formatPaise(row.amount)}
+                  {formatPaise(row.amount, currency)}
                 </td>
                 <td className="py-2 text-right tabular-nums text-zinc-600 dark:text-zinc-400">
                   {formatTenths(row.tenths)}
@@ -145,7 +150,7 @@ export function CategoryChart({
                 Total
               </th>
               <td className="py-2 pr-3 text-right tabular-nums">
-                {formatPaise(total)}
+                {formatPaise(total, currency)}
               </td>
               <td className="py-2 text-right tabular-nums">100.0%</td>
             </tr>
@@ -178,7 +183,7 @@ export function CategoryChart({
               />
               <Tooltip
                 cursor={{ fill: "var(--viz-hover)" }}
-                content={<ChartTooltip />}
+                content={<ChartTooltip currency={currency} />}
                 isAnimationActive={false}
               />
               <Bar
@@ -194,7 +199,7 @@ export function CategoryChart({
                 <LabelList
                   dataKey="amount"
                   position="right"
-                  formatter={(value) => formatPaise(Number(value))}
+                  formatter={(value) => formatPaise(Number(value), currency)}
                   style={{ fill: "var(--viz-text-primary)", fontSize: 12 }}
                 />
               </Bar>
@@ -204,7 +209,7 @@ export function CategoryChart({
       )}
 
       <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
-        Total {formatPaise(total)}
+        Total {formatPaise(total, currency)}
         {rows.some((row) => row.isOther)
           ? ". Smaller categories are grouped as “All other”; the table lists each one."
           : "."}

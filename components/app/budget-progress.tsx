@@ -1,4 +1,5 @@
 import { isOverBudget, overBy, type BudgetLine } from "@/lib/budget";
+import type { CurrencyCode } from "@/lib/currency";
 import { formatPaise } from "@/lib/money";
 
 // Green below 80%, amber from 80%, red at 100% or more. Colour is never the only
@@ -10,16 +11,19 @@ const FILL = {
   limit: "bg-red-600",
 } as const;
 
-function detailText(line: BudgetLine & { budget: number }): string {
+function detailText(
+  line: BudgetLine & { budget: number },
+  currency: CurrencyCode,
+): string {
   if (isOverBudget(line.spent, line.budget)) {
-    return `${formatPaise(overBy(line.spent, line.budget))} over budget`;
+    return `${formatPaise(overBy(line.spent, line.budget), currency)} over budget`;
   }
   if (line.status === "limit") return "Limit reached";
 
   // Rounded down, so 79.6% reads "79%" and cannot look like the 80% warning
   // while the bar is still green.
   const percent = Math.floor(line.percentUsed ?? 0);
-  const left = `${formatPaise(line.remaining ?? 0)} left`;
+  const left = `${formatPaise(line.remaining ?? 0, currency)} left`;
   return line.status === "warning"
     ? `${percent}% used · ${left} · Close to limit`
     : `${percent}% used · ${left}`;
@@ -28,15 +32,17 @@ function detailText(line: BudgetLine & { budget: number }): string {
 export function BudgetProgress({
   label,
   line,
+  currency,
 }: {
   label: string;
   line: BudgetLine;
+  currency: CurrencyCode;
 }) {
   if (line.budget === null || line.status === "none") return null;
   const budgeted = { ...line, budget: line.budget };
 
   const width = Math.min(100, Math.max(0, line.percentUsed ?? 0));
-  const detail = detailText(budgeted);
+  const detail = detailText(budgeted, currency);
 
   return (
     <div data-testid="budget-progress" data-status={line.status}>
@@ -45,7 +51,7 @@ export function BudgetProgress({
           {label}
         </span>
         <span className="tabular-nums text-zinc-600 dark:text-zinc-400">
-          {formatPaise(line.spent)} of {formatPaise(line.budget)}
+          {formatPaise(line.spent, currency)} of {formatPaise(line.budget, currency)}
         </span>
       </div>
       <div

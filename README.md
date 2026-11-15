@@ -53,7 +53,7 @@ The data shown is a demo account, not real spending.
 - **Expenses:**
   - add, edit and delete (delete asks for confirmation);
   - list filtered by month and category, with the count and total for the filter;
-  - amounts entered in rupees, stored as integer paise;
+  - amounts entered in your chosen currency (rupees by default), stored as whole minor units (paise, cents...);
   - 9 default categories created for every new account.
 - **Budgets** (`/budgets`, one month at a time):
   - an overall monthly budget and a limit per category (a blank field means no limit);
@@ -77,7 +77,7 @@ The data shown is a demo account, not real spending.
 ### Not built yet
 
 - Recurring expenses, Google login.
-- More automated tests. `npm test` runs 265 unit tests for money handling, the budget helpers, "today" and "this month" in different time zones, the categorisation rules, the password rules, the reset-link helpers and the email wording. The CSV import and recurring-expense logic have no Vitest tests yet. Screens and database writes were checked with browser-driven scripts that are not part of the repo.
+- More automated tests. `npm test` runs 301 unit tests for money handling, the budget helpers, "today" and "this month" in different time zones, the categorisation rules, the password rules, the reset-link helpers, the email wording and currency formatting. The CSV import and recurring-expense logic have no Vitest tests yet. Screens and database writes were checked with browser-driven scripts that are not part of the repo.
 
 ## Tech stack
 
@@ -172,7 +172,7 @@ proxy.ts                 route protection (the Next 16 name for middleware)
 
 ## Design notes
 
-- **Money is integer paise.** `₹199.50` is stored as `19950`. Input is parsed with string
+- **Money is stored in whole minor units.** `₹199.50` is stored as `19950`. The currency is a display setting on the Account page (13 currencies with 2 decimal places, from rupees to dollars, euros and dirhams): it changes the symbol and number format, and does **not** convert amounts. Currencies without 2 decimals (such as the yen) are left out on purpose. Input is parsed with string
   arithmetic, never floating point, and the column is a 32-bit integer (maximum ₹21,474,836.47).
 - **Dates are calendar dates.** An expense date is stored at UTC midnight, so it never shifts
   into another day or month because of a time zone. Month filters use the same boundaries.

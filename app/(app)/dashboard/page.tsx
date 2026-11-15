@@ -17,6 +17,7 @@ import { generateDueExpenses } from "@/lib/recurring-db";
 import { daysLeftInMonth, safeToSpend } from "@/lib/budget";
 import { loadMonthBudgets } from "@/lib/budget-summary";
 import { buildCategoryBreakdown } from "@/lib/category-breakdown";
+import { getUserCurrency } from "@/lib/currency-db";
 import { currentMonth, formatMonth, resolveMonth } from "@/lib/expense-filters";
 import { getRecentExpenses, getSpendingByDay } from "@/lib/expenses";
 import { buildMonthlyTrend, lastMonths } from "@/lib/monthly-trend";
@@ -109,7 +110,8 @@ async function DashboardContent({
   const requested = resolveMonth(first((await searchParams).month)) ?? nowMonth;
   const month = requested > nowMonth ? nowMonth : requested;
   const isCurrentMonth = month === nowMonth;
-  const [{ summary }, dailyTotals, recent] = await Promise.all([
+  const [currency, { summary }, dailyTotals, recent] = await Promise.all([
+    getUserCurrency(userId),
     loadMonthBudgets(userId, month),
     // The six months ending with the current one.
     getSpendingByDay(userId, lastMonths(month)[0], month),
@@ -157,12 +159,13 @@ async function DashboardContent({
       />
 
       <div className="flex flex-col gap-4 md:gap-5">
-        <BudgetAlerts month={month} summary={summary} showManageLink />
+        <BudgetAlerts month={month} summary={summary} currency={currency} showManageLink />
         <SummaryCards
           month={month}
           isCurrentMonth={isCurrentMonth}
           overall={summary.overall}
           safe={safe}
+          currency={currency}
         />
 
         <div className="grid gap-4 md:gap-5 lg:grid-cols-2">
@@ -180,7 +183,11 @@ async function DashboardContent({
               {formatMonth(month)}
             </p>
             {breakdown.rows.length > 0 ? (
-              <CategoryChart monthLabel={formatMonth(month)} breakdown={breakdown} />
+              <CategoryChart
+                monthLabel={formatMonth(month)}
+                breakdown={breakdown}
+                currency={currency}
+              />
             ) : (
               <p
                 data-testid="chart-empty"
@@ -212,7 +219,7 @@ async function DashboardContent({
                 No spending in the last {trend.points.length} months yet.
               </p>
             ) : (
-              <TrendChart trend={trend} />
+              <TrendChart trend={trend} currency={currency} />
             )}
           </section>
         </div>
@@ -222,6 +229,7 @@ async function DashboardContent({
             id="recent-expenses"
             title={isCurrentMonth ? "Recent expenses" : `Expenses in ${formatMonth(month)}`}
             items={recent}
+            currency={currency}
             emptyText={
               isCurrentMonth
                 ? "No expenses yet. Add your first one to start tracking."
@@ -230,7 +238,7 @@ async function DashboardContent({
             footerHref={`/expenses?month=${month}`}
             footerLabel="View all"
           />
-          <BudgetStatus month={month} summary={summary} />
+          <BudgetStatus month={month} summary={summary} currency={currency} />
         </div>
       </div>
     </>

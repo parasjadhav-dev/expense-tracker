@@ -6,6 +6,7 @@ import { RecentExpenses } from "@/components/app/recent-expenses";
 import { PageHeader } from "@/components/ui/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { auth } from "@/lib/auth";
+import { getUserCurrency } from "@/lib/currency-db";
 import { todayInAppZone } from "@/lib/time";
 import { db } from "@/lib/db";
 import { getRecentExpenses } from "@/lib/expenses";
@@ -55,6 +56,7 @@ async function EditExpenseLoader({
   const session = await auth();
   if (!session?.user?.id) redirect(`/login?callbackUrl=/expenses/${id}/edit`);
   const userId = session.user.id;
+  const currency = await getUserCurrency(userId);
 
   const [expense, categories] = await Promise.all([
     db.expense.findFirst({ where: { id, userId } }),
@@ -83,6 +85,7 @@ async function EditExpenseLoader({
           today={todayInAppZone()}
           categories={categories}
           action={updateExpense.bind(null, expense.id)}
+          currency={currency}
           initialValues={{
             amount: paiseToRupeesInput(expense.amount),
             categoryId: expense.categoryId,
@@ -98,6 +101,7 @@ async function EditExpenseLoader({
         id="other-in-category"
         title={`Other ${categoryName} expenses`}
         items={others}
+        currency={currency}
         emptyText={`No other ${categoryName} expenses yet.`}
         footerHref={`/expenses?month=&category=${expense.categoryId}`}
         footerLabel="View all"

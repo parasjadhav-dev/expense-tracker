@@ -8,10 +8,12 @@ import { generateDueExpenses } from "@/lib/recurring-db";
 import { DeleteExpenseButton } from "@/components/app/delete-expense-button";
 import { PageHeader } from "@/components/ui/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getUserCurrency } from "@/lib/currency-db";
 import { db } from "@/lib/db";
 import { formatMonth, resolveMonth } from "@/lib/expense-filters";
 import { EXPENSE_LIST_LIMIT, listExpenses } from "@/lib/expenses";
 import { formatDay } from "@/lib/format";
+import type { CurrencyCode } from "@/lib/currency";
 import { formatPaise } from "@/lib/money";
 import { button, card, iconChip, input, label } from "@/lib/ui";
 
@@ -29,14 +31,17 @@ function first(value: string | string[] | undefined): string | undefined {
 }
 
 // What the delete dialog shows, so the user can see exactly what will go.
-function describe(expense: {
-  amount: number;
-  date: Date;
-  note: string | null;
-  categoryName: string;
-}): string {
+function describe(
+  expense: {
+    amount: number;
+    date: Date;
+    note: string | null;
+    categoryName: string;
+  },
+  currency: CurrencyCode,
+): string {
   const parts = [
-    formatPaise(expense.amount),
+    formatPaise(expense.amount, currency),
     expense.categoryName,
     formatDay(expense.date),
   ];
@@ -92,6 +97,7 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
   const session = await auth();
   if (!session?.user?.id) redirect("/login?callbackUrl=/expenses");
   const userId = session.user.id;
+  const currency = await getUserCurrency(userId);
   // Adds any recurring expenses that have come due since the last visit.
   await generateDueExpenses(userId);
 
@@ -176,7 +182,7 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
             data-testid="total"
             className="text-xl font-semibold tracking-tight tabular-nums text-zinc-950 dark:text-zinc-50"
           >
-            {formatPaise(totalPaise)}
+            {formatPaise(totalPaise, currency)}
           </p>
         </div>
 
@@ -229,7 +235,7 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
                       {expense.note ?? ""}
                     </td>
                     <td className="whitespace-nowrap px-5 py-3.5 text-right font-semibold tabular-nums text-zinc-950 dark:text-zinc-50">
-                      {formatPaise(expense.amount)}
+                      {formatPaise(expense.amount, currency)}
                     </td>
                     <td className="whitespace-nowrap px-5 py-3.5 text-right">
                       <div className="flex items-center justify-end gap-1">
@@ -241,7 +247,7 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
                         </Link>
                         <DeleteExpenseButton
                           id={expense.id}
-                          summary={describe(expense)}
+                          summary={describe(expense, currency)}
                         />
                       </div>
                     </td>
@@ -258,7 +264,7 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
                       {expense.categoryName}
                     </span>
                     <span className="text-base font-semibold tabular-nums">
-                      {formatPaise(expense.amount)}
+                      {formatPaise(expense.amount, currency)}
                     </span>
                   </div>
                   <div className="flex items-baseline justify-between gap-3 text-xs text-zinc-500 dark:text-zinc-400">
@@ -274,7 +280,7 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
                     </Link>
                     <DeleteExpenseButton
                       id={expense.id}
-                      summary={describe(expense)}
+                      summary={describe(expense, currency)}
                     />
                   </div>
                 </li>

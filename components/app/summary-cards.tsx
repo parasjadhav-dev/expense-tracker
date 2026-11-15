@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CalendarClock, PiggyBank, Wallet, type LucideIcon } from "lucide-react";
 import type { BudgetLine, SafeToSpend } from "@/lib/budget";
+import type { CurrencyCode } from "@/lib/currency";
 import { formatMonth } from "@/lib/expense-filters";
 import { formatPaise } from "@/lib/money";
 import { card, iconChip } from "@/lib/ui";
@@ -64,14 +65,16 @@ export function SummaryCards({
   isCurrentMonth = true,
   overall,
   safe,
+  currency,
 }: {
   month: string;
   isCurrentMonth?: boolean;
   overall: BudgetLine;
   safe: SafeToSpend;
+  currency: CurrencyCode;
 }) {
   const budget = overall.budget;
-  const safeView = safeToSpendView(safe);
+  const safeView = safeToSpendView(safe, currency);
   // Rounded down, and capped so a wildly overspent month reads "over 999%"
   // instead of a six-digit number.
   const percent = Math.floor(overall.percentUsed ?? 0);
@@ -95,10 +98,10 @@ export function SummaryCards({
         id="spent"
         icon={Wallet}
         label={isCurrentMonth ? "Spent this month" : `Spent in ${formatMonth(month)}`}
-        value={formatPaise(overall.spent)}
+        value={formatPaise(overall.spent, currency)}
         caption={
           budget !== null
-            ? `${percentText} of your ${formatPaise(budget)} budget`
+            ? `${percentText} of your ${formatPaise(budget, currency)} budget`
             : "No overall budget set"
         }
       />
@@ -116,12 +119,12 @@ export function SummaryCards({
           id="remaining"
           icon={PiggyBank}
           label="Remaining"
-          value={formatPaise(overall.remaining ?? 0)}
+          value={formatPaise(overall.remaining ?? 0, currency)}
           tone={(overall.remaining ?? 0) < 0 ? "alert" : "normal"}
           caption={
             (overall.remaining ?? 0) < 0
-              ? `Over your ${formatPaise(budget)} budget`
-              : `of your ${formatPaise(budget)} budget`
+              ? `Over your ${formatPaise(budget, currency)} budget`
+              : `of your ${formatPaise(budget, currency)} budget`
           }
         />
       )}

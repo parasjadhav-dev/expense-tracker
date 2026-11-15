@@ -17,6 +17,8 @@ model User {
   email        String   @unique
   passwordHash String
   name         String?
+  // ISO code of the currency amounts are shown in. Display only: nothing is converted.
+  currency     String   @default("INR")
   createdAt    DateTime @default(now())
 
   categories Category[]

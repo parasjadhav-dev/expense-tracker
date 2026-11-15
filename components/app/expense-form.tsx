@@ -7,6 +7,7 @@ import type {
   ExpenseFormState,
   ExpenseFormValues,
 } from "@/lib/expense-form";
+import { currencySymbol, type CurrencyCode } from "@/lib/currency";
 import { button, input, label } from "@/lib/ui";
 
 type Category = { id: string; name: string };
@@ -27,7 +28,9 @@ export function ExpenseForm({
   pendingLabel,
   cancelHref,
   today,
+  currency,
 }: {
+  currency: CurrencyCode;
   // "YYYY-MM-DD" in the app time zone: the default date and the latest allowed.
   today: string;
   categories: Category[];
@@ -68,7 +71,7 @@ export function ExpenseForm({
       >
         <div>
           <label htmlFor="amount" className={label}>
-            Amount (₹)
+            Amount ({currencySymbol(currency)})
           </label>
           <input
             id="amount"

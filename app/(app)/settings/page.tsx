@@ -2,9 +2,11 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { ChangePasswordForm } from "@/components/app/change-password-form";
+import { CurrencyForm } from "@/components/app/currency-form";
 import { PageHeader } from "@/components/ui/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { auth } from "@/lib/auth";
+import { getUserCurrency } from "@/lib/currency-db";
 import { card } from "@/lib/ui";
 
 export const metadata = {
@@ -17,7 +19,7 @@ export default function SettingsPage() {
       <div className="mx-auto w-full max-w-6xl">
         <PageHeader
           title="Account"
-          description="Your sign-in details and password."
+          description="Your sign-in details, currency and password."
         />
         <Suspense
           fallback={
@@ -40,34 +42,47 @@ async function SettingsContent() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login?callbackUrl=/settings");
   const { name, email } = session.user;
+  const currency = await getUserCurrency(session.user.id);
 
   return (
     <div className="grid items-start gap-4 md:gap-5 lg:grid-cols-2">
-      <section className={`${card} p-6`} aria-labelledby="account-details">
-        <h2
-          id="account-details"
-          className="mb-4 text-base font-semibold tracking-tight text-zinc-950 dark:text-zinc-50"
-        >
-          Your account
-        </h2>
-        <dl className="flex flex-col gap-4 text-sm">
-          <div>
-            <dt className="text-zinc-500 dark:text-zinc-400">Name</dt>
-            <dd className="mt-0.5 font-medium text-zinc-950 dark:text-zinc-50">
-              {name || "Not set"}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-zinc-500 dark:text-zinc-400">Email</dt>
-            <dd
-              className="mt-0.5 break-all font-medium text-zinc-950 dark:text-zinc-50"
-              data-testid="account-email"
-            >
-              {email}
-            </dd>
-          </div>
-        </dl>
-      </section>
+      <div className="flex flex-col gap-4 md:gap-5">
+        <section className={`${card} p-6`} aria-labelledby="account-details">
+          <h2
+            id="account-details"
+            className="mb-4 text-base font-semibold tracking-tight text-zinc-950 dark:text-zinc-50"
+          >
+            Your account
+          </h2>
+          <dl className="flex flex-col gap-4 text-sm">
+            <div>
+              <dt className="text-zinc-500 dark:text-zinc-400">Name</dt>
+              <dd className="mt-0.5 font-medium text-zinc-950 dark:text-zinc-50">
+                {name || "Not set"}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-zinc-500 dark:text-zinc-400">Email</dt>
+              <dd
+                className="mt-0.5 break-all font-medium text-zinc-950 dark:text-zinc-50"
+                data-testid="account-email"
+              >
+                {email}
+              </dd>
+            </div>
+          </dl>
+        </section>
+
+        <section className={`${card} p-6`} aria-labelledby="currency-heading">
+          <h2
+            id="currency-heading"
+            className="mb-4 text-base font-semibold tracking-tight text-zinc-950 dark:text-zinc-50"
+          >
+            Currency
+          </h2>
+          <CurrencyForm currency={currency} />
+        </section>
+      </div>
 
       <section className={`${card} p-6`} aria-labelledby="change-password">
         <h2

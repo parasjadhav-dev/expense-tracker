@@ -13,6 +13,7 @@ import { checkBudgetMonth } from "@/lib/validations/budget";
 import { daysLeftInMonth, safeToSpend } from "@/lib/budget";
 import { loadMonthBudgets } from "@/lib/budget-summary";
 import { ensureDefaultCategories } from "@/lib/categories";
+import { getUserCurrency } from "@/lib/currency-db";
 import { currentMonth, formatMonth, resolveMonth } from "@/lib/expense-filters";
 import { formatPaise, paiseToRupeesInput } from "@/lib/money";
 import { todayInAppZone } from "@/lib/time";
@@ -65,6 +66,7 @@ async function BudgetsContent({ searchParams }: { searchParams: SearchParams }) 
   const session = await auth();
   if (!session?.user?.id) redirect("/login?callbackUrl=/budgets");
   const userId = session.user.id;
+  const currency = await getUserCurrency(userId);
   // Adds any recurring expenses that have come due since the last visit.
   await generateDueExpenses(userId);
 
@@ -121,8 +123,13 @@ async function BudgetsContent({ searchParams }: { searchParams: SearchParams }) 
 
       <div className={GRID}>
         <div className="flex flex-col gap-4 md:gap-5">
-          <BudgetAlerts month={month} summary={summary} />
-          <SpendingOverview month={month} summary={summary} safe={safe} />
+          <BudgetAlerts month={month} summary={summary} currency={currency} />
+          <SpendingOverview
+            month={month}
+            summary={summary}
+            safe={safe}
+            currency={currency}
+          />
         </div>
 
         <div className="flex flex-col gap-4 md:gap-5">
@@ -137,11 +144,12 @@ async function BudgetsContent({ searchParams }: { searchParams: SearchParams }) 
               data-testid="current-budget"
               className="mt-2 mb-5 text-3xl font-semibold tracking-tight tabular-nums text-zinc-950 dark:text-zinc-50"
             >
-              {budget ? formatPaise(budget.amount) : "Not set"}
+              {budget ? formatPaise(budget.amount, currency) : "Not set"}
             </p>
             <BudgetForm
               month={month}
               initialAmount={budget ? paiseToRupeesInput(budget.amount) : undefined}
+              currency={currency}
             />
           </section>
 
@@ -157,14 +165,14 @@ async function BudgetsContent({ searchParams }: { searchParams: SearchParams }) 
               className="mt-2 mb-5 text-sm text-zinc-600 dark:text-zinc-400"
             >
               {categoryTotal > 0
-                ? `Saved category limits add up to ${formatPaise(categoryTotal)}.`
+                ? `Saved category limits add up to ${formatPaise(categoryTotal, currency)}.`
                 : "No category limits set."}
               {overBy > 0 ? (
                 <span
                   data-testid="over-overall"
                   className="mt-1 block text-amber-700 dark:text-amber-400"
                 >
-                  That is {formatPaise(overBy)} more than your overall budget.
+                  That is {formatPaise(overBy, currency)} more than your overall budget.
                 </span>
               ) : null}
             </p>

@@ -59,8 +59,15 @@ describe("paiseToRupeesInput", () => {
 
 describe("formatPaise", () => {
   it("shows rupees with Indian digit grouping", () => {
-    expect(formatPaise(0)).toBe("₹0.00");
-    expect(formatPaise(19950)).toBe("₹199.50");
-    expect(formatPaise(12345678)).toBe("₹1,23,456.78");
+    expect(formatPaise(0, "INR")).toBe("₹0.00");
+    expect(formatPaise(19950, "INR")).toBe("₹199.50");
+    expect(formatPaise(12345678, "INR")).toBe("₹1,23,456.78");
+  });
+
+  it("shows the symbol of the chosen currency", () => {
+    expect(formatPaise(19950, "USD")).toBe("$199.50");
+    expect(formatPaise(19950, "EUR")).toBe("€199.50");
+    expect(formatPaise(19950, "GBP")).toBe("£199.50");
+    expect(formatPaise(12345678, "USD")).toBe("$123,456.78");
   });
 });

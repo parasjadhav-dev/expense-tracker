@@ -1,4 +1,5 @@
 import type { SafeToSpend as SafeToSpendResult } from "@/lib/budget";
+import type { CurrencyCode } from "@/lib/currency";
 import { formatPaise } from "@/lib/money";
 
 function days(count: number): string {
@@ -6,7 +7,7 @@ function days(count: number): string {
 }
 
 export type SafeToSpendView = {
-  // The per-day amount, e.g. "₹1,000.00". null when there is nothing to show.
+  // The per-day amount, e.g. "₹1,000.00" or "$1,000.00". null when there is nothing to show.
   amount: string | null;
   // A sentence explaining the amount (or why there is none).
   detail: string;
@@ -16,32 +17,35 @@ export type SafeToSpendView = {
 
 // The wording for every case, shared by the Safe to spend block on /budgets and
 // the dashboard card so the two cannot disagree.
-export function safeToSpendView(safe: SafeToSpendResult): SafeToSpendView {
+export function safeToSpendView(
+  safe: SafeToSpendResult,
+  currency: CurrencyCode,
+): SafeToSpendView {
   switch (safe.kind) {
     case "ok":
       return {
-        amount: formatPaise(safe.perDay),
+        amount: formatPaise(safe.perDay, currency),
         detail: safe.lastDay
-          ? `Last day of the month: up to ${formatPaise(safe.remaining)} left to spend today.`
-          : `${formatPaise(safe.remaining)} left over ${days(safe.daysLeft)}, counting today.`,
+          ? `Last day of the month: up to ${formatPaise(safe.remaining, currency)} left to spend today.`
+          : `${formatPaise(safe.remaining, currency)} left over ${days(safe.daysLeft)}, counting today.`,
         tone: "normal",
       };
     case "over":
       return {
-        amount: formatPaise(0),
-        detail: `You are over your overall budget by ${formatPaise(safe.overBy)}.`,
+        amount: formatPaise(0, currency),
+        detail: `You are over your overall budget by ${formatPaise(safe.overBy, currency)}.`,
         tone: "alert",
       };
     case "budget-used":
       return {
-        amount: formatPaise(0),
+        amount: formatPaise(0, currency),
         detail: "You have used your whole overall budget.",
         tone: "normal",
       };
     case "month-ended":
       return {
         amount: null,
-        detail: `This month has ended. ${formatPaise(safe.remaining)} of the overall budget was not used.`,
+        detail: `This month has ended. ${formatPaise(safe.remaining, currency)} of the overall budget was not used.`,
         tone: "normal",
       };
     case "no-budget":
@@ -56,8 +60,14 @@ export function safeToSpendView(safe: SafeToSpendResult): SafeToSpendView {
 // How much can be spent each remaining day without breaking the overall budget.
 // Always says something: there is a message for every case, including no
 // budget, over budget and a finished month.
-export function SafeToSpend({ safe }: { safe: SafeToSpendResult }) {
-  const view = safeToSpendView(safe);
+export function SafeToSpend({
+  safe,
+  currency,
+}: {
+  safe: SafeToSpendResult;
+  currency: CurrencyCode;
+}) {
+  const view = safeToSpendView(safe, currency);
 
   return (
     <div

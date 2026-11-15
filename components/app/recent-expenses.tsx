@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, ReceiptText } from "lucide-react";
+import type { CurrencyCode } from "@/lib/currency";
 import { formatShortDay } from "@/lib/format";
 import { formatPaise } from "@/lib/money";
 import type { ExpenseListItem } from "@/lib/expenses";
@@ -11,6 +12,7 @@ export function RecentExpenses({
   id,
   title,
   items,
+  currency,
   emptyText,
   footerHref,
   footerLabel,
@@ -19,6 +21,7 @@ export function RecentExpenses({
   id: string;
   title: string;
   items: ExpenseListItem[];
+  currency: CurrencyCode;
   emptyText: string;
   footerHref?: string;
   footerLabel?: string;
@@ -82,7 +85,7 @@ export function RecentExpenses({
                 </p>
               </div>
               <p className="shrink-0 text-sm font-semibold tabular-nums text-zinc-950 dark:text-zinc-50">
-                {formatPaise(item.amount)}
+                {formatPaise(item.amount, currency)}
               </p>
             </li>
           ))}

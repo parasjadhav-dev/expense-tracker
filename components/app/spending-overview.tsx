@@ -1,4 +1,5 @@
 import type { BudgetSummary, SafeToSpend as SafeToSpendResult } from "@/lib/budget";
+import type { CurrencyCode } from "@/lib/currency";
 import { formatMonth } from "@/lib/expense-filters";
 import { formatPaise } from "@/lib/money";
 import { card } from "@/lib/ui";
@@ -11,10 +12,12 @@ export function SpendingOverview({
   month,
   summary,
   safe,
+  currency,
 }: {
   month: string;
   summary: BudgetSummary;
   safe: SafeToSpendResult;
+  currency: CurrencyCode;
 }) {
   const withLimit = summary.categories.filter((c) => c.budget !== null);
   const withoutLimit = summary.categories.filter(
@@ -35,16 +38,16 @@ export function SpendingOverview({
       </h2>
 
       <div className="mt-4 flex flex-col gap-5">
-        <SafeToSpend safe={safe} />
+        <SafeToSpend safe={safe} currency={currency} />
 
         {overall.budget !== null ? (
-          <BudgetProgress label="Overall" line={overall} />
+          <BudgetProgress label="Overall" line={overall} currency={currency} />
         ) : (
           <p
             data-testid="no-overall-budget"
             className="text-sm text-zinc-600 dark:text-zinc-400"
           >
-            Spent {formatPaise(overall.spent)} this month. No overall budget is
+            Spent {formatPaise(overall.spent, currency)} this month. No overall budget is
             set.
           </p>
         )}
@@ -55,6 +58,7 @@ export function SpendingOverview({
               key={category.categoryId}
               label={category.name}
               line={category}
+              currency={currency}
             />
           ))
         ) : (
@@ -79,7 +83,7 @@ export function SpendingOverview({
                 >
                   <span>{category.name}</span>
                   <span className="tabular-nums">
-                    {formatPaise(category.spent)}
+                    {formatPaise(category.spent, currency)}
                   </span>
                 </li>
               ))}

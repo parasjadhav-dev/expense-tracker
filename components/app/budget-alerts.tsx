@@ -6,6 +6,7 @@ import {
   type BudgetSummary,
 } from "@/lib/budget";
 import { formatMonth } from "@/lib/expense-filters";
+import type { CurrencyCode } from "@/lib/currency";
 import { formatPaise } from "@/lib/money";
 
 const STYLE = {
@@ -16,8 +17,8 @@ const STYLE = {
     "bg-amber-50 text-amber-900 ring-amber-200 dark:bg-amber-950 dark:text-amber-100 dark:ring-amber-900",
 } as const;
 
-function message(alert: BudgetAlert): string {
-  const amounts = `${formatPaise(alert.spent)} of ${formatPaise(alert.budget)}`;
+function message(alert: BudgetAlert, currency: CurrencyCode): string {
+  const amounts = `${formatPaise(alert.spent, currency)} of ${formatPaise(alert.budget, currency)}`;
   const who = alert.scope === "overall" ? "your overall budget" : "its budget";
   // Rounded down so the percent never reaches 80 before the warning does.
   const percent = Math.floor(alert.percentUsed);
@@ -25,12 +26,12 @@ function message(alert: BudgetAlert): string {
   switch (alert.kind) {
     case "over":
       return alert.scope === "overall"
-        ? `You are over your overall budget by ${formatPaise(alert.overBy)} (${amounts}).`
-        : `${alert.name} is over budget by ${formatPaise(alert.overBy)} (${amounts}).`;
+        ? `You are over your overall budget by ${formatPaise(alert.overBy, currency)} (${amounts}).`
+        : `${alert.name} is over budget by ${formatPaise(alert.overBy, currency)} (${amounts}).`;
     case "reached":
       return alert.scope === "overall"
-        ? `You have used all of your overall budget (${formatPaise(alert.budget)}).`
-        : `${alert.name} has used all of its budget (${formatPaise(alert.budget)}).`;
+        ? `You have used all of your overall budget (${formatPaise(alert.budget, currency)}).`
+        : `${alert.name} has used all of its budget (${formatPaise(alert.budget, currency)}).`;
     case "warning":
       return alert.scope === "overall"
         ? `You have used ${percent}% of ${who} (${amounts}).`
@@ -44,10 +45,12 @@ function message(alert: BudgetAlert): string {
 export function BudgetAlerts({
   month,
   summary,
+  currency,
   showManageLink = false,
 }: {
   month: string;
   summary: BudgetSummary;
+  currency: CurrencyCode;
   showManageLink?: boolean;
 }) {
   const alerts = budgetAlerts(summary);
@@ -71,7 +74,7 @@ export function BudgetAlerts({
             className={`flex items-start gap-3 rounded-xl px-4 py-3 text-sm ring-1 ${STYLE[alert.kind]}`}
           >
             <Icon className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-            <p>{message(alert)}</p>
+            <p>{message(alert, currency)}</p>
           </div>
         );
       })}
