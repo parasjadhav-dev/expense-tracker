@@ -21,7 +21,7 @@ import { button, card, iconChip } from "@/lib/ui";
 type Category = { id: string; name: string };
 
 const selectClass =
-  "w-full rounded-lg border border-zinc-300 bg-white px-2.5 py-2 text-sm text-zinc-950 outline-none transition focus:border-[#2a78d6] focus:ring-2 focus:ring-[#2a78d6]/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50";
+  "w-full rounded-lg border border-zinc-300 bg-white px-2.5 py-2 text-base text-zinc-950 outline-none transition focus:border-[#2a78d6] focus:ring-2 focus:ring-[#2a78d6]/20 sm:text-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50";
 
 // Upload a statement, check the rows, save. The server reads the file; nothing
 // is stored until the user confirms.

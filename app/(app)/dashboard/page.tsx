@@ -29,7 +29,10 @@ export const metadata = {
 };
 
 const addExpenseAction = (
-  <Link href="/expenses/new" className={button("primary")}>
+  <Link
+    href="/expenses/new"
+    className={`${button("primary")} w-full sm:w-auto`}
+  >
     <Plus className="size-4" aria-hidden="true" />
     Add expense
   </Link>

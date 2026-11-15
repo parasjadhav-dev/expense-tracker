@@ -69,7 +69,7 @@ export function BudgetForm({
           required
           defaultValue={state.values?.amount ?? initialAmount}
           aria-invalid={amountErrors ? true : undefined}
-          className={`${input} text-base tabular-nums`}
+          className={`${input} tabular-nums`}
         />
         {amountErrors?.length ? (
           <p className="mt-1 text-sm text-red-600 dark:text-red-400">

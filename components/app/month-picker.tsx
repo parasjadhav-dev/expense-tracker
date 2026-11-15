@@ -24,7 +24,8 @@ export function MonthPicker({
   return (
     <div
       data-testid="month-picker"
-      className="flex flex-wrap items-center gap-2"
+      // One row on a phone: previous, the month field (takes the spare width), next.
+      className="flex w-full flex-wrap items-center gap-2 sm:w-auto"
     >
       <Link
         href={`${basePath}?month=${previous}`}
@@ -35,7 +36,11 @@ export function MonthPicker({
         <ChevronLeft className="size-4" aria-hidden="true" />
       </Link>
 
-      <form method="get" action={basePath} className="flex items-center gap-2">
+      <form
+        method="get"
+        action={basePath}
+        className="flex min-w-[13.5rem] flex-1 items-center gap-2 sm:min-w-0 sm:flex-none"
+      >
         <label htmlFor="month" className="sr-only">
           Month
         </label>
@@ -48,7 +53,7 @@ export function MonthPicker({
           title="Use the format YYYY-MM, for example 2026-11"
           defaultValue={month}
           max={currentMonth}
-          className={`${input} mt-0 w-44`}
+          className={`${input} mt-0 min-w-0 flex-1 sm:w-44 sm:flex-none`}
         />
         <button type="submit" className={button("secondary")}>
           Show

@@ -64,7 +64,7 @@ export function RecurringForm({
             required
             defaultValue={values?.amount}
             aria-invalid={errors.amount ? true : undefined}
-            className={`${input} text-base tabular-nums`}
+            className={`${input} tabular-nums`}
           />
           <FieldError errors={errors.amount} />
         </div>
