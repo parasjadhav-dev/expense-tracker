@@ -60,6 +60,15 @@ describe("formatMinor", () => {
     expect(formatMinor(12345678, "GBP")).toBe("£123,456.78");
   });
 
+  it("shows Sri Lankan rupees as LKR, so they are never confused with Indian rupees", () => {
+    // Intl puts a non-breaking space after a code, so the code and number never split across lines.
+    const plain = (text: string) => text.replace(/ /g, " ");
+    expect(plain(formatMinor(12345678, "LKR"))).toBe("LKR 123,456.78");
+    expect(plain(formatMinor(0, "LKR"))).toBe("LKR 0.00");
+    expect(currencySymbol("LKR")).toBe("LKR");
+    expect(isCurrencyCode("LKR")).toBe(true);
+  });
+
   it("always shows two decimals, for zero too", () => {
     for (const code of CURRENCY_CODES) {
       expect(formatMinor(0, code), code).toMatch(/0\.00$/);

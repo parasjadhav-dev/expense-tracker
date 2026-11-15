@@ -7,6 +7,7 @@
 
 export const CURRENCY_CODES = [
   "INR",
+  "LKR",
   "USD",
   "EUR",
   "GBP",
@@ -29,6 +30,7 @@ export const DEFAULT_CURRENCY: CurrencyCode = "INR";
 // 12,34,567.50; the others as 1,234,567.50).
 export const CURRENCY_INFO: Record<CurrencyCode, { name: string; locale: string }> = {
   INR: { name: "Indian rupee", locale: "en-IN" },
+  LKR: { name: "Sri Lankan rupee", locale: "en-LK" },
   USD: { name: "US dollar", locale: "en-US" },
   EUR: { name: "Euro", locale: "en-IE" },
   GBP: { name: "British pound", locale: "en-GB" },

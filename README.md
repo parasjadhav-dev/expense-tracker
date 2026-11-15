@@ -172,7 +172,7 @@ proxy.ts                 route protection (the Next 16 name for middleware)
 
 ## Design notes
 
-- **Money is stored in whole minor units.** `₹199.50` is stored as `19950`. The currency is a display setting on the Account page (13 currencies with 2 decimal places, from rupees to dollars, euros and dirhams): it changes the symbol and number format, and does **not** convert amounts. Currencies without 2 decimals (such as the yen) are left out on purpose. Input is parsed with string
+- **Money is stored in whole minor units.** `₹199.50` is stored as `19950`. The currency is a display setting on the Account page (14 currencies with 2 decimal places, from Indian and Sri Lankan rupees to dollars, euros and dirhams): it changes the symbol and number format, and does **not** convert amounts. Currencies without 2 decimals (such as the yen) are left out on purpose. Input is parsed with string
   arithmetic, never floating point, and the column is a 32-bit integer (maximum ₹21,474,836.47).
 - **Dates are calendar dates.** An expense date is stored at UTC midnight, so it never shifts
   into another day or month because of a time zone. Month filters use the same boundaries.
