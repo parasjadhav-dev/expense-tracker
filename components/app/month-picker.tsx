@@ -4,7 +4,7 @@ import { formatMonth, shiftMonth } from "@/lib/expense-filters";
 import { button, input } from "@/lib/ui";
 
 const arrow =
-  "inline-flex size-9 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200";
+  "inline-flex size-11 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 lg:size-9";
 
 // Steps through months with arrows, or jumps to one with the month field. Months
 // after the current one are not offered: there is nothing to show yet.

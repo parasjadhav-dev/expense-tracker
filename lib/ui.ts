@@ -8,9 +8,11 @@ export const card =
 const buttonBase =
   "inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-950 disabled:pointer-events-none disabled:opacity-60";
 
+// 44px tall on phones and tablets (the size fingers can hit reliably), the compact
+// sizes from laptop width (lg) up where there is a mouse.
 const sizes = {
-  md: "h-10 px-4",
-  sm: "h-8 px-3 text-xs",
+  md: "h-11 px-4 lg:h-10",
+  sm: "h-11 px-4 text-sm lg:h-8 lg:px-3 lg:text-xs",
 } as const;
 
 const variants = {
@@ -30,9 +32,14 @@ export function button(
 }
 
 export const input =
-  "mt-1.5 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-base text-zinc-950 outline-none transition placeholder:text-zinc-400 sm:text-sm focus:border-[#2a78d6] focus:ring-2 focus:ring-[#2a78d6]/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50";
+  "mt-1.5 min-h-11 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-base text-zinc-950 outline-none transition placeholder:text-zinc-400 lg:min-h-0 lg:text-sm focus:border-[#2a78d6] focus:ring-2 focus:ring-[#2a78d6]/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50";
 
 export const label = "text-sm font-medium text-zinc-900 dark:text-zinc-100";
+
+// Text links and bare text buttons are only about 20px tall. On a phone this adds
+// 12px of padding above and below, cancelled by a negative margin so nothing
+// moves, which makes a 44px target. From laptop width (lg) up it is off.
+export const tapTarget = "-my-3 py-3 lg:my-0 lg:py-0";
 
 // Text link with the accent colour.
 export const link =

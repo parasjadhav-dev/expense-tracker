@@ -8,6 +8,7 @@ import {
 import { formatMonth } from "@/lib/expense-filters";
 import type { CurrencyCode } from "@/lib/currency";
 import { formatPaise } from "@/lib/money";
+import { tapTarget } from "@/lib/ui";
 
 const STYLE = {
   over: "bg-red-50 text-red-900 ring-red-200 dark:bg-red-950 dark:text-red-100 dark:ring-red-900",
@@ -81,7 +82,7 @@ export function BudgetAlerts({
       {showManageLink ? (
         <Link
           href={`/budgets?month=${month}`}
-          className="inline-flex items-center gap-1 self-end text-sm font-medium text-[#1c5cab] hover:underline dark:text-[#6da7ec]"
+          className={`${tapTarget} inline-flex items-center gap-1 self-end text-sm font-medium text-[#1c5cab] hover:underline dark:text-[#6da7ec]`}
         >
           Manage budgets
           <ArrowRight className="size-3.5" aria-hidden="true" />

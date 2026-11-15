@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { NAV_ITEMS } from "./nav-items";
 
 export const NAV_LINK_BASE =
-  "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors";
+  "group flex items-center gap-3 rounded-lg px-3 py-3 text-sm lg:py-2 font-medium transition-colors";
 export const NAV_LINK_IDLE =
   "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-50";
 export const NAV_LINK_ACTIVE =

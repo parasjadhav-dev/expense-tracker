@@ -4,7 +4,7 @@ import type { CurrencyCode } from "@/lib/currency";
 import { formatShortDay } from "@/lib/format";
 import { formatPaise } from "@/lib/money";
 import type { ExpenseListItem } from "@/lib/expenses";
-import { card, iconChip } from "@/lib/ui";
+import { card, iconChip, tapTarget } from "@/lib/ui";
 
 // A short list of expenses, used on the dashboard and beside the add and edit
 // forms so those pages are never a lone form in an empty page.
@@ -44,7 +44,7 @@ export function RecentExpenses({
         {footerHref && items.length > 0 ? (
           <Link
             href={footerHref}
-            className="inline-flex items-center gap-1 text-sm font-medium text-[#1c5cab] hover:underline dark:text-[#6da7ec]"
+            className={`${tapTarget} inline-flex items-center gap-1 text-sm font-medium text-[#1c5cab] hover:underline dark:text-[#6da7ec]`}
           >
             {footerLabel ?? "View all"}
             <ArrowRight className="size-3.5" aria-hidden="true" />

@@ -16,12 +16,12 @@ import {
 import type { ConfirmState, PreviewRow, PreviewState } from "@/lib/import-types";
 import type { CurrencyCode } from "@/lib/currency";
 import { formatPaise } from "@/lib/money";
-import { button, card, iconChip } from "@/lib/ui";
+import { button, card, iconChip, tapTarget } from "@/lib/ui";
 
 type Category = { id: string; name: string };
 
 const selectClass =
-  "w-full rounded-lg border border-zinc-300 bg-white px-2.5 py-2 text-base text-zinc-950 outline-none transition focus:border-[#2a78d6] focus:ring-2 focus:ring-[#2a78d6]/20 sm:text-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50";
+  "min-h-11 w-full rounded-lg border border-zinc-300 bg-white px-2.5 py-2 text-base text-zinc-950 outline-none transition focus:border-[#2a78d6] focus:ring-2 focus:ring-[#2a78d6]/20 lg:min-h-0 lg:text-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50";
 
 // Upload a statement, check the rows, save. The server reads the file; nothing
 // is stored until the user confirms.
@@ -314,10 +314,10 @@ function PreviewStep({
 
       <section className={`${card} overflow-hidden`} aria-label="Expenses to import">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-zinc-100 px-4 py-3 dark:border-zinc-900">
-          <button type="button" onClick={() => setAll(true)} className="text-sm font-medium text-[#1c5cab] hover:underline dark:text-[#6da7ec]">
+          <button type="button" onClick={() => setAll(true)} className={`${tapTarget} text-sm font-medium text-[#1c5cab] hover:underline dark:text-[#6da7ec]`}>
             Select all
           </button>
-          <button type="button" onClick={() => setAll(false)} className="text-sm font-medium text-[#1c5cab] hover:underline dark:text-[#6da7ec]">
+          <button type="button" onClick={() => setAll(false)} className={`${tapTarget} text-sm font-medium text-[#1c5cab] hover:underline dark:text-[#6da7ec]`}>
             Select none
           </button>
           <div className="ml-auto w-full sm:w-64">
@@ -412,13 +412,17 @@ function ImportRowItem({
         edit.include ? "" : "opacity-60"
       }`}
     >
-      <input
-        type="checkbox"
-        checked={edit.include}
-        onChange={(event) => onChange({ include: event.target.checked })}
-        aria-label={`Import ${description}`}
-        className="size-4 shrink-0 accent-[#2a78d6]"
-      />
+      {/* The label makes the whole 44px square a tap target on phones; the box
+          itself stays small. Cancelled by a negative margin so rows do not grow. */}
+      <label className="-m-3 flex size-11 shrink-0 cursor-pointer items-center justify-center lg:m-0 lg:size-auto">
+        <input
+          type="checkbox"
+          checked={edit.include}
+          onChange={(event) => onChange({ include: event.target.checked })}
+          aria-label={`Import ${description}`}
+          className="size-5 accent-[#2a78d6] lg:size-4"
+        />
+      </label>
       <div className="min-w-0 flex-1 basis-40">
         <p className="truncate text-sm font-medium text-zinc-950 dark:text-zinc-50" title={description}>
           {description}

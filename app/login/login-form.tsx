@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { login, type LoginState } from "./actions";
-import { button, input, label, link } from "@/lib/ui";
+import { button, input, label, link, tapTarget } from "@/lib/ui";
 
 const initialState: LoginState = { status: "idle" };
 
@@ -43,7 +43,7 @@ export function LoginForm({ callbackUrl }: { callbackUrl: string }) {
           <label htmlFor="password" className={label}>
             Password
           </label>
-          <Link href="/forgot-password" className={`${link} text-sm`}>
+          <Link href="/forgot-password" className={`${link} ${tapTarget} inline-block text-sm`}>
             Forgot password?
           </Link>
         </div>

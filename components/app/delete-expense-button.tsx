@@ -35,7 +35,7 @@ export function DeleteExpenseButton({
       <button
         type="button"
         onClick={() => dialogRef.current?.showModal()}
-        className="rounded-md px-2 py-1 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950"
+        className="inline-flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-red-600 lg:min-h-0 lg:px-2 lg:py-1 transition-colors hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950"
       >
         Delete
       </button>

@@ -53,7 +53,7 @@ export default function Home() {
   return (
     <div className="flex flex-1 flex-col bg-[#f5f6fa] dark:bg-black">
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-5 md:px-8">
-        <Link href="/" aria-label="Expense Tracker home">
+        <Link href="/" aria-label="Expense Tracker home" className="-my-2 inline-flex py-2">
           <Logo />
         </Link>
         <nav aria-label="Account" className="flex items-center gap-2">

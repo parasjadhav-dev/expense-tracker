@@ -68,7 +68,7 @@ export function CategoryBudgetsForm({
             >
               <label
                 htmlFor={inputId}
-                className="pt-2 text-sm font-medium text-zinc-900 dark:text-zinc-100"
+                className="pt-3 text-sm font-medium text-zinc-900 lg:pt-2 dark:text-zinc-100"
               >
                 {row.name}
               </label>
@@ -82,7 +82,7 @@ export function CategoryBudgetsForm({
                   placeholder="No limit"
                   defaultValue={state.values?.[row.id] ?? row.amount}
                   aria-invalid={error ? true : undefined}
-                  className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-right text-base tabular-nums sm:text-sm text-zinc-950 outline-none transition placeholder:text-zinc-400 focus:border-[#2a78d6] focus:ring-2 focus:ring-[#2a78d6]/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+                  className="min-h-11 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-right text-base tabular-nums lg:min-h-0 lg:text-sm text-zinc-950 outline-none transition placeholder:text-zinc-400 focus:border-[#2a78d6] focus:ring-2 focus:ring-[#2a78d6]/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
                 />
                 {error ? (
                   <p className="mt-1 text-sm text-red-600 dark:text-red-400">

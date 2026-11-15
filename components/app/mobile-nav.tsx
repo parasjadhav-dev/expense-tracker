@@ -18,18 +18,18 @@ export function MobileNav({ children }: { children: React.ReactNode }) {
   return (
     <header className="sticky top-0 z-30 border-b border-zinc-200/80 bg-white/90 backdrop-blur md:hidden dark:border-zinc-800 dark:bg-zinc-950/90">
       <div className="flex h-14 items-center justify-between px-4">
-        <Link href="/dashboard" aria-label="Expense Tracker home">
+        <Link href="/dashboard" aria-label="Expense Tracker home" className="-my-2 inline-flex py-2">
           <Logo />
         </Link>
         <div className="flex items-center gap-1">
-        <ThemeToggle className="size-10" />
+        <ThemeToggle />
         <button
           type="button"
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
           aria-controls="mobile-menu"
           onClick={() => setOpenOn(open ? null : pathname)}
-          className="inline-flex size-10 items-center justify-center rounded-lg text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+          className="inline-flex size-11 items-center justify-center rounded-lg text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
         >
           {open ? (
             <X className="size-5" aria-hidden="true" />

@@ -50,7 +50,7 @@ function describe(
 }
 
 const editLink =
-  "rounded-md px-2 py-1 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-zinc-50";
+  "inline-flex min-h-11 items-center rounded-md px-3 text-sm lg:min-h-0 lg:px-2 lg:py-1 font-medium text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-zinc-50";
 
 export default function ExpensesPage({
   searchParams,
@@ -125,7 +125,7 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
       <form
         method="get"
         action="/expenses"
-        className={`${card} grid grid-cols-2 items-end gap-x-3 gap-y-3 p-4 sm:grid-cols-[1fr_1fr_auto]`}
+        className={`${card} grid grid-cols-1 items-end gap-x-3 gap-y-3 p-4 sm:grid-cols-[1fr_1fr_auto]`}
       >
         <div>
           <label htmlFor="month" className={label}>
@@ -160,7 +160,7 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
             ))}
           </select>
         </div>
-        <div className="col-span-2 flex gap-2 sm:col-span-1">
+        <div className="flex gap-2">
           <button type="submit" className={`${button("primary")} flex-1 sm:flex-none`}>
             Apply
           </button>
@@ -168,7 +168,7 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
             Reset
           </Link>
         </div>
-        <p className="col-span-2 text-xs text-zinc-500 sm:col-span-3 dark:text-zinc-400">
+        <p className="text-xs text-zinc-500 sm:col-span-3 dark:text-zinc-400">
           Clear the month and apply to see all months.
         </p>
       </form>

@@ -3,7 +3,7 @@ import { ArrowRight, Target } from "lucide-react";
 import type { BudgetSummary } from "@/lib/budget";
 import type { CurrencyCode } from "@/lib/currency";
 import { formatMonth } from "@/lib/expense-filters";
-import { button, card, iconChip } from "@/lib/ui";
+import { button, card, iconChip, tapTarget } from "@/lib/ui";
 import { BudgetProgress } from "./budget-progress";
 
 const MAX_ROWS = 5;
@@ -39,7 +39,7 @@ export function BudgetStatus({
         </h2>
         <Link
           href={`/budgets?month=${month}`}
-          className="inline-flex items-center gap-1 text-sm font-medium text-[#1c5cab] hover:underline dark:text-[#6da7ec]"
+          className={`${tapTarget} inline-flex items-center gap-1 text-sm font-medium text-[#1c5cab] hover:underline dark:text-[#6da7ec]`}
         >
           Manage
           <ArrowRight className="size-3.5" aria-hidden="true" />
