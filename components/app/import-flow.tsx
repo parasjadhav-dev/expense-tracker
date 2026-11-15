@@ -355,7 +355,7 @@ function PreviewStep({
       </section>
 
       <div
-        className={`${card} sticky bottom-3 z-10 flex flex-wrap items-center justify-between gap-3 p-4`}
+        className={`${card} sticky bottom-24 z-10 flex md:bottom-3 flex-wrap items-center justify-between gap-3 p-4`}
       >
         <div className="min-w-0 text-sm" aria-live="polite">
           <p className="font-medium text-zinc-950 dark:text-zinc-50" data-testid="import-summary-line">

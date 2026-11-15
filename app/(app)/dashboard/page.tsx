@@ -28,10 +28,11 @@ export const metadata = {
   title: "Dashboard | Expense Tracker",
 };
 
+// Hidden on phones: the tab bar's "+" does the same job there.
 const addExpenseAction = (
   <Link
     href="/expenses/new"
-    className={`${button("primary")} w-full sm:w-auto`}
+    className={`${button("primary")} max-md:hidden`}
   >
     <Plus className="size-4" aria-hidden="true" />
     Add expense

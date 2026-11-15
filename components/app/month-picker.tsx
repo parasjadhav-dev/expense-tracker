@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { formatMonth, shiftMonth } from "@/lib/expense-filters";
 import { button, input } from "@/lib/ui";
+import { MonthInput } from "./month-input";
 
 const arrow =
   "inline-flex size-11 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 lg:size-9";
@@ -39,12 +40,12 @@ export function MonthPicker({
       <form
         method="get"
         action={basePath}
-        className="flex min-w-[13.5rem] flex-1 items-center gap-2 sm:min-w-0 sm:flex-none"
+        className="flex min-w-[10rem] flex-1 items-center gap-2 sm:min-w-0 sm:flex-none"
       >
         <label htmlFor="month" className="sr-only">
           Month
         </label>
-        <input
+        <MonthInput
           id="month"
           name="month"
           type="month"
@@ -55,7 +56,9 @@ export function MonthPicker({
           max={currentMonth}
           className={`${input} mt-0 min-w-0 flex-1 sm:w-44 sm:flex-none`}
         />
-        <button type="submit" className={button("secondary")}>
+        {/* Hidden on a phone to leave the month field room: picking a month there
+            applies it (see month-input.tsx). Still in the page for everyone else. */}
+        <button type="submit" data-show-month className={`${button("secondary")} max-sm:hidden`}>
           Show
         </button>
       </form>

@@ -5,6 +5,7 @@ import {
   deleteExpense,
   type DeleteExpenseState,
 } from "@/app/(app)/expenses/actions";
+import { Trash2 } from "lucide-react";
 import { button } from "@/lib/ui";
 
 const initialState: DeleteExpenseState = { status: "idle" };
@@ -14,9 +15,13 @@ const initialState: DeleteExpenseState = { status: "idle" };
 export function DeleteExpenseButton({
   id,
   summary,
+  variant = "link",
 }: {
   id: string;
   summary: string;
+  // "link" is the compact text button for the desktop table; "button" is the
+  // bordered, full-size one used in the phone list.
+  variant?: "link" | "button";
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [state, formAction, pending] = useActionState(
@@ -35,8 +40,13 @@ export function DeleteExpenseButton({
       <button
         type="button"
         onClick={() => dialogRef.current?.showModal()}
-        className="inline-flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-red-600 lg:min-h-0 lg:px-2 lg:py-1 transition-colors hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950"
+        className={
+          variant === "button"
+            ? `${button("dangerOutline")} flex-1`
+            : "inline-flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-red-600 lg:min-h-0 lg:px-2 lg:py-1 transition-colors hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950"
+        }
       >
+        {variant === "button" ? <Trash2 className="size-4" aria-hidden="true" /> : null}
         Delete
       </button>
 
@@ -74,11 +84,15 @@ export function DeleteExpenseButton({
               type="button"
               autoFocus
               onClick={() => dialogRef.current?.close()}
-              className={button("secondary")}
+              className={`${button("secondary")} flex-1 sm:flex-none`}
             >
               Cancel
             </button>
-            <button type="submit" disabled={pending} className={button("danger")}>
+            <button
+              type="submit"
+              disabled={pending}
+              className={`${button("danger")} flex-1 sm:flex-none`}
+            >
               {pending ? "Deleting..." : "Delete"}
             </button>
           </div>

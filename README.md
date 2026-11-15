@@ -185,6 +185,7 @@ proxy.ts                 route protection (the Next 16 name for middleware)
 - **Authorisation does not rely on the proxy alone.** `proxy.ts` redirects early, but every
   protected page and every server action checks the session itself, and every query is scoped
   to the signed-in user's id. Updates and deletes match on both the record id and the user id.
+- **Phone navigation sits at the bottom.** Below tablet width a tab bar (Dashboard, Expenses, Budgets, More) with a raised "+" for adding an expense replaces the top menu; Recurring, Account and log out are under More. On the expense list, Edit and Delete are real buttons with a confirmation dialog. Tablets and laptops keep the sidebar.
 - **Built for thumbs.** Below laptop width (1024px) every button, field, link and checkbox has a tap area of at least 44px, and form fields are 16px so iPhones do not zoom in on focus. From laptop width up the denser desktop sizes return. Checked at 320 to 768px wide with no sideways scrolling.
 - **The database client is created on first use**, so building without `DATABASE_URL` works.
   The first query without it fails with a clear message.

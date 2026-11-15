@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
-import { Plus, SearchX, Upload } from "lucide-react";
+import { Pencil, Plus, SearchX, Upload } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { generateDueExpenses } from "@/lib/recurring-db";
 import { DeleteExpenseButton } from "@/components/app/delete-expense-button";
@@ -69,7 +69,7 @@ export default function ExpensesPage({
                 <Upload className="size-4" aria-hidden="true" />
                 Import CSV
               </Link>
-              <Link href="/expenses/new" className={button("primary")}>
+              <Link href="/expenses/new" className={`${button("primary")} max-md:hidden`}>
                 <Plus className="size-4" aria-hidden="true" />
                 Add expense
               </Link>
@@ -271,16 +271,20 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
                     <span className="truncate">{expense.note ?? ""}</span>
                     <span className="shrink-0">{formatDay(expense.date)}</span>
                   </div>
-                  <div className="flex items-center gap-1 pt-1">
+                  {/* Two real buttons, side by side and apart, so a thumb does not
+                      hit Delete when aiming for Edit. */}
+                  <div className="flex items-center gap-3 pt-2">
                     <Link
                       href={`/expenses/${expense.id}/edit`}
-                      className={editLink}
+                      className={`${button("secondary")} flex-1`}
                     >
+                      <Pencil className="size-4" aria-hidden="true" />
                       Edit
                     </Link>
                     <DeleteExpenseButton
                       id={expense.id}
                       summary={describe(expense, currency)}
+                      variant="button"
                     />
                   </div>
                 </li>

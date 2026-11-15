@@ -20,6 +20,10 @@ const variants = {
     "bg-[#2a78d6] text-white shadow-sm hover:bg-[#256abf] focus-visible:ring-[#2a78d6]/50 dark:bg-[#3987e5] dark:hover:bg-[#2a78d6]",
   secondary:
     "border border-zinc-300 bg-white text-zinc-900 hover:bg-zinc-50 focus-visible:ring-zinc-400/50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:hover:bg-zinc-800",
+  // A quieter red for buttons that open a confirmation, so a tap is not
+  // mistaken for the final "Delete".
+  dangerOutline:
+    "border border-red-200 bg-white text-red-700 hover:bg-red-50 focus-visible:ring-red-500/40 dark:border-red-900 dark:bg-zinc-900 dark:text-red-300 dark:hover:bg-red-950",
   danger:
     "bg-red-600 text-white shadow-sm hover:bg-red-700 focus-visible:ring-red-500/50",
 } as const;
