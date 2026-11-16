@@ -196,7 +196,6 @@ proxy.ts                 route protection (the Next 16 name for middleware)
 - Forgot-password emails are limited to 3 per account per hour, but login and sign-up have no rate limiting yet, and there is no email verification. After a password change or reset, other devices stay logged in until their session expires.
 - Sign-up reveals whether an email is already registered.
 - The expense list shows the latest 100 matches (the total still covers all of them); there is no pagination.
-- `npm audit` reports findings in development tooling (`shadcn`, `eslint-config-next`, `typescript-eslint`).
-  None are in runtime dependencies, and none have been force-fixed.
+- `npm audit --omit=dev` reports no vulnerabilities in what runs in production. The 7 moderate findings that remain are in development tooling (`typescript-eslint` and its `minimatch`), and none have been force-fixed.
 - `next-auth` v5 is still a beta release.
 - Category chart colours are fixed per chart, not per category: the bars are one hue because a donut or pie with stable per-category colours cannot keep every neighbouring pair of slices distinguishable. Identity comes from the labels.
