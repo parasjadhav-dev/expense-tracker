@@ -78,7 +78,7 @@ The data shown is a demo account, not real spending.
 ### Not built yet
 
 - Recurring expenses, Google login.
-- More automated tests. `npm test` runs 314 unit tests for money handling, the budget helpers, "today" and "this month" in different time zones, the categorisation rules, the password rules, the reset-link helpers, the email wording, currency formatting and the import filter. The CSV import and recurring-expense logic have no Vitest tests yet. Screens and database writes were checked with browser-driven scripts that are not part of the repo.
+- More automated tests. `npm test` runs 327 unit tests for money handling, the budget helpers, "today" and "this month" in different time zones, the categorisation rules, the password rules, the reset-link helpers, the email wording, currency formatting and the import filter and the PWA manifest and icons. The CSV import and recurring-expense logic have no Vitest tests yet. Screens and database writes were checked with browser-driven scripts that are not part of the repo.
 
 ## Tech stack
 
@@ -186,6 +186,7 @@ proxy.ts                 route protection (the Next 16 name for middleware)
 - **Authorisation does not rely on the proxy alone.** `proxy.ts` redirects early, but every
   protected page and every server action checks the session itself, and every query is scoped
   to the signed-in user's id. Updates and deletes match on both the record id and the user id.
+- **Installable as an app (PWA).** A web app manifest (`app/manifest.ts`), icons drawn from the logo (`public/icons`), a theme colour that follows light/dark, and a small service worker (`public/sw.js`). On Android and desktop Chrome use "Install app"; on an iPhone use Share, then "Add to Home Screen". It opens full screen on the dashboard, with Add expense, Dashboard and Budgets shortcuts on the icon. Offline support is deliberately minimal: when a page cannot be loaded, an offline page is shown. Nothing else is cached, because pages show a person's own money. The worker is registered in production only.
 - **Phone navigation sits at the bottom.** Below tablet width a tab bar (Dashboard, Expenses, Budgets, More) with a raised "+" for adding an expense replaces the top menu; Recurring, Account and log out are under More. On the expense list, Edit and Delete are real buttons with a confirmation dialog. Tablets and laptops keep the sidebar.
 - **Built for thumbs.** Below laptop width (1024px) every button, field, link and checkbox has a tap area of at least 44px, and form fields are 16px so iPhones do not zoom in on focus. From laptop width up the denser desktop sizes return. Checked at 320 to 768px wide with no sideways scrolling.
 - **The database client is created on first use**, so building without `DATABASE_URL` works.
