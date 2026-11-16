@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
-import { Pencil, Plus, SearchX, Upload } from "lucide-react";
+import { ChevronLeft, ChevronRight, Pencil, Plus, Search, SearchX, Upload } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { generateDueExpenses } from "@/lib/recurring-db";
 import { DeleteExpenseButton } from "@/components/app/delete-expense-button";
@@ -11,7 +11,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getUserCurrency } from "@/lib/currency-db";
 import { db } from "@/lib/db";
 import { formatMonth, resolveMonth } from "@/lib/expense-filters";
-import { EXPENSE_LIST_LIMIT, listExpenses } from "@/lib/expenses";
+import {
+  PAGE_SIZE,
+  SORT_KEYS,
+  SORT_LABELS,
+  expensesHref,
+  parsePage,
+  parseSearch,
+  parseSort,
+} from "@/lib/expense-query";
+import { listExpenses } from "@/lib/expenses";
 import { formatDay } from "@/lib/format";
 import type { CurrencyCode } from "@/lib/currency";
 import { formatPaise } from "@/lib/money";
@@ -24,6 +33,9 @@ export const metadata = {
 type SearchParams = Promise<{
   month?: string | string[];
   category?: string | string[];
+  q?: string | string[];
+  sort?: string | string[];
+  page?: string | string[];
 }>;
 
 function first(value: string | string[] | undefined): string | undefined {
@@ -62,7 +74,7 @@ export default function ExpensesPage({
       <div className="mx-auto w-full max-w-6xl">
         <PageHeader
           title="Expenses"
-          description="Every expense, filtered by month and category."
+          description="Every expense. Search, filter by month and category, and sort."
           actions={
             <>
               <Link href="/expenses/import" className={button("secondary")}>
@@ -114,20 +126,53 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
   const categoryId =
     categories.find((category) => category.id === requestedCategory)?.id ?? null;
 
-  const { items, totalPaise, count, truncated } = await listExpenses({
+  const q = parseSearch(first(params.q));
+  const sort = parseSort(first(params.sort));
+
+  const { items, totalPaise, count, page, pageCount } = await listExpenses({
     userId,
     month,
     categoryId,
+    q,
+    sort,
+    page: parsePage(first(params.page)),
   });
+  const filtered = Boolean(q || categoryId);
+  const firstShown = (page - 1) * PAGE_SIZE + 1;
+  const lastShown = firstShown + items.length - 1;
+  const hrefFor = (target: number) =>
+    expensesHref({ month, categoryId, q, sort, page: target });
 
   return (
     <div className="flex flex-col gap-4 md:gap-5">
       <form
         method="get"
         action="/expenses"
-        className={`${card} grid grid-cols-1 items-end gap-x-3 gap-y-3 p-4 sm:grid-cols-[1fr_1fr_auto]`}
+        role="search"
+        className={`${card} grid grid-cols-1 items-end gap-x-3 gap-y-3 p-4 sm:grid-cols-6`}
       >
-        <div>
+        <div className="sm:col-span-6">
+          <label htmlFor="q" className={label}>
+            Search
+          </label>
+          <div className="relative">
+            <Search
+              className="pointer-events-none absolute left-3 top-1/2 mt-[3px] size-4 -translate-y-1/2 text-zinc-400"
+              aria-hidden="true"
+            />
+            <input
+              id="q"
+              name="q"
+              type="search"
+              maxLength={80}
+              placeholder="Note, category or exact amount"
+              defaultValue={q}
+              autoComplete="off"
+              className={`${input} pl-9`}
+            />
+          </div>
+        </div>
+        <div className="sm:col-span-2">
           <label htmlFor="month" className={label}>
             Month
           </label>
@@ -142,7 +187,7 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
             className={input}
           />
         </div>
-        <div>
+        <div className="sm:col-span-2">
           <label htmlFor="category" className={label}>
             Category
           </label>
@@ -160,7 +205,19 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
             ))}
           </select>
         </div>
-        <div className="flex gap-2">
+        <div className="sm:col-span-2">
+          <label htmlFor="sort" className={label}>
+            Sort by
+          </label>
+          <select id="sort" name="sort" defaultValue={sort} className={input}>
+            {SORT_KEYS.map((key) => (
+              <option key={key} value={key}>
+                {SORT_LABELS[key]}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex gap-2 sm:col-span-6">
           <button type="submit" className={`${button("primary")} flex-1 sm:flex-none`}>
             Apply
           </button>
@@ -168,7 +225,7 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
             Reset
           </Link>
         </div>
-        <p className="text-xs text-zinc-500 sm:col-span-3 dark:text-zinc-400">
+        <p className="text-xs text-zinc-500 sm:col-span-6 dark:text-zinc-400">
           Clear the month and apply to see all months.
         </p>
       </form>
@@ -192,8 +249,8 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
               <SearchX className="size-5" aria-hidden="true" />
             </span>
             <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              {categoryId
-                ? "No expenses match these filters."
+              {filtered
+                ? "No expenses match your search or filters."
                 : month
                   ? `No expenses in ${formatMonth(month)} yet.`
                   : "You have not added any expenses yet."}
@@ -294,11 +351,59 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
         )}
       </section>
 
-      {truncated ? (
-        <p className="text-center text-xs text-zinc-500 dark:text-zinc-400">
-          Showing the latest {EXPENSE_LIST_LIMIT} of {count} expenses. Narrow the
-          filters to see the rest.
-        </p>
+      {count > 0 ? (
+        <nav
+          aria-label="Pages"
+          data-testid="pager"
+          className="flex flex-wrap items-center justify-between gap-3"
+        >
+          <p
+            data-testid="pager-range"
+            className="text-sm text-zinc-600 dark:text-zinc-400"
+          >
+            Showing {firstShown}–{lastShown} of {count}
+          </p>
+          {pageCount > 1 ? (
+            <div className="flex items-center gap-2">
+              {page > 1 ? (
+                <Link
+                  href={hrefFor(page - 1)}
+                  rel="prev"
+                  className={button("secondary")}
+                >
+                  <ChevronLeft className="size-4" aria-hidden="true" />
+                  Previous
+                </Link>
+              ) : (
+                <span aria-disabled="true" className={`${button("secondary")} opacity-50`}>
+                  <ChevronLeft className="size-4" aria-hidden="true" />
+                  Previous
+                </span>
+              )}
+              <span
+                data-testid="pager-page"
+                className="min-w-20 text-center text-sm tabular-nums text-zinc-600 dark:text-zinc-400"
+              >
+                Page {page} of {pageCount}
+              </span>
+              {page < pageCount ? (
+                <Link
+                  href={hrefFor(page + 1)}
+                  rel="next"
+                  className={button("secondary")}
+                >
+                  Next
+                  <ChevronRight className="size-4" aria-hidden="true" />
+                </Link>
+              ) : (
+                <span aria-disabled="true" className={`${button("secondary")} opacity-50`}>
+                  Next
+                  <ChevronRight className="size-4" aria-hidden="true" />
+                </span>
+              )}
+            </div>
+          ) : null}
+        </nav>
       ) : null}
     </div>
   );

@@ -1,12 +1,14 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
+import { CategoryManager } from "@/components/app/category-manager";
 import { ChangePasswordForm } from "@/components/app/change-password-form";
 import { CurrencyForm } from "@/components/app/currency-form";
 import { PageHeader } from "@/components/ui/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { auth } from "@/lib/auth";
 import { getUserCurrency } from "@/lib/currency-db";
+import { db } from "@/lib/db";
 import { card } from "@/lib/ui";
 
 export const metadata = {
@@ -19,7 +21,7 @@ export default function SettingsPage() {
       <div className="mx-auto w-full max-w-6xl">
         <PageHeader
           title="Account"
-          description="Your sign-in details, currency and password."
+          description="Your sign-in details, currency, categories and password."
         />
         <Suspense
           fallback={
@@ -42,7 +44,23 @@ async function SettingsContent() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login?callbackUrl=/settings");
   const { name, email } = session.user;
-  const currency = await getUserCurrency(session.user.id);
+  const userId = session.user.id;
+  const currency = await getUserCurrency(userId);
+  const categoryRows = await db.category.findMany({
+    where: { userId },
+    orderBy: { name: "asc" },
+    select: {
+      id: true,
+      name: true,
+      _count: { select: { expenses: true, recurring: true } },
+    },
+  });
+  const categories = categoryRows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    expenses: row._count.expenses,
+    recurring: row._count.recurring,
+  }));
 
   return (
     <div className="grid items-start gap-4 md:gap-5 lg:grid-cols-2">
@@ -96,6 +114,22 @@ async function SettingsContent() {
           their session ends.
         </p>
         <ChangePasswordForm />
+      </section>
+
+      <section
+        className={`${card} p-6 lg:col-span-2`}
+        aria-labelledby="categories-heading"
+      >
+        <h2
+          id="categories-heading"
+          className="mb-1 text-base font-semibold tracking-tight text-zinc-950 dark:text-zinc-50"
+        >
+          Categories
+        </h2>
+        <p className="mb-4 text-sm text-zinc-600 dark:text-zinc-400">
+          Add your own, rename them, or delete the ones you do not use.
+        </p>
+        <CategoryManager categories={categories} />
       </section>
     </div>
   );

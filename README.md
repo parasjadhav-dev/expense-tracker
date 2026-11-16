@@ -54,8 +54,10 @@ The data shown is a demo account, not real spending.
 - **Expenses:**
   - add, edit and delete (delete asks for confirmation);
   - list filtered by month and category, with the count and total for the filter;
+  - search by note, category name or exact amount, sort by date or amount, and 25 expenses per page (the count and total cover every match, not only the page);
   - amounts entered in your chosen currency (rupees by default), stored as whole minor units (paise, cents...);
   - 9 default categories created for every new account.
+- **Custom categories** (Account page): add your own, rename them (their expenses keep following), or delete them. Deleting a category that is in use moves its expenses and recurring items to another category you choose, and removes its monthly budgets. Names are unique ignoring case, up to 30 characters, with a limit of 50 categories, and you always keep at least one.
 - **Budgets** (`/budgets`, one month at a time):
   - an overall monthly budget and a limit per category (a blank field means no limit);
   - progress bars per budget: green below 80%, amber from 80%, red at 100% and over;
@@ -78,7 +80,7 @@ The data shown is a demo account, not real spending.
 ### Not built yet
 
 - Recurring expenses, Google login.
-- More automated tests. `npm test` runs 327 unit tests for money handling, the budget helpers, "today" and "this month" in different time zones, the categorisation rules, the password rules, the reset-link helpers, the email wording, currency formatting and the import filter and the PWA manifest and icons. The CSV import and recurring-expense logic have no Vitest tests yet. Screens and database writes were checked with browser-driven scripts that are not part of the repo.
+- More automated tests. `npm test` runs 352 unit tests for money handling, the budget helpers, "today" and "this month" in different time zones, the categorisation rules, the password rules, the reset-link helpers, the email wording, currency formatting and the import filter, expense search, sorting and paging, category names and the PWA manifest and icons. The CSV import and recurring-expense logic have no Vitest tests yet. Screens and database writes were checked with browser-driven scripts that are not part of the repo.
 
 ## Tech stack
 
@@ -196,7 +198,7 @@ proxy.ts                 route protection (the Next 16 name for middleware)
 
 - Forgot-password emails are limited to 3 per account per hour, but login and sign-up have no rate limiting yet, and there is no email verification. After a password change or reset, other devices stay logged in until their session expires.
 - Sign-up reveals whether an email is already registered.
-- The expense list shows the latest 100 matches (the total still covers all of them); there is no pagination.
+- Search matches text inside notes and category names (not whole-word or fuzzy), plus exact amounts. Category colours are not customisable.
 - `npm audit --omit=dev` reports no vulnerabilities in what runs in production. The 7 moderate findings that remain are in development tooling (`typescript-eslint` and its `minimatch`), and none have been force-fixed.
 - `next-auth` v5 is still a beta release.
 - Category chart colours are fixed per chart, not per category: the bars are one hue because a donut or pie with stable per-category colours cannot keep every neighbouring pair of slices distinguishable. Identity comes from the labels.

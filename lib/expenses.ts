@@ -1,9 +1,16 @@
 import { db } from "@/lib/db";
 import { monthRange } from "@/lib/expense-filters";
+import {
+  DEFAULT_SORT,
+  PAGE_SIZE,
+  clampPage,
+  orderByFor,
+  pageCount,
+  searchConditions,
+  type SortKey,
+} from "@/lib/expense-query";
 
 import type { SpendEntry } from "@/lib/budget";
-
-export const EXPENSE_LIST_LIMIT = 100;
 
 // Total spent per category in one month, in the shape the budget maths expects.
 // Categories with no expenses are absent. Scoped to userId, which callers must
@@ -33,10 +40,12 @@ export type ExpenseListItem = {
 
 export type ExpenseList = {
   items: ExpenseListItem[];
-  // Totals cover every matching expense, not only the rows shown.
+  // Totals cover every matching expense, not only the rows on this page.
   totalPaise: number;
   count: number;
-  truncated: boolean;
+  // The page actually shown (a page past the end becomes the last page).
+  page: number;
+  pageCount: number;
 };
 
 // Every query is scoped to userId. Callers pass the id from the session, never
@@ -45,34 +54,40 @@ export async function listExpenses(options: {
   userId: string;
   month: string | null;
   categoryId: string | null;
+  q?: string;
+  sort?: SortKey;
+  page?: number;
 }): Promise<ExpenseList> {
+  const conditions = searchConditions(options.q ?? "");
   const where = {
     userId: options.userId,
     ...(options.month ? { date: monthRange(options.month) } : {}),
     ...(options.categoryId ? { categoryId: options.categoryId } : {}),
+    ...(conditions.length > 0 ? { OR: conditions } : {}),
   };
 
-  const [rows, totals] = await Promise.all([
-    db.expense.findMany({
-      where,
-      orderBy: [{ date: "desc" }, { createdAt: "desc" }],
-      take: EXPENSE_LIST_LIMIT,
-      select: {
-        id: true,
-        amount: true,
-        date: true,
-        note: true,
-        category: { select: { name: true } },
-      },
-    }),
-    db.expense.aggregate({
-      where,
-      _sum: { amount: true },
-      _count: { _all: true },
-    }),
-  ]);
-
+  const totals = await db.expense.aggregate({
+    where,
+    _sum: { amount: true },
+    _count: { _all: true },
+  });
   const count = totals._count._all;
+  const page = clampPage(options.page ?? 1, count);
+
+  const rows = await db.expense.findMany({
+    where,
+    orderBy: orderByFor(options.sort ?? DEFAULT_SORT),
+    skip: (page - 1) * PAGE_SIZE,
+    take: PAGE_SIZE,
+    select: {
+      id: true,
+      amount: true,
+      date: true,
+      note: true,
+      category: { select: { name: true } },
+    },
+  });
+
   return {
     items: rows.map((row) => ({
       id: row.id,
@@ -83,7 +98,8 @@ export async function listExpenses(options: {
     })),
     totalPaise: totals._sum.amount ?? 0,
     count,
-    truncated: count > rows.length,
+    page,
+    pageCount: pageCount(count),
   };
 }
 
