@@ -6,6 +6,8 @@ import { formatPaise } from "@/lib/money";
 import type { ExpenseListItem } from "@/lib/expenses";
 import { card, iconChip, tapTarget } from "@/lib/ui";
 
+const PHONE_ROWS = 4;
+
 // A short list of expenses, used on the dashboard and beside the add and edit
 // forms so those pages are never a lone form in an empty page.
 export function RecentExpenses({
@@ -64,11 +66,12 @@ export function RecentExpenses({
         </div>
       ) : (
         <ul className="mt-3 divide-y divide-zinc-100 dark:divide-zinc-900">
-          {items.map((item) => (
+          {items.map((item, index) => (
             <li
               key={item.id}
               data-testid="recent-expense"
-              className="flex items-center gap-3 py-2.5"
+              // A phone shows the latest few; "View all" has the rest.
+              className={`flex items-center gap-3 py-2.5 ${index >= PHONE_ROWS ? "max-sm:hidden" : ""}`}
             >
               <span
                 aria-hidden="true"

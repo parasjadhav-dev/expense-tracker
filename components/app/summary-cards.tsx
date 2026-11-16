@@ -9,6 +9,9 @@ import { safeToSpendView } from "./safe-to-spend";
 
 type Tone = "normal" | "alert";
 
+// On a phone the three numbers share two rows: "Safe to spend per day" is the
+// hero and takes the full width, "Spent" and "Remaining" sit side by side as
+// small tiles. From sm up all three are equal cards in one row.
 function Card({
   id,
   label,
@@ -16,6 +19,7 @@ function Card({
   caption,
   icon: Icon,
   tone = "normal",
+  hero = false,
 }: {
   id: string;
   label: string;
@@ -23,24 +27,29 @@ function Card({
   caption: React.ReactNode;
   icon: LucideIcon;
   tone?: Tone;
+  hero?: boolean;
 }) {
   return (
     <div
       data-testid="summary-card"
       data-card={id}
-      className={`${card} p-5`}
+      className={`${card} p-4 sm:p-5 ${
+        hero ? "order-first col-span-2 sm:order-none sm:col-span-1" : ""
+      }`}
     >
       <div className="flex items-center justify-between gap-3">
         <p className="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
           {label}
         </p>
-        <span className={iconChip}>
+        <span className={`${iconChip} ${hero ? "" : "max-sm:hidden"}`}>
           <Icon className="size-[18px]" aria-hidden="true" />
         </span>
       </div>
       <p
         data-testid="summary-value"
-        className={`mt-3 text-[28px] font-semibold leading-tight tracking-tight tabular-nums ${
+        className={`mt-2 break-words font-semibold leading-tight tracking-tight tabular-nums sm:mt-3 sm:text-[28px] ${
+          hero ? "text-[28px]" : "text-xl"
+        } ${
           tone === "alert"
             ? "text-red-700 dark:text-red-400"
             : "text-zinc-950 dark:text-zinc-50"
@@ -50,7 +59,7 @@ function Card({
       </p>
       <p
         data-testid="summary-caption"
-        className="mt-1.5 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400"
+        className="mt-1 text-xs leading-relaxed text-zinc-600 sm:mt-1.5 dark:text-zinc-400"
       >
         {caption}
       </p>
@@ -92,7 +101,7 @@ export function SummaryCards({
     <section
       aria-label={`Summary for ${formatMonth(month)}`}
       data-testid="summary-cards"
-      className="grid gap-4 sm:grid-cols-3 md:gap-5"
+      className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:gap-5"
     >
       <Card
         id="spent"
@@ -131,6 +140,7 @@ export function SummaryCards({
 
       <Card
         id="safe"
+        hero
         icon={CalendarClock}
         label="Safe to spend per day"
         value={safeView.amount ?? "Not available"}

@@ -7,6 +7,7 @@ import { button, card, iconChip, tapTarget } from "@/lib/ui";
 import { BudgetProgress } from "./budget-progress";
 
 const MAX_ROWS = 5;
+const PHONE_ROWS = 3;
 
 // The categories closest to their limits, as progress bars: the dashboard's
 // quick answer to "how am I doing against my budgets?".
@@ -63,13 +64,11 @@ export function BudgetStatus({
         </div>
       ) : (
         <div className="mt-4 flex flex-col gap-4">
-          {withLimit.map((category) => (
-            <BudgetProgress
-              key={category.categoryId}
-              label={category.name}
-              line={category}
-              currency={currency}
-            />
+          {withLimit.map((category, index) => (
+            // A phone shows the three closest to their limit; "Manage" has the rest.
+            <div key={category.categoryId} className={index >= PHONE_ROWS ? "max-sm:hidden" : ""}>
+              <BudgetProgress label={category.name} line={category} currency={currency} />
+            </div>
           ))}
         </div>
       )}

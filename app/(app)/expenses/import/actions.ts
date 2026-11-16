@@ -8,7 +8,7 @@ import {
   revalidateExpensePages,
 } from "@/lib/action-errors";
 import { auth } from "@/lib/auth";
-import { suggestCategoryId } from "@/lib/auto-categorize";
+import { suggestCategoryId, suggestCategoryName } from "@/lib/auto-categorize";
 import { ensureDefaultCategories } from "@/lib/categories";
 import { MAX_NOTE_LENGTH, parseStatement } from "@/lib/csv-import";
 import { db } from "@/lib/db";
@@ -106,6 +106,7 @@ export async function previewImport(
       amount: row.amount,
       note: row.note,
       categoryId: suggestCategoryId(row.note, categories),
+      suggested: suggestCategoryName(row.note) !== null,
       duplicate: duplicates[index],
     }));
     return {

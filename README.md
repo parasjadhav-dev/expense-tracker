@@ -46,6 +46,7 @@ The data shown is a demo account, not real spending.
   - Parsing (papaparse) finds the header row, handles Debit/Credit columns or one Amount column (with a Dr/Cr type, a minus sign or a Dr/Cr suffix), and reads dates like 2026-11-09, 09/11/2026 (day first) and 9-Nov-2026. Money-in rows are ignored; rows it cannot read are listed with the reason.
   - Categories are suggested from the description with keyword rules (Swiggy is Food, Uber is Travel, and so on), matched to your own category names; anything unmatched goes to "Other", or you choose one.
   - The preview lets you change any category, untick rows, or set a category for all selected rows.
+  - Long statements can be narrowed to "To check" (descriptions no keyword rule recognised) or "Already added" rows; Select all, Select none and the category menu then apply only to the rows shown. On a phone, tap a cut-off description to read all of it.
   - Rows with the same date, amount and description as an existing expense are marked "Already added" and left out, so importing the same file twice adds nothing. A genuine repeat purchase in one file is kept. The server checks again when you confirm.
   - Limits: 800 KB and 2,000 rows per file. A sample file is at `public/sample-statement.csv`.
 - **Accounts:** email and password sign-up (Zod validation, bcrypt hashing), login and logout with Auth.js, sessions that survive a reload.
@@ -77,7 +78,7 @@ The data shown is a demo account, not real spending.
 ### Not built yet
 
 - Recurring expenses, Google login.
-- More automated tests. `npm test` runs 301 unit tests for money handling, the budget helpers, "today" and "this month" in different time zones, the categorisation rules, the password rules, the reset-link helpers, the email wording and currency formatting. The CSV import and recurring-expense logic have no Vitest tests yet. Screens and database writes were checked with browser-driven scripts that are not part of the repo.
+- More automated tests. `npm test` runs 314 unit tests for money handling, the budget helpers, "today" and "this month" in different time zones, the categorisation rules, the password rules, the reset-link helpers, the email wording, currency formatting and the import filter. The CSV import and recurring-expense logic have no Vitest tests yet. Screens and database writes were checked with browser-driven scripts that are not part of the repo.
 
 ## Tech stack
 

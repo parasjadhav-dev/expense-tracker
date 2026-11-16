@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { useActionState, useState } from "react";
-import { CheckCircle2, FileSpreadsheet, TriangleAlert, Upload } from "lucide-react";
+import { CheckCircle2, ChevronDown, FileSpreadsheet, TriangleAlert, Upload } from "lucide-react";
 import {
   confirmImport,
   previewImport,
 } from "@/app/(app)/expenses/import/actions";
 import { formatDay } from "@/lib/format";
+import { filterCounts, matchesFilter, type ImportFilter } from "@/lib/import-filter";
 import {
   MAX_IMPORT_BYTES,
   MAX_IMPORT_LABEL,
@@ -209,6 +210,7 @@ function PreviewStep({
     confirmImport,
     { status: "idle" },
   );
+  const [filter, setFilter] = useState<ImportFilter>("all");
 
   if (confirm.status === "done") {
     return <DoneStep
@@ -235,12 +237,31 @@ function PreviewStep({
     })),
   );
 
+  // The filter only changes what is listed. Rows that are hidden keep their
+  // choices, and "Select all/none" and "Set category" touch only the rows shown.
+  const counts = filterCounts(preview.rows);
+  const shown = preview.rows.filter((row) => matchesFilter(row, filter));
+  const shownIds = new Set(shown.map((row) => row.id));
+  const filtering = filter !== "all";
+  const filterOptions: { value: ImportFilter; label: string; count: number }[] = [
+    { value: "all", label: "All", count: counts.all },
+    { value: "check", label: "To check", count: counts.check },
+    { value: "duplicates", label: "Already added", count: counts.duplicates },
+  ];
+  // Only worth showing when there is something to narrow down to.
+  const showFilters = counts.check > 0 || counts.duplicates > 0;
+
   const update = (id: number, change: Partial<Edit>) =>
     setEdits((current) => ({ ...current, [id]: { ...current[id], ...change } }));
   const setAll = (include: boolean) =>
     setEdits((current) =>
       Object.fromEntries(
-        preview.rows.map((row) => [row.id, { ...current[row.id], include: include && !row.duplicate }]),
+        preview.rows.map((row) => [
+          row.id,
+          shownIds.has(row.id)
+            ? { ...current[row.id], include: include && !row.duplicate }
+            : current[row.id],
+        ]),
       ),
     );
   const setCategoryForSelected = (categoryId: string) =>
@@ -248,7 +269,9 @@ function PreviewStep({
       Object.fromEntries(
         preview.rows.map((row) => [
           row.id,
-          current[row.id].include ? { ...current[row.id], categoryId } : current[row.id],
+          shownIds.has(row.id) && current[row.id].include
+            ? { ...current[row.id], categoryId }
+            : current[row.id],
         ]),
       ),
     );
@@ -313,6 +336,40 @@ function PreviewStep({
       </section>
 
       <section className={`${card} overflow-hidden`} aria-label="Expenses to import">
+        {showFilters ? (
+          <div
+            role="group"
+            aria-label="Which rows to show"
+            data-testid="import-filters"
+            className="flex flex-wrap items-center gap-2 border-b border-zinc-100 px-4 py-3 dark:border-zinc-900"
+          >
+            {filterOptions
+              .filter((option) => option.value === "all" || option.count > 0)
+              .map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  aria-pressed={filter === option.value}
+                  data-testid={`import-filter-${option.value}`}
+                  onClick={() => setFilter(option.value)}
+                  className={`inline-flex min-h-11 items-center gap-1.5 rounded-full border px-4 text-sm font-medium transition-colors lg:min-h-9 lg:px-3.5 ${
+                    filter === option.value
+                      ? "border-[#2a78d6] bg-[#2a78d6]/10 text-[#1c5cab] dark:border-[#3987e5] dark:bg-[#3987e5]/15 dark:text-[#8db9f0]"
+                      : "border-zinc-300 text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                  }`}
+                >
+                  {option.label}
+                  <span className="tabular-nums opacity-70">{option.count}</span>
+                </button>
+              ))}
+            {filtering ? (
+              <p className="basis-full text-xs text-zinc-500 dark:text-zinc-400" data-testid="import-showing">
+                Showing {shown.length} of {preview.rows.length}. Select all, Select none and
+                the category menu apply to these rows only.
+              </p>
+            ) : null}
+          </div>
+        ) : null}
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-zinc-100 px-4 py-3 dark:border-zinc-900">
           <button type="button" onClick={() => setAll(true)} className={`${tapTarget} text-sm font-medium text-[#1c5cab] hover:underline dark:text-[#6da7ec]`}>
             Select all
@@ -330,7 +387,9 @@ function PreviewStep({
               onChange={(event) => event.target.value && setCategoryForSelected(event.target.value)}
               className={selectClass}
             >
-              <option value="">Set category for selected rows...</option>
+              <option value="">
+                {filtering ? "Set category for these rows..." : "Set category for selected rows..."}
+              </option>
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
@@ -341,7 +400,7 @@ function PreviewStep({
         </div>
 
         <ul className="divide-y divide-zinc-100 dark:divide-zinc-900" data-testid="import-rows">
-          {preview.rows.map((row) => (
+          {shown.map((row) => (
             <ImportRowItem
               key={row.id}
               row={row}
@@ -354,13 +413,18 @@ function PreviewStep({
         </ul>
       </section>
 
+      {/* Kept short on a phone (one row: counts on the left, button on the right) so
+          it does not cover the list it floats over. */}
       <div
-        className={`${card} sticky bottom-24 z-10 flex md:bottom-3 flex-wrap items-center justify-between gap-3 p-4`}
+        className={`${card} sticky bottom-24 z-10 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 p-3 sm:p-4 md:bottom-3`}
       >
-        <div className="min-w-0 text-sm" aria-live="polite">
+        <div className="min-w-0 flex-1 text-sm" aria-live="polite">
           <p className="font-medium text-zinc-950 dark:text-zinc-50" data-testid="import-summary-line">
-            {selected.length} of {preview.rows.length} selected ·{" "}
-            <span className="tabular-nums">{formatPaise(totalPaise, currency)}</span>
+            {selected.length} of {preview.rows.length} selected
+            <span className="block tabular-nums sm:ml-1 sm:inline">
+              <span className="max-sm:hidden">· </span>
+              {formatPaise(totalPaise, currency)}
+            </span>
           </p>
           {missing > 0 ? (
             <p className="text-red-700 dark:text-red-300" data-testid="import-missing">
@@ -377,12 +441,24 @@ function PreviewStep({
         <button
           type="submit"
           disabled={!canImport}
-          className={`${button("primary")} h-11`}
+          className={`${button("primary")} h-11 shrink-0`}
           data-testid="import-confirm"
+          aria-label={
+            confirmPending
+              ? "Importing"
+              : `Import ${selected.length} ${selected.length === 1 ? "expense" : "expenses"}`
+          }
         >
-          {confirmPending
-            ? "Importing..."
-            : `Import ${selected.length} ${selected.length === 1 ? "expense" : "expenses"}`}
+          {confirmPending ? (
+            "Importing..."
+          ) : (
+            <>
+              <span className="sm:hidden">Import {selected.length}</span>
+              <span className="max-sm:hidden">
+                Import {selected.length} {selected.length === 1 ? "expense" : "expenses"}
+              </span>
+            </>
+          )}
         </button>
       </div>
     </form>
@@ -403,6 +479,9 @@ function ImportRowItem({
   onChange: (change: Partial<Edit>) => void;
 }) {
   const description = row.note || "(no description)";
+  // Long bank descriptions are cut off to keep rows short; tapping shows them all.
+  const [open, setOpen] = useState(false);
+  const long = description.length > 20;
   return (
     <li
       data-testid="import-row"
@@ -424,9 +503,26 @@ function ImportRowItem({
         />
       </label>
       <div className="min-w-0 flex-1 basis-40">
-        <p className="truncate text-sm font-medium text-zinc-950 dark:text-zinc-50" title={description}>
-          {description}
-        </p>
+        {long ? (
+          <button
+            type="button"
+            aria-expanded={open}
+            onClick={() => setOpen((value) => !value)}
+            data-testid="import-description"
+            title={description}
+            className={`${tapTarget} flex w-full items-start gap-1 text-left text-sm font-medium text-zinc-950 dark:text-zinc-50`}
+          >
+            <span className={`min-w-0 flex-1 ${open ? "break-words" : "truncate"}`}>{description}</span>
+            <ChevronDown
+              className={`mt-0.5 size-4 shrink-0 text-zinc-400 transition-transform ${open ? "rotate-180" : ""}`}
+              aria-hidden="true"
+            />
+          </button>
+        ) : (
+          <p className="truncate text-sm font-medium text-zinc-950 dark:text-zinc-50" title={description}>
+            {description}
+          </p>
+        )}
         <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-zinc-500 dark:text-zinc-400">
           <span>{formatDay(new Date(`${row.date}T00:00:00.000Z`))}</span>
           {row.duplicate ? (

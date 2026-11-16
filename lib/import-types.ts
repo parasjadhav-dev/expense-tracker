@@ -9,6 +9,7 @@ export type PreviewRow = {
   amount: number; // paise
   note: string;
   categoryId: string | null; // the suggestion; null when nothing fits
+  suggested: boolean; // a keyword rule recognised the description (false = filed under Other)
   duplicate: boolean; // already in the account
 };
 
