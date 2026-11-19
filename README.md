@@ -3,10 +3,11 @@
 A budget-focused expense tracker built with Next.js, TypeScript, Prisma and PostgreSQL.
 Set category budgets, get overspend alerts, and see your daily safe-to-spend amount.
 
-> **Status: Weeks 1 and 2 complete, Week 3 in progress.** Accounts, expense management,
-> budgets with alerts and safe-to-spend, a dashboard with charts and a month selector, and
-> CSV import (with auto-categorisation, a review step and duplicate detection) work. Automated
-> tests and deployment are still to come.
+> **Status: Weeks 1 and 2 complete, Week 3 nearly done.** Accounts (with password reset by email),
+> expense management with search, sorting and paging, custom categories, budgets with alerts and
+> safe-to-spend, recurring expenses, a dashboard with charts and a month selector, CSV import,
+> multi-currency display, dark mode, an installable PWA and a phone-first layout all work, backed by
+> Vitest unit tests. Deployment is still to come.
 > See [Progress](#progress) for exactly what is and is not built.
 
 ## Screenshots
@@ -34,8 +35,8 @@ The data shown is a demo account, not real spending.
 | Phase | Scope | Status |
 |---|---|---|
 | Week 1: Foundation | Sign-up, login/logout, protected routes, responsive layout, add / list / filter / edit / delete expenses | **Done** |
-| Week 2: Budgets and dashboard | Monthly and per-category budgets, progress bars, overspend alerts, safe-to-spend per day, summary cards, charts | **In progress:** budgets, progress bars, alerts, safe-to-spend, the summary cards and both charts (category breakdown, six-month trend) and the dashboard month selector (earlier months, via `?month=YYYY-MM`) are done, and empty, loading and error states are done; only the Week 2 review is left |
-| Week 3: Import, tests, deploy | CSV import with auto-categorisation, Vitest unit tests, Vercel deployment | **In progress:** CSV import (parsing, auto-categorisation, review and fix, duplicate detection) is done; Vitest tests and deployment are not |
+| Week 2: Budgets and dashboard | Monthly and per-category budgets, progress bars, overspend alerts, safe-to-spend per day, summary cards, charts | **Done:** budgets, progress bars, alerts, safe-to-spend, the summary cards, both charts (category breakdown, six-month trend), the dashboard month selector (`?month=YYYY-MM`), and empty, loading and error states |
+| Week 3: Import, tests, deploy | CSV import with auto-categorisation, Vitest unit tests, Vercel deployment | **In progress:** CSV import (parsing, auto-categorisation, review and fix, duplicate detection), recurring expenses and Vitest unit tests are done; deployment is not |
 | Final: Polish | Screenshots, live link, README finish | Not started |
 
 ### What works today
@@ -79,8 +80,9 @@ The data shown is a demo account, not real spending.
 
 ### Not built yet
 
-- Recurring expenses, Google login.
-- More automated tests. `npm test` runs 352 unit tests for money handling, the budget helpers, "today" and "this month" in different time zones, the categorisation rules, the password rules, the reset-link helpers, the email wording, currency formatting and the import filter, expense search, sorting and paging, category names and the PWA manifest and icons. The CSV import and recurring-expense logic have no Vitest tests yet. Screens and database writes were checked with browser-driven scripts that are not part of the repo.
+- Deployment to Vercel and a live link.
+- Google login.
+- Tests for screens and database writes. `npm test` runs unit tests for the pure logic: money handling, the budget helpers, "today" and "this month" in different time zones, the categorisation rules, CSV parsing, the password rules, the reset-link helpers, the email wording, currency formatting, the import filter, expense search, sorting and paging, category names and the PWA manifest and icons. Screens and database writes were checked with browser-driven scripts that are not part of the repo.
 
 ## Tech stack
 
@@ -94,6 +96,7 @@ The data shown is a demo account, not real spending.
 | UI | Tailwind CSS 4, Base UI, lucide-react, Inter font |
 | Charts | Recharts |
 | Tests | Vitest (unit tests for the pure logic in `lib/`) |
+| Email | Nodemailer (SMTP) or Resend |
 | Hosting (planned) | Vercel |
 
 ## Getting started
@@ -144,6 +147,12 @@ Tests live next to the code they check, as `lib/*.test.ts`, and import with the 
 | `lib/budget.test.ts` | Percent used, the 80% and 100% thresholds, summaries, alerts, days left in a month, safe to spend per day (including over budget, the last day and leap years) |
 | `lib/time.test.ts` | "Today" and "this month" around midnight in several time zones |
 | `lib/auto-categorize.test.ts` | Known and unknown merchants, whole-word matching, rule priority, and checks on the rule table itself |
+| `lib/csv-import.test.ts` | Header detection, Debit/Credit and single-amount layouts, date formats, skipped rows |
+| `lib/import-filter.test.ts` | The "To check" and "Already added" filters on the import review |
+| `lib/expense-query.test.ts` | Expense search, sorting and paging |
+| `lib/currency.test.ts` | Currency formatting and the supported list |
+| `lib/password-reset.test.ts`, `lib/reset-email.test.ts`, `lib/welcome-email.test.ts`, `lib/email.test.ts` | Reset links, email wording and sending |
+| `lib/manifest.test.ts` | The PWA manifest and icons |
 
 `package.json` overrides `rollup` with its WebAssembly build (`@rollup/wasm-node`). Vitest's bundler normally loads a native add-on, and on machines where Windows Application Control blocks unsigned native files that fails with "An Application Control policy has blocked this file". The WebAssembly build behaves the same and works everywhere; it is only used when running tests, not by the app or `next build`.
 
@@ -164,9 +173,14 @@ future `prisma migrate dev` may try to drop it. Read any generated migration bef
 app/
   (app)/                 signed-in pages sharing the sidebar layout
     dashboard/           summary cards, charts, recent expenses, month selector
-    expenses/            list, add (new/) and edit ([id]/edit/)
+    expenses/            list, add (new/), edit ([id]/edit/) and CSV import (import/)
+    budgets/             monthly and per-category budgets
+    recurring/           recurring expenses
+    settings/            account page: password, currency, custom categories
   api/auth/[...nextauth] Auth.js route handler
   login/  sign-up/       public auth pages
+  forgot-password/  reset-password/  emailed one-time reset links
+  manifest.ts            PWA web app manifest
 components/app/          navigation, expense form, delete dialog
 lib/                     db client, auth, money and date helpers, validation schemas
 prisma/                  schema, migrations, seed
