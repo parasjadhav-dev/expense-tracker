@@ -59,6 +59,7 @@ export function SpendingOverview({
               label={category.name}
               line={category}
               currency={currency}
+              withBadge
             />
           ))
         ) : (

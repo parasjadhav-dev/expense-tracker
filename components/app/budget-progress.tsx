@@ -1,6 +1,7 @@
 import { isOverBudget, overBy, type BudgetLine } from "@/lib/budget";
 import type { CurrencyCode } from "@/lib/currency";
 import { formatPaise } from "@/lib/money";
+import { CategoryBadge } from "./category-badge";
 
 // Green below 80%, amber from 80%, red at 100% or more. Colour is never the only
 // signal: the text below the bar says the same thing, and the bar has a
@@ -33,8 +34,11 @@ export function BudgetProgress({
   label,
   line,
   currency,
+  withBadge = false,
 }: {
   label: string;
+  // Show the category's coloured icon beside the name (not for the overall budget).
+  withBadge?: boolean;
   line: BudgetLine;
   currency: CurrencyCode;
 }) {
@@ -47,8 +51,9 @@ export function BudgetProgress({
   return (
     <div data-testid="budget-progress" data-status={line.status}>
       <div className="flex items-baseline justify-between gap-3 text-sm">
-        <span className="font-medium text-zinc-900 dark:text-zinc-100">
-          {label}
+        <span className="flex min-w-0 items-center gap-2 font-medium text-zinc-900 dark:text-zinc-100">
+          {withBadge ? <CategoryBadge name={label} className="size-6" /> : null}
+          <span className="truncate">{label}</span>
         </span>
         <span className="tabular-nums text-zinc-600 dark:text-zinc-400">
           {formatPaise(line.spent, currency)} of {formatPaise(line.budget, currency)}

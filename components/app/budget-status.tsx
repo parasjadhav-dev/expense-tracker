@@ -3,7 +3,8 @@ import { ArrowRight, Target } from "lucide-react";
 import type { BudgetSummary } from "@/lib/budget";
 import type { CurrencyCode } from "@/lib/currency";
 import { formatMonth } from "@/lib/expense-filters";
-import { button, card, iconChip, tapTarget } from "@/lib/ui";
+import { EmptyState } from "@/components/ui/empty-state";
+import { button, card, tapTarget } from "@/lib/ui";
 import { BudgetProgress } from "./budget-progress";
 
 const MAX_ROWS = 5;
@@ -40,7 +41,7 @@ export function BudgetStatus({
         </h2>
         <Link
           href={`/budgets?month=${month}`}
-          className={`${tapTarget} inline-flex items-center gap-1 text-sm font-medium text-[#1c5cab] hover:underline dark:text-[#6da7ec]`}
+          className={`${tapTarget} inline-flex items-center gap-1 text-sm font-medium text-[#0f766e] hover:underline dark:text-[#5eead4]`}
         >
           Manage
           <ArrowRight className="size-3.5" aria-hidden="true" />
@@ -51,23 +52,22 @@ export function BudgetStatus({
       </p>
 
       {withLimit.length === 0 ? (
-        <div className="flex flex-1 flex-col items-center justify-center gap-3 py-8 text-center">
-          <span className={`${iconChip} size-11`}>
-            <Target className="size-5" aria-hidden="true" />
-          </span>
-          <p className="max-w-[16rem] text-sm text-zinc-600 dark:text-zinc-400">
-            Set a limit for a category to see how close you are to it.
-          </p>
-          <Link href={`/budgets?month=${month}`} className={button("primary", "sm")}>
-            Set category budgets
-          </Link>
-        </div>
+        <EmptyState
+          icon={Target}
+          action={
+            <Link href={`/budgets?month=${month}`} className={button("primary", "sm")}>
+              Set category budgets
+            </Link>
+          }
+        >
+          Set a limit for a category to see how close you are to it.
+        </EmptyState>
       ) : (
         <div className="mt-4 flex flex-col gap-4">
           {withLimit.map((category, index) => (
             // A phone shows the three closest to their limit; "Manage" has the rest.
             <div key={category.categoryId} className={index >= PHONE_ROWS ? "max-sm:hidden" : ""}>
-              <BudgetProgress label={category.name} line={category} currency={currency} />
+              <BudgetProgress label={category.name} line={category} currency={currency} withBadge />
             </div>
           ))}
         </div>

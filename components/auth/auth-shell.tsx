@@ -27,10 +27,10 @@ export function AuthShell({
     <main className="grid min-h-screen flex-1 bg-white lg:grid-cols-[1.05fr_1fr] dark:bg-zinc-950">
       <div
         aria-hidden="true"
-        className="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-[#164a8c] via-[#2a78d6] to-[#5598e7] p-12 text-white lg:flex"
+        className="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-[#134e4a] via-[#0f766e] to-[#2dd4bf] p-12 text-white lg:flex"
       >
         <div className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-white/10" />
-        <div className="pointer-events-none absolute -bottom-32 -left-16 size-96 rounded-full bg-[#164a8c]/40" />
+        <div className="pointer-events-none absolute -bottom-32 -left-16 size-96 rounded-full bg-[#134e4a]/40" />
 
         <div className="relative">
           <Logo tone="light" />

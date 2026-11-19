@@ -18,6 +18,7 @@ import {
 } from "@/lib/category-breakdown";
 import type { CurrencyCode } from "@/lib/currency";
 import { formatPaise } from "@/lib/money";
+import { OTHER_CHART_COLOR, getCategoryStyle } from "@/lib/category-style";
 import { button } from "@/lib/ui";
 
 const BAR_SIZE = 20; // thin marks: 24px at most
@@ -29,7 +30,7 @@ function shortName(name: string): string {
 }
 
 function fillFor(row: BreakdownRow): string {
-  return row.isOther ? "var(--viz-other)" : "var(--viz-series-1)";
+  return row.isOther ? OTHER_CHART_COLOR : getCategoryStyle(row.name).color;
 }
 
 // Values lead and the name follows. The short line in front of the name is a key
@@ -69,8 +70,9 @@ function ChartTooltip({
   );
 }
 
-// Ranked horizontal bars: one per category, largest first, all in one hue. The
-// bar length carries the amount and the label carries the name, so colour is
+// Ranked horizontal bars: one per category, largest first, each in its own
+// category colour (the same colour the category has everywhere else). The bar
+// length carries the amount and the label carries the name, so colour is
 // never needed to tell categories apart. Has a table view for the same numbers.
 export function CategoryChart({
   monthLabel,

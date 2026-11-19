@@ -14,7 +14,7 @@ export default function GlobalError({
 }) {
   return (
     <html lang="en">
-      <body className="flex min-h-screen items-center justify-center bg-[#f5f6fa] px-5 font-sans">
+      <body className="flex min-h-screen items-center justify-center bg-[#f3f6f5] px-5 font-sans">
         <title>Something went wrong | Expense Tracker</title>
         <ErrorState error={error} retry={retry} homeHref="/" homeLabel="Back to home" />
       </body>

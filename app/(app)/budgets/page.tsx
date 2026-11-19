@@ -9,7 +9,8 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { auth } from "@/lib/auth";
 import { generateDueExpenses } from "@/lib/recurring-db";
-import { checkBudgetMonth } from "@/lib/validations/budget";
+import { checkBudgetMonth, maxBudgetMonth } from "@/lib/validations/budget";
+import { MonthPicker } from "@/components/app/month-picker";
 import { daysLeftInMonth, safeToSpend } from "@/lib/budget";
 import { loadMonthBudgets } from "@/lib/budget-summary";
 import { ensureDefaultCategories } from "@/lib/categories";
@@ -17,7 +18,7 @@ import { getUserCurrency } from "@/lib/currency-db";
 import { currentMonth, formatMonth, resolveMonth } from "@/lib/expense-filters";
 import { formatPaise, paiseToRupeesInput } from "@/lib/money";
 import { todayInAppZone } from "@/lib/time";
-import { button, card, input } from "@/lib/ui";
+import { card } from "@/lib/ui";
 
 export const metadata = {
   title: "Budgets | Expense Tracker",
@@ -100,24 +101,12 @@ async function BudgetsContent({ searchParams }: { searchParams: SearchParams }) 
         title="Budgets"
         description="Set how much you plan to spend each month."
         actions={
-          <form method="get" action="/budgets" className="flex items-center gap-2">
-            <label htmlFor="month" className="sr-only">
-              Month
-            </label>
-            <input
-              id="month"
-              name="month"
-              type="month"
-              placeholder="YYYY-MM"
-              pattern="\d{4}-\d{2}"
-              title="Use the format YYYY-MM, for example 2026-11"
-              defaultValue={month}
-              className={`${input} mt-0 w-44`}
-            />
-            <button type="submit" className={button("secondary")}>
-              Show
-            </button>
-          </form>
+          <MonthPicker
+            basePath="/budgets"
+            month={month}
+            currentMonth={currentMonth()}
+            maxMonth={maxBudgetMonth()}
+          />
         }
       />
 

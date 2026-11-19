@@ -16,7 +16,7 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 // with URL data outside a boundary.
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-1 flex-col bg-[#f5f6fa] md:flex-row dark:bg-black">
+    <div className="flex flex-1 flex-col bg-[#f3f6f5] md:flex-row dark:bg-black">
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col gap-6 border-r border-zinc-200/80 bg-white p-4 md:flex dark:border-zinc-800 dark:bg-zinc-950">
         <div className="flex items-center justify-between gap-2 pr-1">
           <Link href="/dashboard" aria-label="Expense Tracker home" className="px-2 pt-1">

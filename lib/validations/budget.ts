@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { currentMonth } from "@/lib/expense-filters";
+import { currentMonth, shiftMonth } from "@/lib/expense-filters";
 import { parseRupeesToPaise } from "@/lib/money";
 import { AMOUNT_MESSAGES } from "@/lib/validations/expense";
 
@@ -13,6 +13,11 @@ function monthIndex(month: string): number {
 }
 
 // Returns an error message, or null when the month can hold a budget.
+// The furthest month a budget can be planned for.
+export function maxBudgetMonth(now: Date = new Date()): string {
+  return shiftMonth(currentMonth(now), MAX_MONTHS_AHEAD);
+}
+
 export function checkBudgetMonth(
   month: string,
   now: Date = new Date(),

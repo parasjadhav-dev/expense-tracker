@@ -12,7 +12,7 @@ export default function RootError({
   retry: () => void;
 }) {
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-8 bg-[#f5f6fa] px-5 py-16 dark:bg-black">
+    <main className="flex flex-1 flex-col items-center justify-center gap-8 bg-[#f3f6f5] px-5 py-16 dark:bg-black">
       <Logo />
       <ErrorState
         error={error}

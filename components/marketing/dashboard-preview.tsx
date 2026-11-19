@@ -3,9 +3,9 @@ import { CalendarClock } from "lucide-react";
 // A small picture of the dashboard for the landing page and the sign-in panel.
 // The numbers are made up and the card says so.
 const SAMPLE_BARS = [
-  { name: "Rent", value: "₹18,000", width: "100%", tone: "bg-[#2a78d6]" },
-  { name: "Food", value: "₹6,420", width: "36%", tone: "bg-[#2a78d6]" },
-  { name: "Travel", value: "₹3,150", width: "18%", tone: "bg-[#2a78d6]" },
+  { name: "Rent", value: "₹18,000", width: "100%", tone: "bg-[#0f766e]" },
+  { name: "Food", value: "₹6,420", width: "36%", tone: "bg-[#0f766e]" },
+  { name: "Travel", value: "₹3,150", width: "18%", tone: "bg-[#0f766e]" },
 ];
 
 const SAMPLE_TREND = "0,38 40,30 80,34 120,18 160,24 200,8";
@@ -20,7 +20,7 @@ export function DashboardPreview({ className = "" }: { className?: string }) {
         <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
           Safe to spend per day
         </p>
-        <span className="grid size-8 place-items-center rounded-lg bg-[#2a78d6]/10 text-[#1c5cab]">
+        <span className="grid size-8 place-items-center rounded-lg bg-[#0f766e]/10 text-[#0f766e]">
           <CalendarClock className="size-4" />
         </span>
       </div>
@@ -54,15 +54,15 @@ export function DashboardPreview({ className = "" }: { className?: string }) {
         <div className="rounded-xl bg-zinc-50 p-3">
           <p className="text-[11px] font-medium text-zinc-500">Last 6 months</p>
           <svg viewBox="0 0 200 48" className="mt-1 h-12 w-full" fill="none">
-            <polygon points={`${SAMPLE_TREND} 200,48 0,48`} fill="#2a78d6" fillOpacity="0.1" />
+            <polygon points={`${SAMPLE_TREND} 200,48 0,48`} fill="#0f766e" fillOpacity="0.1" />
             <polyline
               points={SAMPLE_TREND}
-              stroke="#2a78d6"
+              stroke="#0f766e"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
-            <circle cx="200" cy="8" r="4" fill="#fff" stroke="#2a78d6" strokeWidth="2" />
+            <circle cx="200" cy="8" r="4" fill="#fff" stroke="#0f766e" strokeWidth="2" />
           </svg>
         </div>
       </div>

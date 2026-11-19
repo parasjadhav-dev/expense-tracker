@@ -51,7 +51,7 @@ const FEATURES: { icon: LucideIcon; title: string; text: string }[] = [
 
 export default function Home() {
   return (
-    <div className="flex flex-1 flex-col bg-[#f5f6fa] dark:bg-black">
+    <div className="flex flex-1 flex-col bg-[#f3f6f5] dark:bg-black">
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-5 md:px-8">
         <Link href="/" aria-label="Expense Tracker home" className="-my-2 inline-flex py-2">
           <Logo />
@@ -70,7 +70,7 @@ export default function Home() {
       <main className="flex-1">
         <section className="mx-auto grid w-full max-w-6xl items-center gap-12 px-5 pb-16 pt-8 md:px-8 md:pb-24 md:pt-16 lg:grid-cols-[1.1fr_1fr]">
           <div>
-            <p className="inline-flex items-center rounded-full bg-[#2a78d6]/10 px-3 py-1 text-xs font-medium text-[#1c5cab] ring-1 ring-[#2a78d6]/15">
+            <p className="inline-flex items-center rounded-full bg-[#0f766e]/10 px-3 py-1 text-xs font-medium text-[#0f766e] ring-1 ring-[#0f766e]/15">
               Budget-first expense tracking
             </p>
             <h1 className="mt-5 text-4xl font-semibold leading-[1.1] tracking-tight text-zinc-950 md:text-5xl dark:text-zinc-50">
@@ -130,7 +130,7 @@ export default function Home() {
         </section>
 
         <section className="mx-auto w-full max-w-6xl px-5 pb-20 md:px-8">
-          <div className="flex flex-col items-start justify-between gap-6 rounded-3xl bg-gradient-to-br from-[#164a8c] via-[#2a78d6] to-[#5598e7] p-8 text-white shadow-lg md:flex-row md:items-center md:p-12">
+          <div className="flex flex-col items-start justify-between gap-6 rounded-3xl bg-gradient-to-br from-[#134e4a] via-[#0f766e] to-[#2dd4bf] p-8 text-white shadow-lg md:flex-row md:items-center md:p-12">
             <div>
               <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
                 Start tracking in a minute
@@ -142,7 +142,7 @@ export default function Home() {
             </div>
             <Link
               href="/sign-up"
-              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-white px-6 text-sm font-medium text-[#1c5cab] shadow-sm transition-colors hover:bg-zinc-100"
+              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-white px-6 text-sm font-medium text-[#0f766e] shadow-sm transition-colors hover:bg-zinc-100"
             >
               Create account
               <ArrowRight className="size-4" aria-hidden="true" />

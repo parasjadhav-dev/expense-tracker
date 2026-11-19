@@ -15,7 +15,8 @@ import { formatDay } from "@/lib/format";
 import { formatPaise } from "@/lib/money";
 import { nextDueDate } from "@/lib/recurring";
 import { generateDueExpenses, listRecurring } from "@/lib/recurring-db";
-import { card, iconChip } from "@/lib/ui";
+import { EmptyState } from "@/components/ui/empty-state";
+import { card } from "@/lib/ui";
 
 export const metadata = {
   title: "Recurring | Expense Tracker",
@@ -99,15 +100,15 @@ async function RecurringContent() {
         </div>
 
         {items.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 px-6 py-14 text-center">
-            <span className={`${iconChip} size-11`}>
-              <Repeat className="size-5" aria-hidden="true" />
-            </span>
-            <p className="max-w-xs text-sm text-zinc-600 dark:text-zinc-400" data-testid="recurring-empty">
-              Nothing recurring yet. Add your rent or a subscription and it will be
-              added to your expenses every month.
-            </p>
-          </div>
+          <EmptyState
+            icon={Repeat}
+            title="Nothing recurring yet"
+            testId="recurring-empty"
+            className="px-6 py-12"
+          >
+            Add your rent or a subscription and it will be added to your expenses
+            every month.
+          </EmptyState>
         ) : (
           <ul className="mt-3 divide-y divide-zinc-100 dark:divide-zinc-900">
             {items.map((item) => {

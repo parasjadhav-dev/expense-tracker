@@ -4,7 +4,9 @@ import type { CurrencyCode } from "@/lib/currency";
 import { formatShortDay } from "@/lib/format";
 import { formatPaise } from "@/lib/money";
 import type { ExpenseListItem } from "@/lib/expenses";
-import { card, iconChip, tapTarget } from "@/lib/ui";
+import { card, tapTarget } from "@/lib/ui";
+import { EmptyState } from "@/components/ui/empty-state";
+import { CategoryBadge } from "./category-badge";
 
 const PHONE_ROWS = 4;
 
@@ -46,7 +48,7 @@ export function RecentExpenses({
         {footerHref && items.length > 0 ? (
           <Link
             href={footerHref}
-            className={`${tapTarget} inline-flex items-center gap-1 text-sm font-medium text-[#1c5cab] hover:underline dark:text-[#6da7ec]`}
+            className={`${tapTarget} inline-flex items-center gap-1 text-sm font-medium text-[#0f766e] hover:underline dark:text-[#5eead4]`}
           >
             {footerLabel ?? "View all"}
             <ArrowRight className="size-3.5" aria-hidden="true" />
@@ -55,15 +57,9 @@ export function RecentExpenses({
       </div>
 
       {items.length === 0 ? (
-        <div className="flex flex-1 flex-col items-center justify-center gap-3 py-8 text-center">
-          <span className={`${iconChip} size-11`}>
-            <ReceiptText className="size-5" aria-hidden="true" />
-          </span>
-          <p className="max-w-[16rem] text-sm text-zinc-600 dark:text-zinc-400">
-            {emptyText}
-          </p>
-          {emptyAction}
-        </div>
+        <EmptyState icon={ReceiptText} action={emptyAction}>
+          {emptyText}
+        </EmptyState>
       ) : (
         <ul className="mt-3 divide-y divide-zinc-100 dark:divide-zinc-900">
           {items.map((item, index) => (
@@ -73,12 +69,7 @@ export function RecentExpenses({
               // A phone shows the latest few; "View all" has the rest.
               className={`flex items-center gap-3 py-2.5 ${index >= PHONE_ROWS ? "max-sm:hidden" : ""}`}
             >
-              <span
-                aria-hidden="true"
-                className="grid size-9 shrink-0 place-items-center rounded-lg bg-zinc-100 text-xs font-semibold text-zinc-600 dark:bg-zinc-900 dark:text-zinc-400"
-              >
-                {item.categoryName.slice(0, 1).toUpperCase()}
-              </span>
+              <CategoryBadge name={item.categoryName} />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-zinc-950 dark:text-zinc-50">
                   {item.note || item.categoryName}

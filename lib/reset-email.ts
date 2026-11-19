@@ -4,7 +4,7 @@ import { escapeHtml } from "@/lib/welcome-email";
 // The "reset your password" email. Pure (no network), so it is easy to test.
 // The HTML uses tables and inline styles because email apps ignore most CSS.
 
-const BLUE = "#2a78d6";
+const BLUE = "#0f766e";
 
 function cleanName(name: string | null | undefined): string {
   return (name ?? "").replace(/[\r\n\t]+/g, " ").trim();
@@ -46,8 +46,8 @@ export function resetEmail({
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Reset your Expense Tracker password</title>
 </head>
-<body style="margin:0;padding:0;background:#f5f6fa;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f5f6fa;padding:24px 12px;">
+<body style="margin:0;padding:0;background:#f3f6f5;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f6f5;padding:24px 12px;">
 <tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:14px;border:1px solid #e4e4e7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#18181b;">
 <tr><td style="padding:28px 32px 8px 32px;font-size:15px;font-weight:600;color:${BLUE};">Expense Tracker</td></tr>
