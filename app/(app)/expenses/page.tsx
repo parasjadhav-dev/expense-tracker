@@ -2,15 +2,19 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
-import { ChevronLeft, ChevronRight, Pencil, Plus, Search, SearchX, Upload } from "lucide-react";
+import { ChevronLeft, ChevronRight, Pencil, Plus, ReceiptText, Search, SearchX, Upload } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { generateDueExpenses } from "@/lib/recurring-db";
+import { CategoryPill } from "@/components/app/category-badge";
 import { DeleteExpenseButton } from "@/components/app/delete-expense-button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getUserCurrency } from "@/lib/currency-db";
 import { db } from "@/lib/db";
-import { formatMonth, resolveMonth } from "@/lib/expense-filters";
+import { looksByName } from "@/lib/category-style";
+import { currentMonth, formatMonth, resolveMonth, shiftMonth } from "@/lib/expense-filters";
+import { MonthArrow } from "@/components/app/month-arrow";
 import {
   PAGE_SIZE,
   SORT_KEYS,
@@ -24,7 +28,7 @@ import { listExpenses } from "@/lib/expenses";
 import { formatDay } from "@/lib/format";
 import type { CurrencyCode } from "@/lib/currency";
 import { formatPaise } from "@/lib/money";
-import { button, card, iconChip, input, label } from "@/lib/ui";
+import { button, card, input, label } from "@/lib/ui";
 
 export const metadata = {
   title: "Expenses | Expense Tracker",
@@ -119,8 +123,9 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
   const categories = await db.category.findMany({
     where: { userId },
     orderBy: { name: "asc" },
-    select: { id: true, name: true },
+    select: { id: true, name: true, color: true, icon: true },
   });
+  const looks = looksByName(categories);
   // Only the user's own categories are accepted. Anything else is ignored.
   const requestedCategory = first(params.category);
   const categoryId =
@@ -143,8 +148,48 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
   const hrefFor = (target: number) =>
     expensesHref({ month, categoryId, q, sort, page: target });
 
+  // Arrows step one month at a time and keep the search, category and sort.
+  const nowMonth = currentMonth();
+  const previousMonth = month ? shiftMonth(month, -1) : null;
+  const nextMonth = month ? shiftMonth(month, 1) : null;
+  const monthHref = (target: string) =>
+    expensesHref({ month: target, categoryId, q, sort, page: 1 });
+
   return (
     <div className="flex flex-col gap-4 md:gap-5">
+      <div
+        data-testid="month-stepper"
+        className="flex items-center justify-between gap-2"
+      >
+        <MonthArrow
+          direction="prev"
+          href={previousMonth ? monthHref(previousMonth) : null}
+          label={previousMonth ? `Previous month: ${formatMonth(previousMonth)}` : "Previous month"}
+        />
+        <div className="flex min-w-0 flex-1 flex-col items-center text-center">
+          <p
+            aria-live="polite"
+            className="truncate text-base font-semibold tracking-tight text-zinc-950 dark:text-zinc-50"
+          >
+            {month ? formatMonth(month) : "All months"}
+          </p>
+          {month !== nowMonth ? (
+            <Link
+              href={monthHref(nowMonth)}
+              data-testid="month-current"
+              className="-my-2 py-2 text-xs font-medium text-[#0f766e] underline-offset-4 hover:underline dark:text-[#5eead4]"
+            >
+              Go to this month
+            </Link>
+          ) : null}
+        </div>
+        <MonthArrow
+          direction="next"
+          href={nextMonth && nextMonth <= nowMonth ? monthHref(nextMonth) : null}
+          label={nextMonth ? `Next month: ${formatMonth(nextMonth)}` : "Next month"}
+        />
+      </div>
+
       <form
         method="get"
         action="/expenses"
@@ -244,21 +289,21 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
         </div>
 
         {items.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 px-6 py-14 text-center">
-            <span className={`${iconChip} size-11`}>
-              <SearchX className="size-5" aria-hidden="true" />
-            </span>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          <EmptyState
+            icon={filtered ? SearchX : ReceiptText}
+            className="px-6 py-12"
+            action={
+              <Link href="/expenses/new" className={button("primary", "sm")}>
+              Add an expense
+            </Link>
+            }
+          >
               {filtered
                 ? "No expenses match your search or filters."
                 : month
                   ? `No expenses in ${formatMonth(month)} yet.`
                   : "You have not added any expenses yet."}
-            </p>
-            <Link href="/expenses/new" className={button("primary", "sm")}>
-              Add an expense
-            </Link>
-          </div>
+            </EmptyState>
         ) : (
           <>
             <table className="hidden w-full text-sm md:table">
@@ -284,9 +329,7 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
                       {formatDay(expense.date)}
                     </td>
                     <td className="px-5 py-3.5">
-                      <span className="inline-flex rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
-                        {expense.categoryName}
-                      </span>
+                      <CategoryPill name={expense.categoryName} looks={looks} />
                     </td>
                     <td className="max-w-xs truncate px-5 py-3.5 text-zinc-600 dark:text-zinc-400">
                       {expense.note ?? ""}
@@ -317,9 +360,7 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
               {items.map((expense) => (
                 <li key={expense.id} className="flex flex-col gap-1 px-4 py-3.5">
                   <div className="flex items-baseline justify-between gap-3">
-                    <span className="inline-flex rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
-                      {expense.categoryName}
-                    </span>
+                    <CategoryPill name={expense.categoryName} looks={looks} />
                     <span className="text-base font-semibold tabular-nums">
                       {formatPaise(expense.amount, currency)}
                     </span>

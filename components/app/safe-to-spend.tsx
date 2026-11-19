@@ -73,7 +73,7 @@ export function SafeToSpend({
     <div
       data-testid="safe-to-spend"
       data-kind={safe.kind}
-      className="rounded-xl bg-gradient-to-br from-[#2a78d6]/[0.08] to-[#2a78d6]/[0.02] px-4 py-3.5 ring-1 ring-[#2a78d6]/15 dark:from-[#3987e5]/15 dark:to-transparent dark:ring-[#3987e5]/25"
+      className="rounded-xl bg-gradient-to-br from-[#0f766e]/[0.08] to-[#0f766e]/[0.02] px-4 py-3.5 ring-1 ring-[#0f766e]/15 dark:from-[#14b8a6]/15 dark:to-transparent dark:ring-[#2dd4bf]/25"
     >
       <p className="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
         Safe to spend

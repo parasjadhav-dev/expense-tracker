@@ -23,7 +23,7 @@ const tab =
   "flex min-h-14 flex-col items-center justify-center gap-0.5 px-1 text-xs font-medium transition-colors";
 const tabIdle =
   "text-zinc-500 active:text-zinc-950 dark:text-zinc-400 dark:active:text-zinc-50";
-const tabActive = "text-[#1c5cab] dark:text-[#8db9f0]";
+const tabActive = "text-[#0f766e] dark:text-[#99f6e4]";
 
 export function BottomNav({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -69,7 +69,7 @@ export function BottomNav({ children }: { children: React.ReactNode }) {
               aria-label="Add expense"
               aria-current={activeHref === ADD_HREF ? "page" : undefined}
               data-testid="bottom-add"
-              className="-translate-y-4 flex size-14 items-center justify-center rounded-full bg-[#2a78d6] text-white shadow-lg ring-4 ring-white transition-colors active:bg-[#1c5cab] dark:bg-[#3987e5] dark:ring-zinc-950"
+              className="-translate-y-4 flex size-14 items-center justify-center rounded-full bg-[#0f766e] text-white shadow-lg ring-4 ring-white transition-colors active:bg-[#0f766e] dark:bg-[#0f766e] dark:ring-zinc-950"
             >
               <Plus className="size-7" aria-hidden="true" />
             </Link>
@@ -143,7 +143,7 @@ export function BottomNav({ children }: { children: React.ReactNode }) {
                   aria-current={activeHref === href ? "page" : undefined}
                   className={`flex min-h-12 items-center gap-3 rounded-lg px-3 text-base font-medium ${
                     activeHref === href
-                      ? "bg-[#2a78d6]/10 text-[#1c5cab] dark:bg-[#3987e5]/15 dark:text-[#8db9f0]"
+                      ? "bg-[#0f766e]/10 text-[#0f766e] dark:bg-[#2dd4bf]/15 dark:text-[#99f6e4]"
                       : "text-zinc-800 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
                   }`}
                 >

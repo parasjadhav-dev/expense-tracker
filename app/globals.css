@@ -127,11 +127,24 @@
   }
 }
 
+/* Category colours (see lib/category-style.ts). Stepped for contrast on each surface:
+   the 600 shades on white, the 400 shades on dark. */
+:root {
+  --cat-0: #c2410c; --cat-1: #0369a1; --cat-2: #6d28d9; --cat-3: #be185d;
+  --cat-4: #4338ca; --cat-5: #a16207; --cat-6: #be123c; --cat-7: #a21caf;
+  --cat-8: #4d7c0f; --cat-9: #64748b; --cat-10: #0e7490; --cat-11: #1d4ed8;
+}
+.dark {
+  --cat-0: #fb923c; --cat-1: #38bdf8; --cat-2: #a78bfa; --cat-3: #f472b6;
+  --cat-4: #818cf8; --cat-5: #fbbf24; --cat-6: #fb7185; --cat-7: #e879f9;
+  --cat-8: #a3e635; --cat-9: #94a3b8; --cat-10: #22d3ee; --cat-11: #60a5fa;
+}
+
 /* Chart colours. Values come from the validated reference palette; the dark set
    uses the same hue stepped for the dark surface. They follow the project's
    class-based dark mode (.dark), like the rest of the theme. */
 .viz-root {
-  --viz-series-1: #2a78d6;
+  --viz-series-1: #0f766e;
   --viz-other: #898781;
   --viz-text-primary: #0b0b0b;
   --viz-text-secondary: #52514e;
@@ -140,7 +153,7 @@
 }
 
 .dark .viz-root {
-  --viz-series-1: #3987e5;
+  --viz-series-1: #2dd4bf;
   --viz-other: #898781;
   --viz-text-primary: #f0efec;
   --viz-text-secondary: #c3c2b7;

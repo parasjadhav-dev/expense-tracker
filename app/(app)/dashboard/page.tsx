@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
-import { Plus } from "lucide-react";
+import { PieChart, Plus, TrendingUp } from "lucide-react";
 import { BudgetAlerts } from "@/components/app/budget-alerts";
 import { MonthPicker } from "@/components/app/month-picker";
 import { BudgetStatus } from "@/components/app/budget-status";
@@ -10,6 +10,7 @@ import { CategoryChart } from "@/components/app/category-chart";
 import { RecentExpenses } from "@/components/app/recent-expenses";
 import { SummaryCards } from "@/components/app/summary-cards";
 import { TrendChart } from "@/components/app/trend-chart";
+import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { auth } from "@/lib/auth";
@@ -114,7 +115,7 @@ async function DashboardContent({
   const requested = resolveMonth(first((await searchParams).month)) ?? nowMonth;
   const month = requested > nowMonth ? nowMonth : requested;
   const isCurrentMonth = month === nowMonth;
-  const [currency, { summary }, dailyTotals, recent] = await Promise.all([
+  const [currency, { summary, looks }, dailyTotals, recent] = await Promise.all([
     getUserCurrency(userId),
     loadMonthBudgets(userId, month),
     // The six months ending with the current one.
@@ -190,15 +191,13 @@ async function DashboardContent({
               <CategoryChart
                 monthLabel={formatMonth(month)}
                 breakdown={breakdown}
+                looks={looks}
                 currency={currency}
               />
             ) : (
-              <p
-                data-testid="chart-empty"
-                className="flex flex-1 items-center justify-center py-10 text-center text-sm text-zinc-600 dark:text-zinc-400"
-              >
+              <EmptyState icon={PieChart} testId="chart-empty">
                 No spending recorded for {formatMonth(month)} yet.
-              </p>
+              </EmptyState>
             )}
           </section>
 
@@ -216,12 +215,9 @@ async function DashboardContent({
               Last {trend.points.length} months
             </p>
             {trend.empty ? (
-              <p
-                data-testid="trend-empty"
-                className="flex flex-1 items-center justify-center py-10 text-center text-sm text-zinc-600 dark:text-zinc-400"
-              >
+              <EmptyState icon={TrendingUp} testId="trend-empty">
                 No spending in the last {trend.points.length} months yet.
-              </p>
+              </EmptyState>
             ) : (
               <TrendChart trend={trend} currency={currency} />
             )}
@@ -233,6 +229,7 @@ async function DashboardContent({
             id="recent-expenses"
             title={isCurrentMonth ? "Recent expenses" : `Expenses in ${formatMonth(month)}`}
             items={recent}
+            looks={looks}
             currency={currency}
             emptyText={
               isCurrentMonth
@@ -242,7 +239,7 @@ async function DashboardContent({
             footerHref={`/expenses?month=${month}`}
             footerLabel="View all"
           />
-          <BudgetStatus month={month} summary={summary} currency={currency} />
+          <BudgetStatus month={month} summary={summary} currency={currency} looks={looks} />
         </div>
       </div>
     </>

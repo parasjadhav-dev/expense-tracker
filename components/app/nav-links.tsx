@@ -9,7 +9,7 @@ export const NAV_LINK_BASE =
 export const NAV_LINK_IDLE =
   "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-50";
 export const NAV_LINK_ACTIVE =
-  "bg-[#2a78d6]/10 text-[#1c5cab] dark:bg-[#3987e5]/15 dark:text-[#8db9f0]";
+  "bg-[#0f766e]/10 text-[#0f766e] dark:bg-[#2dd4bf]/15 dark:text-[#99f6e4]";
 
 export function NavLinks() {
   const pathname = usePathname();

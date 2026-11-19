@@ -22,7 +22,7 @@ import { button, card, iconChip, tapTarget } from "@/lib/ui";
 type Category = { id: string; name: string };
 
 const selectClass =
-  "min-h-11 w-full rounded-lg border border-zinc-300 bg-white px-2.5 py-2 text-base text-zinc-950 outline-none transition focus:border-[#2a78d6] focus:ring-2 focus:ring-[#2a78d6]/20 lg:min-h-0 lg:text-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50";
+  "min-h-11 w-full rounded-lg border border-zinc-300 bg-white px-2.5 py-2 text-base text-zinc-950 outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 lg:min-h-0 lg:text-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50";
 
 // Upload a statement, check the rows, save. The server reads the file; nothing
 // is stored until the user confirms.
@@ -109,7 +109,7 @@ function UploadStep({
 
         <label
           htmlFor="file"
-          className="mt-5 flex cursor-pointer flex-col items-center gap-2 rounded-xl border-2 border-dashed border-zinc-300 px-6 py-10 text-center transition-colors hover:border-[#2a78d6] hover:bg-[#2a78d6]/[0.03] has-[:focus-visible]:border-[#2a78d6] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[#2a78d6]/30 dark:border-zinc-700"
+          className="mt-5 flex cursor-pointer flex-col items-center gap-2 rounded-xl border-2 border-dashed border-zinc-300 px-6 py-10 text-center transition-colors hover:border-[#0f766e] hover:bg-[#0f766e]/[0.03] has-[:focus-visible]:border-[#0f766e] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[#0f766e]/30 dark:border-zinc-700"
         >
           <span className={`${iconChip} size-11`}>
             {fileName ? (
@@ -142,7 +142,7 @@ function UploadStep({
           <a
             href="/sample-statement.csv"
             download
-            className="text-sm font-medium text-[#1c5cab] underline-offset-4 hover:underline dark:text-[#6da7ec]"
+            className="text-sm font-medium text-[#0f766e] underline-offset-4 hover:underline dark:text-[#5eead4]"
           >
             Download a sample file
           </a>
@@ -354,7 +354,7 @@ function PreviewStep({
                   onClick={() => setFilter(option.value)}
                   className={`inline-flex min-h-11 items-center gap-1.5 rounded-full border px-4 text-sm font-medium transition-colors lg:min-h-9 lg:px-3.5 ${
                     filter === option.value
-                      ? "border-[#2a78d6] bg-[#2a78d6]/10 text-[#1c5cab] dark:border-[#3987e5] dark:bg-[#3987e5]/15 dark:text-[#8db9f0]"
+                      ? "border-[#0f766e] bg-[#0f766e]/10 text-[#0f766e] dark:border-[#2dd4bf] dark:bg-[#2dd4bf]/15 dark:text-[#99f6e4]"
                       : "border-zinc-300 text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
                   }`}
                 >
@@ -371,10 +371,10 @@ function PreviewStep({
           </div>
         ) : null}
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-zinc-100 px-4 py-3 dark:border-zinc-900">
-          <button type="button" onClick={() => setAll(true)} className={`${tapTarget} text-sm font-medium text-[#1c5cab] hover:underline dark:text-[#6da7ec]`}>
+          <button type="button" onClick={() => setAll(true)} className={`${tapTarget} text-sm font-medium text-[#0f766e] hover:underline dark:text-[#5eead4]`}>
             Select all
           </button>
-          <button type="button" onClick={() => setAll(false)} className={`${tapTarget} text-sm font-medium text-[#1c5cab] hover:underline dark:text-[#6da7ec]`}>
+          <button type="button" onClick={() => setAll(false)} className={`${tapTarget} text-sm font-medium text-[#0f766e] hover:underline dark:text-[#5eead4]`}>
             Select none
           </button>
           <div className="ml-auto w-full sm:w-64">
@@ -499,7 +499,7 @@ function ImportRowItem({
           checked={edit.include}
           onChange={(event) => onChange({ include: event.target.checked })}
           aria-label={`Import ${description}`}
-          className="size-5 accent-[#2a78d6] lg:size-4"
+          className="size-5 accent-[#0f766e] lg:size-4"
         />
       </label>
       <div className="min-w-0 flex-1 basis-40">

@@ -26,7 +26,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       aria-label="Toggle dark mode"
       title="Toggle dark mode"
       data-testid="theme-toggle"
-      className={`inline-flex size-11 shrink-0 items-center justify-center rounded-lg text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2a78d6]/50 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50 lg:size-9 ${className}`}
+      className={`inline-flex size-11 shrink-0 items-center justify-center rounded-lg text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0f766e]/50 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50 lg:size-9 ${className}`}
     >
       <Moon className="size-[18px] dark:hidden" aria-hidden="true" />
       <Sun className="hidden size-[18px] dark:block" aria-hidden="true" />

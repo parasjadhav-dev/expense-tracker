@@ -13,7 +13,7 @@ export function Logo({
         className={`grid size-8 shrink-0 place-items-center rounded-lg shadow-sm ${
           tone === "light"
             ? "bg-white/15 text-white ring-1 ring-white/25"
-            : "bg-gradient-to-br from-[#3987e5] to-[#1c5cab] text-white"
+            : "bg-gradient-to-br from-[#14b8a6] to-[#0f766e] text-white"
         }`}
       >
         <Wallet className="size-[18px]" />

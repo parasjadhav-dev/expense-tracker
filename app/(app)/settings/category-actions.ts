@@ -4,8 +4,10 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { SAVE_FAILED_MESSAGE, logActionError } from "@/lib/action-errors";
+import { pickColorForNew, resolveLook } from "@/lib/category-style";
 import {
   MAX_CATEGORIES,
+  checkCategoryLook,
   checkCategoryName,
   isNameTaken,
 } from "@/lib/validations/category";
@@ -51,11 +53,13 @@ export async function createCategory(
   const typed = text(formData, "name");
   const checked = checkCategoryName(typed);
   if (!checked.ok) return { status: "error", message: checked.message, name: typed };
+  const look = checkCategoryLook(text(formData, "color"), text(formData, "icon"));
+  if (!look.ok) return { status: "error", message: look.message, name: typed };
 
   try {
     const existing = await db.category.findMany({
       where: { userId },
-      select: { id: true, name: true },
+      select: { id: true, name: true, color: true, icon: true },
     });
     if (existing.length >= MAX_CATEGORIES) {
       return {
@@ -67,7 +71,13 @@ export async function createCategory(
     if (isNameTaken(existing, checked.name)) {
       return { status: "error", message: `You already have a category called "${checked.name}".`, name: typed };
     }
-    await db.category.create({ data: { userId, name: checked.name } });
+    // No colour chosen: take one no other category is using, so two do not look alike.
+    const color =
+      look.color ??
+      pickColorForNew(existing.map((item) => resolveLook(item.name, item).color));
+    await db.category.create({
+      data: { userId, name: checked.name, color, icon: look.icon },
+    });
   } catch (error) {
     if (hasCode(error, "P2002")) {
       return { status: "error", message: `You already have a category called "${checked.name}".`, name: typed };
@@ -80,7 +90,10 @@ export async function createCategory(
   return { status: "success", message: `Added "${checked.name}".` };
 }
 
-export async function renameCategory(
+// Changes a category's name, colour and icon together. A category that never had
+// a colour or icon saved keeps the look it is showing now, so renaming it does
+// not change how it looks.
+export async function updateCategory(
   _prevState: CategoryState,
   formData: FormData,
 ): Promise<CategoryState> {
@@ -92,29 +105,40 @@ export async function renameCategory(
   const typed = text(formData, "name");
   const checked = checkCategoryName(typed);
   if (!checked.ok) return { status: "error", message: checked.message, name: typed };
+  const look = checkCategoryLook(text(formData, "color"), text(formData, "icon"));
+  if (!look.ok) return { status: "error", message: look.message, name: typed };
 
   try {
     const existing = await db.category.findMany({
       where: { userId },
-      select: { id: true, name: true },
+      select: { id: true, name: true, color: true, icon: true },
     });
-    if (!existing.some((category) => category.id === id)) {
+    const current = existing.find((category) => category.id === id);
+    if (!current) {
       return { status: "error", message: "This category no longer exists.", name: typed };
     }
     if (isNameTaken(existing, checked.name, id)) {
       return { status: "error", message: `You already have a category called "${checked.name}".`, name: typed };
     }
-    await db.category.updateMany({ where: { id, userId }, data: { name: checked.name } });
+    const shown = resolveLook(current.name, current);
+    await db.category.updateMany({
+      where: { id, userId },
+      data: {
+        name: checked.name,
+        color: look.color ?? shown.color,
+        icon: look.icon ?? shown.icon,
+      },
+    });
   } catch (error) {
     if (hasCode(error, "P2002")) {
       return { status: "error", message: `You already have a category called "${checked.name}".`, name: typed };
     }
-    logActionError("renameCategory", error);
+    logActionError("updateCategory", error);
     return { status: "error", message: SAVE_FAILED_MESSAGE, name: typed };
   }
 
   refresh();
-  return { status: "success", message: `Renamed to "${checked.name}".` };
+  return { status: "success", message: `Saved "${checked.name}".` };
 }
 
 // A category in use cannot simply disappear: its expenses and recurring items

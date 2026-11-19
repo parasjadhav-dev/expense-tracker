@@ -26,7 +26,7 @@ export async function UserMenu() {
       <div className="flex items-center gap-3 px-1">
         <span
           aria-hidden="true"
-          className="grid size-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-[#3987e5] to-[#1c5cab] text-xs font-semibold text-white"
+          className="grid size-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-[#14b8a6] to-[#0f766e] text-xs font-semibold text-white"
         >
           {initials(display)}
         </span>

@@ -9,6 +9,7 @@ import { auth } from "@/lib/auth";
 import { getUserCurrency } from "@/lib/currency-db";
 import { todayInAppZone } from "@/lib/time";
 import { db } from "@/lib/db";
+import { looksByName } from "@/lib/category-style";
 import { getRecentExpenses } from "@/lib/expenses";
 import { paiseToRupeesInput } from "@/lib/money";
 import { card } from "@/lib/ui";
@@ -63,7 +64,7 @@ async function EditExpenseLoader({
     db.category.findMany({
       where: { userId },
       orderBy: { name: "asc" },
-      select: { id: true, name: true },
+      select: { id: true, name: true, color: true, icon: true },
     }),
   ]);
   if (!expense) notFound();
@@ -101,6 +102,7 @@ async function EditExpenseLoader({
         id="other-in-category"
         title={`Other ${categoryName} expenses`}
         items={others}
+        looks={looksByName(categories)}
         currency={currency}
         emptyText={`No other ${categoryName} expenses yet.`}
         footerHref={`/expenses?month=&category=${expense.categoryId}`}

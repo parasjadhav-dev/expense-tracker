@@ -1,26 +1,26 @@
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { formatMonth, shiftMonth } from "@/lib/expense-filters";
 import { button, input } from "@/lib/ui";
+import { MonthArrow } from "./month-arrow";
 import { MonthInput } from "./month-input";
 
-const arrow =
-  "inline-flex size-11 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 lg:size-9";
-
 // Steps through months with arrows, or jumps to one with the month field. Months
-// after the current one are not offered: there is nothing to show yet.
+// after `maxMonth` are not offered (the current month unless a page says otherwise;
+// budgets can be planned ahead).
 export function MonthPicker({
   basePath,
   month,
   currentMonth,
+  maxMonth = currentMonth,
 }: {
   basePath: string;
   month: string;
   currentMonth: string;
+  maxMonth?: string;
 }) {
   const previous = shiftMonth(month, -1);
   const next = shiftMonth(month, 1);
-  const canGoNext = next <= currentMonth;
+  const canGoNext = next <= maxMonth;
 
   return (
     <div
@@ -28,14 +28,11 @@ export function MonthPicker({
       // One row on a phone: previous, the month field (takes the spare width), next.
       className="flex w-full flex-wrap items-center gap-2 sm:w-auto"
     >
-      <Link
+      <MonthArrow
+        direction="prev"
         href={`${basePath}?month=${previous}`}
-        aria-label={`Previous month: ${formatMonth(previous)}`}
-        data-testid="month-prev"
-        className={arrow}
-      >
-        <ChevronLeft className="size-4" aria-hidden="true" />
-      </Link>
+        label={`Previous month: ${formatMonth(previous)}`}
+      />
 
       <form
         method="get"
@@ -53,7 +50,7 @@ export function MonthPicker({
           pattern="\d{4}-\d{2}"
           title="Use the format YYYY-MM, for example 2026-11"
           defaultValue={month}
-          max={currentMonth}
+          max={maxMonth}
           className={`${input} mt-0 min-w-0 flex-1 sm:w-44 sm:flex-none`}
         />
         {/* Hidden on a phone to leave the month field room: picking a month there
@@ -63,24 +60,11 @@ export function MonthPicker({
         </button>
       </form>
 
-      {canGoNext ? (
-        <Link
-          href={`${basePath}?month=${next}`}
-          aria-label={`Next month: ${formatMonth(next)}`}
-          data-testid="month-next"
-          className={arrow}
-        >
-          <ChevronRight className="size-4" aria-hidden="true" />
-        </Link>
-      ) : (
-        <span
-          aria-hidden="true"
-          data-testid="month-next-disabled"
-          className={`${arrow} cursor-not-allowed opacity-40`}
-        >
-          <ChevronRight className="size-4" />
-        </span>
-      )}
+      <MonthArrow
+        direction="next"
+        href={canGoNext ? `${basePath}?month=${next}` : null}
+        label={`Next month: ${formatMonth(next)}`}
+      />
 
       {month !== currentMonth ? (
         <Link

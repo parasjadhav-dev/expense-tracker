@@ -1,5 +1,5 @@
 // One place for the look of cards, buttons and inputs, so every page matches.
-// The accent is the same blue as the chart series (#2a78d6); white text on it
+// The accent is the same teal as the chart series (#0f766e); white text on it
 // has a 4.6:1 contrast ratio.
 
 export const card =
@@ -17,7 +17,7 @@ const sizes = {
 
 const variants = {
   primary:
-    "bg-[#2a78d6] text-white shadow-sm hover:bg-[#256abf] focus-visible:ring-[#2a78d6]/50 dark:bg-[#3987e5] dark:hover:bg-[#2a78d6]",
+    "bg-[#0f766e] text-white shadow-sm hover:bg-[#115e59] focus-visible:ring-[#0f766e]/50 dark:bg-[#0f766e] dark:hover:bg-[#0d9488]",
   secondary:
     "border border-zinc-300 bg-white text-zinc-900 hover:bg-zinc-50 focus-visible:ring-zinc-400/50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:hover:bg-zinc-800",
   // A quieter red for buttons that open a confirmation, so a tap is not
@@ -36,7 +36,7 @@ export function button(
 }
 
 export const input =
-  "mt-1.5 min-h-11 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-base text-zinc-950 outline-none transition placeholder:text-zinc-400 lg:min-h-0 lg:text-sm focus:border-[#2a78d6] focus:ring-2 focus:ring-[#2a78d6]/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50";
+  "mt-1.5 min-h-11 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-base text-zinc-950 outline-none transition placeholder:text-zinc-400 lg:min-h-0 lg:text-sm focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50";
 
 export const label = "text-sm font-medium text-zinc-900 dark:text-zinc-100";
 
@@ -47,8 +47,8 @@ export const tapTarget = "-my-3 py-3 lg:my-0 lg:py-0";
 
 // Text link with the accent colour.
 export const link =
-  "font-medium text-[#1c5cab] underline-offset-4 hover:underline dark:text-[#6da7ec]";
+  "font-medium text-[#0f766e] underline-offset-4 hover:underline dark:text-[#5eead4]";
 
 // Small coloured square behind an icon.
 export const iconChip =
-  "grid size-9 shrink-0 place-items-center rounded-lg bg-[#2a78d6]/10 text-[#1c5cab] dark:bg-[#3987e5]/15 dark:text-[#6da7ec]";
+  "grid size-9 shrink-0 place-items-center rounded-lg bg-[#0f766e]/10 text-[#0f766e] dark:bg-[#2dd4bf]/15 dark:text-[#5eead4]";

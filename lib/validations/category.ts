@@ -1,4 +1,6 @@
-// Rules for category names. Pure, so it is tested without a database.
+// Rules for category names and looks. Pure, so it is tested without a database.
+
+import { CATEGORY_COLOR_COUNT, isCategoryIconKey } from "@/lib/category-style";
 
 export const CATEGORY_NAME_MAX = 30;
 export const MAX_CATEGORIES = 50;
@@ -34,4 +36,28 @@ export function isNameTaken(
   return categories.some(
     (category) => category.id !== exceptId && category.name.toLowerCase() === wanted,
   );
+}
+
+export type CategoryLookResult =
+  | { ok: true; color: number | null; icon: string | null }
+  | { ok: false; message: string };
+
+// Form values for a category's colour and icon. Empty means "not chosen" (null).
+// Anything that is not a palette index or a known icon key is refused, because
+// these values come from the browser.
+export function checkCategoryLook(rawColor: string, rawIcon: string): CategoryLookResult {
+  let color: number | null = null;
+  const typedColor = rawColor.trim();
+  if (typedColor !== "") {
+    const parsed = /^\d{1,2}$/.test(typedColor) ? Number(typedColor) : NaN;
+    if (!Number.isInteger(parsed) || parsed >= CATEGORY_COLOR_COUNT) {
+      return { ok: false, message: "Choose a colour from the list." };
+    }
+    color = parsed;
+  }
+  const icon = rawIcon.trim();
+  if (icon !== "" && !isCategoryIconKey(icon)) {
+    return { ok: false, message: "Choose an icon from the list." };
+  }
+  return { ok: true, color, icon: icon === "" ? null : icon };
 }

@@ -1,12 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Geist_Mono } from "next/font/google";
+import { Manrope, Geist_Mono } from "next/font/google";
 import { RegisterServiceWorker } from "@/components/pwa/register-service-worker";
 import { ThemeColorSync } from "@/components/pwa/theme-color-sync";
 import "./globals.css";
 
-// Inter is the UI font. It registers as --font-sans, which globals.css maps to
+// Manrope is the UI font: round, geometric and clear with numbers. It registers as --font-sans, which globals.css maps to
 // the Tailwind `font-sans` utility.
-const inter = Inter({
+const manrope = Manrope({
   variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
@@ -52,7 +52,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${manrope.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />

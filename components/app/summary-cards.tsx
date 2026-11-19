@@ -91,7 +91,7 @@ export function SummaryCards({
   const setBudgetLink = (
     <Link
       href={`/budgets?month=${month}`}
-      className="font-medium text-[#1c5cab] underline underline-offset-4 dark:text-[#6da7ec]"
+      className="font-medium text-[#0f766e] underline underline-offset-4 dark:text-[#5eead4]"
     >
       Set an overall budget
     </Link>
