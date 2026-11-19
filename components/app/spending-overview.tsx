@@ -1,4 +1,5 @@
 import type { BudgetSummary, SafeToSpend as SafeToSpendResult } from "@/lib/budget";
+import type { CategoryLooks } from "@/lib/category-style";
 import type { CurrencyCode } from "@/lib/currency";
 import { formatMonth } from "@/lib/expense-filters";
 import { formatPaise } from "@/lib/money";
@@ -13,11 +14,13 @@ export function SpendingOverview({
   summary,
   safe,
   currency,
+  looks,
 }: {
   month: string;
   summary: BudgetSummary;
   safe: SafeToSpendResult;
   currency: CurrencyCode;
+  looks?: CategoryLooks;
 }) {
   const withLimit = summary.categories.filter((c) => c.budget !== null);
   const withoutLimit = summary.categories.filter(
@@ -60,6 +63,7 @@ export function SpendingOverview({
               line={category}
               currency={currency}
               withBadge
+              looks={looks}
             />
           ))
         ) : (

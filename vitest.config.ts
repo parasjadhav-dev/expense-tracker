@@ -10,6 +10,11 @@ export default defineConfig({
   },
   test: {
     environment: "node",
+    // The default worker pools fail on this machine before any test runs ("Cannot
+    // read properties of undefined (reading 'config')"); vmThreads runs them.
+    pool: "vmThreads",
+    // The 50,000-case property tests are slower under that pool.
+    testTimeout: 30000,
     include: ["lib/**/*.test.ts"],
   },
 });

@@ -12,6 +12,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getUserCurrency } from "@/lib/currency-db";
 import { db } from "@/lib/db";
+import { looksByName } from "@/lib/category-style";
 import { currentMonth, formatMonth, resolveMonth, shiftMonth } from "@/lib/expense-filters";
 import { MonthArrow } from "@/components/app/month-arrow";
 import {
@@ -122,8 +123,9 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
   const categories = await db.category.findMany({
     where: { userId },
     orderBy: { name: "asc" },
-    select: { id: true, name: true },
+    select: { id: true, name: true, color: true, icon: true },
   });
+  const looks = looksByName(categories);
   // Only the user's own categories are accepted. Anything else is ignored.
   const requestedCategory = first(params.category);
   const categoryId =
@@ -327,7 +329,7 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
                       {formatDay(expense.date)}
                     </td>
                     <td className="px-5 py-3.5">
-                      <CategoryPill name={expense.categoryName} />
+                      <CategoryPill name={expense.categoryName} looks={looks} />
                     </td>
                     <td className="max-w-xs truncate px-5 py-3.5 text-zinc-600 dark:text-zinc-400">
                       {expense.note ?? ""}
@@ -358,7 +360,7 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
               {items.map((expense) => (
                 <li key={expense.id} className="flex flex-col gap-1 px-4 py-3.5">
                   <div className="flex items-baseline justify-between gap-3">
-                    <CategoryPill name={expense.categoryName} />
+                    <CategoryPill name={expense.categoryName} looks={looks} />
                     <span className="text-base font-semibold tabular-nums">
                       {formatPaise(expense.amount, currency)}
                     </span>

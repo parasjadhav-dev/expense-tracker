@@ -1,11 +1,13 @@
-import { CalendarClock } from "lucide-react";
+import { CalendarClock, House, Plane, Utensils, type LucideIcon } from "lucide-react";
 
 // A small picture of the dashboard for the landing page and the sign-in panel.
 // The numbers are made up and the card says so.
-const SAMPLE_BARS = [
-  { name: "Rent", value: "₹18,000", width: "100%", tone: "bg-[#0f766e]" },
-  { name: "Food", value: "₹6,420", width: "36%", tone: "bg-[#0f766e]" },
-  { name: "Travel", value: "₹3,150", width: "18%", tone: "bg-[#0f766e]" },
+// The preview always sits on a white card, so these are the light-theme category
+// colours written out (the app's --cat-N variables turn pale in dark mode).
+const SAMPLE_BARS: { name: string; value: string; width: string; color: string; icon: LucideIcon }[] = [
+  { name: "Rent", value: "₹18,000", width: "100%", color: "#6d28d9", icon: House },
+  { name: "Food", value: "₹6,420", width: "36%", color: "#c2410c", icon: Utensils },
+  { name: "Travel", value: "₹3,150", width: "18%", color: "#0369a1", icon: Plane },
 ];
 
 const SAMPLE_TREND = "0,38 40,30 80,34 120,18 160,24 200,8";
@@ -14,7 +16,7 @@ export function DashboardPreview({ className = "" }: { className?: string }) {
   return (
     <div
       aria-hidden="true"
-      className={`rounded-2xl bg-white p-5 text-zinc-950 shadow-2xl shadow-[#0b2f5c]/25 ring-1 ring-zinc-950/5 ${className}`}
+      className={`rounded-2xl bg-white p-5 text-zinc-950 shadow-2xl shadow-[#0b3b37]/25 ring-1 ring-zinc-950/5 ${className}`}
     >
       <div className="flex items-center justify-between">
         <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
@@ -41,9 +43,15 @@ export function DashboardPreview({ className = "" }: { className?: string }) {
         <div className="flex flex-col gap-2.5">
           {SAMPLE_BARS.map((bar) => (
             <div key={bar.name} className="flex items-center gap-2 text-xs">
-              <span className="w-10 shrink-0 text-zinc-500">{bar.name}</span>
+              <span
+                className="grid size-5 shrink-0 place-items-center rounded-md"
+                style={{ color: bar.color, background: `${bar.color}1f` }}
+              >
+                <bar.icon className="size-3" />
+              </span>
+              <span className="w-9 shrink-0 text-zinc-500">{bar.name}</span>
               <div className="h-2 flex-1 overflow-hidden rounded-r-full">
-                <div className={`h-full rounded-r ${bar.tone}`} style={{ width: bar.width }} />
+                <div className="h-full rounded-r" style={{ width: bar.width, background: bar.color }} />
               </div>
               <span className="w-14 shrink-0 text-right tabular-nums text-zinc-700">
                 {bar.value}

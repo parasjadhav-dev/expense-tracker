@@ -115,7 +115,7 @@ async function DashboardContent({
   const requested = resolveMonth(first((await searchParams).month)) ?? nowMonth;
   const month = requested > nowMonth ? nowMonth : requested;
   const isCurrentMonth = month === nowMonth;
-  const [currency, { summary }, dailyTotals, recent] = await Promise.all([
+  const [currency, { summary, looks }, dailyTotals, recent] = await Promise.all([
     getUserCurrency(userId),
     loadMonthBudgets(userId, month),
     // The six months ending with the current one.
@@ -191,6 +191,7 @@ async function DashboardContent({
               <CategoryChart
                 monthLabel={formatMonth(month)}
                 breakdown={breakdown}
+                looks={looks}
                 currency={currency}
               />
             ) : (
@@ -228,6 +229,7 @@ async function DashboardContent({
             id="recent-expenses"
             title={isCurrentMonth ? "Recent expenses" : `Expenses in ${formatMonth(month)}`}
             items={recent}
+            looks={looks}
             currency={currency}
             emptyText={
               isCurrentMonth
@@ -237,7 +239,7 @@ async function DashboardContent({
             footerHref={`/expenses?month=${month}`}
             footerLabel="View all"
           />
-          <BudgetStatus month={month} summary={summary} currency={currency} />
+          <BudgetStatus month={month} summary={summary} currency={currency} looks={looks} />
         </div>
       </div>
     </>

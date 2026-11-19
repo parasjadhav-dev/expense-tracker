@@ -46,6 +46,10 @@ model PasswordResetToken {
 model Category {
   id        String   @id @default(cuid())
   name      String
+  // Look in the app: a palette index (0-11) and an icon key (see lib/category-style.ts).
+  // Null means "work it out from the name", which is how older categories stay as they were.
+  color     Int?
+  icon      String?
   userId    String
   createdAt DateTime @default(now())
 

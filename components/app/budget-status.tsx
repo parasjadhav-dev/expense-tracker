@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Target } from "lucide-react";
 import type { BudgetSummary } from "@/lib/budget";
+import type { CategoryLooks } from "@/lib/category-style";
 import type { CurrencyCode } from "@/lib/currency";
 import { formatMonth } from "@/lib/expense-filters";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -16,10 +17,12 @@ export function BudgetStatus({
   month,
   summary,
   currency,
+  looks,
 }: {
   month: string;
   summary: BudgetSummary;
   currency: CurrencyCode;
+  looks?: CategoryLooks;
 }) {
   const withLimit = summary.categories
     .filter((category) => category.budget !== null)
@@ -67,7 +70,7 @@ export function BudgetStatus({
           {withLimit.map((category, index) => (
             // A phone shows the three closest to their limit; "Manage" has the rest.
             <div key={category.categoryId} className={index >= PHONE_ROWS ? "max-sm:hidden" : ""}>
-              <BudgetProgress label={category.name} line={category} currency={currency} withBadge />
+              <BudgetProgress label={category.name} line={category} currency={currency} withBadge looks={looks} />
             </div>
           ))}
         </div>

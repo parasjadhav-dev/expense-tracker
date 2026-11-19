@@ -9,7 +9,7 @@ import {
   Target,
   type LucideIcon,
 } from "lucide-react";
-import { DashboardPreview } from "@/components/marketing/dashboard-preview";
+import { HeroArt } from "@/components/marketing/hero-art";
 import { Logo } from "@/components/ui/logo";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { button, card, iconChip } from "@/lib/ui";
@@ -95,7 +95,7 @@ export default function Home() {
             </p>
           </div>
 
-          <DashboardPreview className="mx-auto w-full max-w-md lg:ml-auto" />
+          <HeroArt className="mx-auto w-full max-w-md lg:ml-auto" />
         </section>
 
         <section

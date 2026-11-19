@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, ReceiptText } from "lucide-react";
+import type { CategoryLooks } from "@/lib/category-style";
 import type { CurrencyCode } from "@/lib/currency";
 import { formatShortDay } from "@/lib/format";
 import { formatPaise } from "@/lib/money";
@@ -21,6 +22,7 @@ export function RecentExpenses({
   footerHref,
   footerLabel,
   emptyAction,
+  looks,
 }: {
   id: string;
   title: string;
@@ -31,6 +33,7 @@ export function RecentExpenses({
   footerLabel?: string;
   // Shown under the empty-state text, for example an "Add an expense" button.
   emptyAction?: React.ReactNode;
+  looks?: CategoryLooks;
 }) {
   return (
     <section
@@ -69,7 +72,7 @@ export function RecentExpenses({
               // A phone shows the latest few; "View all" has the rest.
               className={`flex items-center gap-3 py-2.5 ${index >= PHONE_ROWS ? "max-sm:hidden" : ""}`}
             >
-              <CategoryBadge name={item.categoryName} />
+              <CategoryBadge name={item.categoryName} looks={looks} />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-zinc-950 dark:text-zinc-50">
                   {item.note || item.categoryName}

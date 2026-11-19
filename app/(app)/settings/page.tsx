@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
+import { resolveLook } from "@/lib/category-style";
 import { CategoryManager } from "@/components/app/category-manager";
 import { ChangePasswordForm } from "@/components/app/change-password-form";
 import { CurrencyForm } from "@/components/app/currency-form";
@@ -52,12 +53,15 @@ async function SettingsContent() {
     select: {
       id: true,
       name: true,
+      color: true,
+      icon: true,
       _count: { select: { expenses: true, recurring: true } },
     },
   });
   const categories = categoryRows.map((row) => ({
     id: row.id,
     name: row.name,
+    ...resolveLook(row.name, row),
     expenses: row._count.expenses,
     recurring: row._count.recurring,
   }));

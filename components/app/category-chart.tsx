@@ -18,7 +18,7 @@ import {
 } from "@/lib/category-breakdown";
 import type { CurrencyCode } from "@/lib/currency";
 import { formatPaise } from "@/lib/money";
-import { OTHER_CHART_COLOR, getCategoryStyle } from "@/lib/category-style";
+import { OTHER_CHART_COLOR, getCategoryStyle, type CategoryLooks } from "@/lib/category-style";
 import { button } from "@/lib/ui";
 
 const BAR_SIZE = 20; // thin marks: 24px at most
@@ -29,8 +29,8 @@ function shortName(name: string): string {
   return name.length > 14 ? `${name.slice(0, 13)}…` : name;
 }
 
-function fillFor(row: BreakdownRow): string {
-  return row.isOther ? OTHER_CHART_COLOR : getCategoryStyle(row.name).color;
+function fillFor(row: BreakdownRow, looks?: CategoryLooks): string {
+  return row.isOther ? OTHER_CHART_COLOR : getCategoryStyle(row.name, looks).color;
 }
 
 // Values lead and the name follows. The short line in front of the name is a key
@@ -39,10 +39,12 @@ function ChartTooltip({
   active,
   payload,
   currency,
+  looks,
 }: {
   active?: boolean;
   payload?: readonly { payload?: BreakdownRow }[];
   currency: CurrencyCode;
+  looks?: CategoryLooks;
 }) {
   const row = active ? payload?.[0]?.payload : undefined;
   if (!row) return null;
@@ -59,7 +61,7 @@ function ChartTooltip({
         <span
           aria-hidden="true"
           className="inline-block h-0.5 w-3"
-          style={{ background: fillFor(row) }}
+          style={{ background: fillFor(row, looks) }}
         />
         <span>
           {row.name} · {formatTenths(row.tenths)}
@@ -78,10 +80,12 @@ export function CategoryChart({
   monthLabel,
   breakdown,
   currency,
+  looks,
 }: {
   monthLabel: string;
   breakdown: CategoryBreakdown;
   currency: CurrencyCode;
+  looks?: CategoryLooks;
 }) {
   const [showTable, setShowTable] = useState(false);
   const { rows, allRows, total } = breakdown;
@@ -185,7 +189,7 @@ export function CategoryChart({
               />
               <Tooltip
                 cursor={{ fill: "var(--viz-hover)" }}
-                content={<ChartTooltip currency={currency} />}
+                content={<ChartTooltip currency={currency} looks={looks} />}
                 isAnimationActive={false}
               />
               <Bar
@@ -196,7 +200,7 @@ export function CategoryChart({
                 isAnimationActive={false}
               >
                 {rows.map((row) => (
-                  <Cell key={row.key} fill={fillFor(row)} />
+                  <Cell key={row.key} fill={fillFor(row, looks)} />
                 ))}
                 <LabelList
                   dataKey="amount"

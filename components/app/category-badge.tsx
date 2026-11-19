@@ -1,15 +1,17 @@
-import { getCategoryStyle } from "@/lib/category-style";
+import { getCategoryStyle, type CategoryLooks } from "@/lib/category-style";
 
 // A coloured tile with the category's icon. Decorative: the name is always
 // written next to it, so colour and icon are never the only signal.
 export function CategoryBadge({
   name,
+  looks,
   className = "size-9",
 }: {
   name: string;
+  looks?: CategoryLooks;
   className?: string;
 }) {
-  const { icon: Icon, color, tint } = getCategoryStyle(name);
+  const { icon: Icon, color, tint } = getCategoryStyle(name, looks);
   return (
     <span
       aria-hidden="true"
@@ -22,8 +24,8 @@ export function CategoryBadge({
 }
 
 // The category as a small pill: icon and name on a tint of its colour.
-export function CategoryPill({ name }: { name: string }) {
-  const { icon: Icon, color, tint } = getCategoryStyle(name);
+export function CategoryPill({ name, looks }: { name: string; looks?: CategoryLooks }) {
+  const { icon: Icon, color, tint } = getCategoryStyle(name, looks);
   return (
     <span
       className="inline-flex max-w-full items-center gap-1.5 rounded-full py-0.5 pl-2 pr-2.5 text-xs font-medium"

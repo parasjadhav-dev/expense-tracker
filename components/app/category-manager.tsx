@@ -5,15 +5,20 @@ import { CheckCircle2, Pencil, Plus, Trash2 } from "lucide-react";
 import {
   createCategory,
   deleteCategory,
-  renameCategory,
+  updateCategory,
   type CategoryState,
 } from "@/app/(app)/settings/category-actions";
+import { CategoryBadge } from "./category-badge";
+import { CategoryLookPicker } from "./category-look-picker";
 import { button, input, label } from "@/lib/ui";
 import { CATEGORY_NAME_MAX, MAX_CATEGORIES } from "@/lib/validations/category";
 
 export type CategoryRow = {
   id: string;
   name: string;
+  // The look it shows now (saved, or worked out from the name).
+  color: number;
+  icon: string;
   expenses: number;
   recurring: number;
 };
@@ -54,7 +59,7 @@ export function CategoryManager({ categories }: { categories: CategoryRow[] }) {
         ))}
       </ul>
       <p className="text-xs text-zinc-500 dark:text-zinc-400">
-        {categories.length} of {MAX_CATEGORIES} categories. Renaming a category
+        {categories.length} of {MAX_CATEGORIES} categories. Editing a category
         keeps all its expenses. Deleting one moves its expenses to a category you
         choose.
       </p>
@@ -66,7 +71,13 @@ function AddCategoryForm({ disabled }: { disabled: boolean }) {
   const [state, formAction, pending] = useActionState(createCategory, initialState);
 
   return (
-    <form action={formAction} className="flex flex-col gap-3" noValidate>
+    <form
+      action={formAction}
+      className="flex flex-col gap-3"
+      noValidate
+      // A new key after each save puts the colour and icon back to automatic.
+      key={state.status === "success" ? `added-${state.message}` : "add"}
+    >
       {state.status === "success" && state.message ? (
         <p
           role="status"
@@ -106,6 +117,15 @@ function AddCategoryForm({ disabled }: { disabled: boolean }) {
           </button>
         </div>
       </div>
+      <details className="group rounded-lg border border-zinc-200 px-3 py-2 dark:border-zinc-800">
+        <summary className="cursor-pointer select-none text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          Choose a colour and icon{" "}
+          <span className="font-normal text-zinc-500 dark:text-zinc-400">(optional)</span>
+        </summary>
+        <div className="mt-3">
+          <CategoryLookPicker idPrefix="new" initialColor={null} initialIcon={null} optional />
+        </div>
+      </details>
     </form>
   );
 }
@@ -132,9 +152,13 @@ function CategoryItem({
       className="rounded-xl border border-zinc-200 p-3 dark:border-zinc-800"
     >
       {editing ? (
-        <RenameForm category={category} onDone={() => setEditing(false)} />
+        <EditForm category={category} onDone={() => setEditing(false)} />
       ) : (
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <CategoryBadge
+            name={category.name}
+            looks={{ [category.name.toLowerCase()]: { color: category.color, icon: category.icon } }}
+          />
           <div className="min-w-0 flex-1 basis-32">
             <p
               data-testid="category-name"
@@ -148,11 +172,11 @@ function CategoryItem({
             <button
               type="button"
               onClick={() => setEditing(true)}
-              aria-label={`Rename ${category.name}`}
+              aria-label={`Edit ${category.name}`}
               className={button("secondary", "sm")}
             >
               <Pencil className="size-3.5" aria-hidden="true" />
-              Rename
+              Edit
             </button>
             <DeleteCategoryButton category={category} others={others} used={used} />
           </div>
@@ -162,14 +186,14 @@ function CategoryItem({
   );
 }
 
-function RenameForm({
+function EditForm({
   category,
   onDone,
 }: {
   category: CategoryRow;
   onDone: () => void;
 }) {
-  const [state, formAction, pending] = useActionState(renameCategory, initialState);
+  const [state, formAction, pending] = useActionState(updateCategory, initialState);
 
   useEffect(() => {
     if (state.status === "success") onDone();
@@ -192,6 +216,11 @@ function RenameForm({
         key={state.status === "error" ? `e-${state.name}` : "ok"}
         defaultValue={state.status === "error" ? state.name : category.name}
         className={`${input} mt-0`}
+      />
+      <CategoryLookPicker
+        idPrefix={`edit-${category.id}`}
+        initialColor={category.color}
+        initialIcon={category.icon}
       />
       <div className="flex gap-2">
         <button

@@ -82,6 +82,7 @@ async function BudgetsContent({ searchParams }: { searchParams: SearchParams }) 
     categories,
     categoryBudgets,
     summary,
+    looks,
   } = await loadMonthBudgets(userId, month);
   // "Today" follows the app time zone (lib/time.ts), counted into the days left.
   const safe = safeToSpend({
@@ -118,6 +119,7 @@ async function BudgetsContent({ searchParams }: { searchParams: SearchParams }) 
             summary={summary}
             safe={safe}
             currency={currency}
+            looks={looks}
           />
         </div>
 

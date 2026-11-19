@@ -1,3 +1,4 @@
+import { looksByName } from "@/lib/category-style";
 import { summarizeBudgets } from "@/lib/budget";
 import { getCategoryBudgets, getOverallBudget } from "@/lib/budgets";
 import { db } from "@/lib/db";
@@ -12,7 +13,7 @@ export async function loadMonthBudgets(userId: string, month: string) {
       db.category.findMany({
         where: { userId },
         orderBy: { name: "asc" },
-        select: { id: true, name: true },
+        select: { id: true, name: true, color: true, icon: true },
       }),
       getCategoryBudgets(userId, month),
       getMonthSpendByCategory(userId, month),
@@ -25,5 +26,11 @@ export async function loadMonthBudgets(userId: string, month: string) {
     expenses: spending,
   });
 
-  return { overallBudget, categories, categoryBudgets, summary };
+  return {
+    overallBudget,
+    categories,
+    categoryBudgets,
+    summary,
+    looks: looksByName(categories),
+  };
 }

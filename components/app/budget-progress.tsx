@@ -1,4 +1,5 @@
 import { isOverBudget, overBy, type BudgetLine } from "@/lib/budget";
+import type { CategoryLooks } from "@/lib/category-style";
 import type { CurrencyCode } from "@/lib/currency";
 import { formatPaise } from "@/lib/money";
 import { CategoryBadge } from "./category-badge";
@@ -35,10 +36,12 @@ export function BudgetProgress({
   line,
   currency,
   withBadge = false,
+  looks,
 }: {
   label: string;
   // Show the category's coloured icon beside the name (not for the overall budget).
   withBadge?: boolean;
+  looks?: CategoryLooks;
   line: BudgetLine;
   currency: CurrencyCode;
 }) {
@@ -52,7 +55,7 @@ export function BudgetProgress({
     <div data-testid="budget-progress" data-status={line.status}>
       <div className="flex items-baseline justify-between gap-3 text-sm">
         <span className="flex min-w-0 items-center gap-2 font-medium text-zinc-900 dark:text-zinc-100">
-          {withBadge ? <CategoryBadge name={label} className="size-6" /> : null}
+          {withBadge ? <CategoryBadge name={label} looks={looks} className="size-6" /> : null}
           <span className="truncate">{label}</span>
         </span>
         <span className="tabular-nums text-zinc-600 dark:text-zinc-400">

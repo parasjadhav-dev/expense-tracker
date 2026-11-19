@@ -10,6 +10,7 @@ import { getUserCurrency } from "@/lib/currency-db";
 import { todayInAppZone } from "@/lib/time";
 import { ensureDefaultCategories } from "@/lib/categories";
 import { db } from "@/lib/db";
+import { looksByName } from "@/lib/category-style";
 import { getRecentExpenses } from "@/lib/expenses";
 import { card } from "@/lib/ui";
 import { createExpense } from "./actions";
@@ -55,7 +56,7 @@ async function NewExpenseContent() {
     db.category.findMany({
       where: { userId },
       orderBy: { name: "asc" },
-      select: { id: true, name: true },
+      select: { id: true, name: true, color: true, icon: true },
     }),
     getRecentExpenses(userId, { limit: 6 }),
   ]);
@@ -76,6 +77,7 @@ async function NewExpenseContent() {
         id="recent-added"
         title="Recent expenses"
         items={recent}
+        looks={looksByName(categories)}
         currency={currency}
         emptyText="Nothing here yet. Your latest expenses will show up here as you add them."
         footerHref="/expenses"
