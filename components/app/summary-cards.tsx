@@ -34,11 +34,11 @@ function Card({
       data-testid="summary-card"
       data-card={id}
       className={`${card} p-4 sm:p-5 ${
-        hero ? "order-first col-span-2 sm:order-none sm:col-span-1" : ""
+        hero ? "order-first col-span-2" : ""
       }`}
     >
       <div className="flex items-center justify-between gap-3">
-        <p className="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+        <p className="text-xs font-medium uppercase tracking-wide text-zinc-600 dark:text-zinc-400">
           {label}
         </p>
         <span className={`${iconChip} ${hero ? "" : "max-sm:hidden"}`}>
@@ -47,8 +47,8 @@ function Card({
       </div>
       <p
         data-testid="summary-value"
-        className={`mt-2 break-words font-semibold leading-tight tracking-tight tabular-nums sm:mt-3 sm:text-[28px] ${
-          hero ? "text-[28px]" : "text-xl"
+        className={`mt-2 break-words font-semibold leading-tight tracking-tight tabular-nums sm:mt-3 ${
+          hero ? "text-[28px] sm:text-4xl" : "text-xl sm:text-[28px]"
         } ${
           tone === "alert"
             ? "text-red-700 dark:text-red-400"
@@ -101,7 +101,7 @@ export function SummaryCards({
     <section
       aria-label={`Summary for ${formatMonth(month)}`}
       data-testid="summary-cards"
-      className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:gap-5"
+      className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4 md:gap-5"
     >
       <Card
         id="spent"

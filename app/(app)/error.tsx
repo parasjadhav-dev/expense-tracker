@@ -12,7 +12,7 @@ export default function AppError({
   retry: () => void;
 }) {
   return (
-    <main className="px-4 py-10 md:px-8 md:py-16">
+    <main id="main-content" tabIndex={-1} className="outline-none px-4 py-10 md:px-8 md:py-16">
       <ErrorState error={error} retry={retry} />
     </main>
   );

@@ -36,7 +36,7 @@ export function button(
 }
 
 export const input =
-  "mt-1.5 min-h-11 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-base text-zinc-950 outline-none transition placeholder:text-zinc-400 lg:min-h-0 lg:text-sm focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50";
+  "mt-1.5 min-h-11 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-base text-zinc-950 outline-none transition placeholder:text-zinc-500 dark:placeholder:text-zinc-400 lg:min-h-0 lg:text-sm focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50";
 
 export const label = "text-sm font-medium text-zinc-900 dark:text-zinc-100";
 

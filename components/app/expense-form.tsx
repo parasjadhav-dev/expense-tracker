@@ -1,13 +1,14 @@
 "use client";
 
+import { FieldError, fieldA11y, useFocusFirstError } from "@/components/ui/field-error";
 import Link from "next/link";
 import { useActionState } from "react";
-import { CheckCircle2 } from "lucide-react";
 import type {
   ExpenseFormState,
   ExpenseFormValues,
 } from "@/lib/expense-form";
 import { currencySymbol, type CurrencyCode } from "@/lib/currency";
+import { useToastAction } from "@/components/ui/toast";
 import { button, input, label } from "@/lib/ui";
 
 type Category = { id: string; name: string };
@@ -40,30 +41,22 @@ export function ExpenseForm({
   pendingLabel: string;
   cancelHref?: string;
 }) {
-  const [state, formAction, pending] = useActionState(action, initialState);
+  const [state, formAction, pending] = useActionState(useToastAction(action), initialState);
+  const formRef = useFocusFirstError(state);
   const errors = state.fieldErrors ?? {};
   // After an error the submitted values come back; otherwise use the starting ones.
   const values = state.values ?? initialValues;
 
   return (
     <div className="flex flex-col gap-4">
-      {state.status === "success" && state.message ? (
-        <p
-          role="status"
-          className="flex items-center gap-2 rounded-lg bg-green-50 px-3 py-2.5 text-sm text-green-800 ring-1 ring-green-200 dark:bg-green-950 dark:text-green-300 dark:ring-green-900"
-        >
-          <CheckCircle2 className="size-4 shrink-0" aria-hidden="true" />
-          {state.message}
-        </p>
-      ) : null}
       {state.status === "error" && state.message ? (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="text-sm text-red-700 dark:text-red-400">
           {state.message}
         </p>
       ) : null}
 
       {/* A new key after each save clears the fields for the next expense. */}
-      <form
+      <form ref={formRef}
         key={state.savedAt ?? "form"}
         action={formAction}
         className="flex flex-col gap-4"
@@ -82,10 +75,10 @@ export function ExpenseForm({
             placeholder="0.00"
             required
             defaultValue={values?.amount}
-            aria-invalid={errors.amount ? true : undefined}
+            {...fieldA11y("amount", errors.amount)}
             className={`${input} tabular-nums`}
           />
-          <FieldError errors={errors.amount} />
+          <FieldError id="amount" errors={errors.amount} />
         </div>
 
         <div>
@@ -100,7 +93,7 @@ export function ExpenseForm({
             name="categoryId"
             required
             defaultValue={values?.categoryId ?? ""}
-            aria-invalid={errors.categoryId ? true : undefined}
+            {...fieldA11y("categoryId", errors.categoryId)}
             className={input}
           >
             <option value="" disabled>
@@ -112,7 +105,7 @@ export function ExpenseForm({
               </option>
             ))}
           </select>
-          <FieldError errors={errors.categoryId} />
+          <FieldError id="categoryId" errors={errors.categoryId} />
         </div>
 
         <DateField
@@ -123,7 +116,7 @@ export function ExpenseForm({
 
         <div>
           <label htmlFor="note" className={label}>
-            Note <span className="font-normal text-zinc-500">(optional)</span>
+            Note <span className="font-normal text-zinc-600 dark:text-zinc-400">(optional)</span>
           </label>
           <input
             id="note"
@@ -133,10 +126,10 @@ export function ExpenseForm({
             autoComplete="off"
             placeholder="What was it for?"
             defaultValue={values?.note}
-            aria-invalid={errors.note ? true : undefined}
+            {...fieldA11y("note", errors.note)}
             className={input}
           />
-          <FieldError errors={errors.note} />
+          <FieldError id="note" errors={errors.note} />
         </div>
 
         <div className="mt-2 flex gap-3">
@@ -179,17 +172,11 @@ function DateField({
         required
         max={max}
         defaultValue={defaultValue}
-        aria-invalid={errors ? true : undefined}
+        {...fieldA11y("date", errors)}
         className={input}
       />
-      <FieldError errors={errors} />
+      <FieldError id="date" errors={errors} />
     </div>
   );
 }
 
-function FieldError({ errors }: { errors?: string[] }) {
-  if (!errors?.length) return null;
-  return (
-    <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors[0]}</p>
-  );
-}

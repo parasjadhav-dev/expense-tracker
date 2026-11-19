@@ -1,7 +1,8 @@
 "use client";
 
+import { fieldA11y, useFocusFirstError } from "@/components/ui/field-error";
+import { useToastAction } from "@/components/ui/toast";
 import { useActionState } from "react";
-import { CheckCircle2 } from "lucide-react";
 import { updateCurrency, type CurrencyState } from "@/app/(app)/settings/currency-actions";
 import {
   CURRENCY_CODES,
@@ -15,24 +16,17 @@ import { button, input, label } from "@/lib/ui";
 const initialState: CurrencyState = { status: "idle" };
 
 export function CurrencyForm({ currency }: { currency: CurrencyCode }) {
-  const [state, formAction, pending] = useActionState(updateCurrency, initialState);
+  const [state, formAction, pending] = useActionState(useToastAction(updateCurrency), initialState);
+  const formRef = useFocusFirstError(state);
+  const problem = state.status === "error" && state.message ? state.message : undefined;
 
   return (
     // New key when the saved currency changes, so the select shows it after
     // React resets the form.
-    <form key={currency} action={formAction} className="flex flex-col gap-4" noValidate>
-      {state.status === "success" && state.message ? (
-        <p
-          role="status"
-          data-testid="currency-success"
-          className="flex items-start gap-2 rounded-lg bg-green-50 px-3 py-2.5 text-sm text-green-800 ring-1 ring-green-200 dark:bg-green-950 dark:text-green-300 dark:ring-green-900"
-        >
-          <CheckCircle2 className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-          {state.message}
-        </p>
-      ) : null}
+    <form ref={formRef} key={currency} action={formAction} className="flex flex-col gap-4" noValidate>
       {state.status === "error" && state.message ? (
         <p
+          id="currency-error"
           role="alert"
           data-testid="currency-error"
           className="rounded-lg bg-red-50 px-3 py-2.5 text-sm text-red-800 ring-1 ring-red-200 dark:bg-red-950 dark:text-red-200 dark:ring-red-900"
@@ -47,6 +41,7 @@ export function CurrencyForm({ currency }: { currency: CurrencyCode }) {
         </label>
         <select
           id="currency"
+          {...fieldA11y("currency", problem, "currency-hint")}
           name="currency"
           defaultValue={currency}
           className={`${input} h-10`}
@@ -57,7 +52,7 @@ export function CurrencyForm({ currency }: { currency: CurrencyCode }) {
             </option>
           ))}
         </select>
-        <p className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400">
+        <p id="currency-hint" className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-400">
           Now showing amounts like {formatPaise(123456, currency)}. Changing this
           only changes the symbol and number format. Amounts you have already
           entered are not converted.

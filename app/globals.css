@@ -128,11 +128,12 @@
 }
 
 /* Category colours (see lib/category-style.ts). Stepped for contrast on each surface:
-   the 600 shades on white, the 400 shades on dark. */
+   dark enough in light mode that 12px text on a 14% tint of the
+   same colour reaches 4.5:1; the 400 shades on dark. */
 :root {
-  --cat-0: #c2410c; --cat-1: #0369a1; --cat-2: #6d28d9; --cat-3: #be185d;
-  --cat-4: #4338ca; --cat-5: #a16207; --cat-6: #be123c; --cat-7: #a21caf;
-  --cat-8: #4d7c0f; --cat-9: #64748b; --cat-10: #0e7490; --cat-11: #1d4ed8;
+  --cat-0: #ac3a0c; --cat-1: #03659b; --cat-2: #6d28d9; --cat-3: #b61759;
+  --cat-4: #4338ca; --cat-5: #8f5607; --cat-6: #be123c; --cat-7: #a21caf;
+  --cat-8: #446d0c; --cat-9: #546376; --cat-10: #0c6b84; --cat-11: #1d4ed8;
 }
 .dark {
   --cat-0: #fb923c; --cat-1: #38bdf8; --cat-2: #a78bfa; --cat-3: #f472b6;
@@ -170,4 +171,40 @@
 .dark .viz-root {
   --viz-grid: #2c2c2a;
   --viz-surface: #09090b;
+}
+
+/* Toasts slide up and fade in; nothing moves for people who ask for less motion. */
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(0.5rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.toast-in { animation: toast-in 180ms ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .toast-in { animation: none; }
+}
+
+/* Keyboard focus: one visible ring for everything that can take focus and has not
+   drawn its own (buttons and fields do, and turn this one off). Zero specificity,
+   so any utility class wins. Teal on light surfaces, light teal on dark ones. */
+:root { --focus-ring: #0f766e; }
+.dark { --focus-ring: #5eead4; }
+@layer base {
+  :where(a, button, summary, select, input, textarea, [tabindex]:not([tabindex="-1"])):focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+/* People who ask their system for less motion get none: no pulsing skeletons, no
+   sliding toasts or dialogs, no smooth scrolling. Animations are cut to a single
+   instant frame rather than removed, so anything waiting for one to end still ends. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

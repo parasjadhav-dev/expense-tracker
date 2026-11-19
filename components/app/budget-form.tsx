@@ -1,7 +1,8 @@
 "use client";
 
+import { FieldError, fieldA11y, useFocusFirstError } from "@/components/ui/field-error";
+import { useToastAction } from "@/components/ui/toast";
 import { useActionState } from "react";
-import { CheckCircle2 } from "lucide-react";
 import {
   saveOverallBudgetAction,
   type BudgetFormState,
@@ -23,14 +24,16 @@ export function BudgetForm({
   initialAmount?: string;
 }) {
   const [state, formAction, pending] = useActionState(
-    saveOverallBudgetAction,
+    useToastAction(saveOverallBudgetAction),
     initialState,
   );
+  const formRef = useFocusFirstError(state);
   const errors = state.fieldErrors ?? {};
   const amountErrors = errors.amount ?? errors.month;
 
   return (
     <form
+      ref={formRef}
       // New key when the saved budget (or month) changes, so the field shows the
       // saved value after React 19 resets the form.
       key={`${month}-${initialAmount ?? "none"}`}
@@ -38,17 +41,8 @@ export function BudgetForm({
       className="flex flex-col gap-4"
       noValidate
     >
-      {state.status === "success" && state.message ? (
-        <p
-          role="status"
-          className="flex items-center gap-2 rounded-lg bg-green-50 px-3 py-2.5 text-sm text-green-800 ring-1 ring-green-200 dark:bg-green-950 dark:text-green-300 dark:ring-green-900"
-        >
-          <CheckCircle2 className="size-4 shrink-0" aria-hidden="true" />
-          {state.message}
-        </p>
-      ) : null}
       {state.status === "error" && state.message ? (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="text-sm text-red-700 dark:text-red-400">
           {state.message}
         </p>
       ) : null}
@@ -68,14 +62,10 @@ export function BudgetForm({
           placeholder="0.00"
           required
           defaultValue={state.values?.amount ?? initialAmount}
-          aria-invalid={amountErrors ? true : undefined}
+          {...fieldA11y("amount", amountErrors)}
           className={`${input} tabular-nums`}
         />
-        {amountErrors?.length ? (
-          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-            {amountErrors[0]}
-          </p>
-        ) : null}
+        <FieldError id="amount" errors={amountErrors} />
       </div>
 
       <button type="submit" disabled={pending} className={button("primary")}>

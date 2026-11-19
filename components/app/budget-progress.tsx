@@ -79,7 +79,7 @@ export function BudgetProgress({
       </div>
       <p
         data-testid="budget-progress-detail"
-        className="mt-1 text-xs text-zinc-500 dark:text-zinc-400"
+        className="mt-1 text-xs text-zinc-600 dark:text-zinc-400"
       >
         {detail}
       </p>

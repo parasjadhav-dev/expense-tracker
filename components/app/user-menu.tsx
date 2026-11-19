@@ -34,7 +34,7 @@ export async function UserMenu() {
           <p className="truncate text-sm font-medium text-zinc-950 dark:text-zinc-50">
             {session.user.name ?? "Signed in"}
           </p>
-          <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">
+          <p className="truncate text-xs text-zinc-600 dark:text-zinc-400">
             {session.user.email}
           </p>
         </div>

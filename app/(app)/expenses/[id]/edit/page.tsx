@@ -25,7 +25,7 @@ export default function EditExpensePage({
   params: Promise<{ id: string }>;
 }) {
   return (
-    <main className="px-4 py-6 md:px-8 md:py-8">
+    <main id="main-content" tabIndex={-1} className="outline-none px-4 py-6 md:px-8 md:py-8">
       <div className="mx-auto w-full max-w-6xl">
         <PageHeader
           title="Edit expense"

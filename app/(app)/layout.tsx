@@ -6,6 +6,7 @@ import { NavLinks } from "@/components/app/nav-links";
 import { NavLinksFallback } from "@/components/app/nav-links-fallback";
 import { SidebarDate } from "@/components/app/sidebar-date";
 import { UserMenu } from "@/components/app/user-menu";
+import { FlashToast, ToastProvider } from "@/components/ui/toast";
 import { Logo } from "@/components/ui/logo";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 
@@ -16,6 +17,7 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 // with URL data outside a boundary.
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
+    <ToastProvider>
     <div className="flex flex-1 flex-col bg-[#f3f6f5] md:flex-row dark:bg-black">
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col gap-6 border-r border-zinc-200/80 bg-white p-4 md:flex dark:border-zinc-800 dark:bg-zinc-950">
         <div className="flex items-center justify-between gap-2 pr-1">
@@ -53,6 +55,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </Suspense>
         </BottomNav>
       </Suspense>
+      <FlashToast />
     </div>
+    </ToastProvider>
   );
 }

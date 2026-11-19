@@ -1,7 +1,8 @@
 "use client";
 
+import { FieldError, fieldA11y, useFocusFirstError } from "@/components/ui/field-error";
+import { useToastAction } from "@/components/ui/toast";
 import { useActionState } from "react";
-import { CheckCircle2 } from "lucide-react";
 import { button, input, label } from "@/lib/ui";
 import {
   changePassword,
@@ -11,20 +12,11 @@ import {
 const initialState: ChangePasswordState = { status: "idle" };
 
 export function ChangePasswordForm() {
-  const [state, formAction, pending] = useActionState(changePassword, initialState);
+  const [state, formAction, pending] = useActionState(useToastAction(changePassword), initialState);
+  const formRef = useFocusFirstError(state);
 
   return (
-    <form action={formAction} className="flex flex-col gap-4" noValidate>
-      {state.status === "success" ? (
-        <p
-          role="status"
-          data-testid="password-success"
-          className="flex items-center gap-2 rounded-lg bg-green-50 px-3 py-2.5 text-sm text-green-800 ring-1 ring-green-200 dark:bg-green-950 dark:text-green-300 dark:ring-green-900"
-        >
-          <CheckCircle2 className="size-4 shrink-0" aria-hidden="true" />
-          {state.message}
-        </p>
-      ) : null}
+    <form ref={formRef} action={formAction} className="flex flex-col gap-4" noValidate>
       {state.status === "error" && state.message ? (
         <p
           role="alert"
@@ -40,30 +32,30 @@ export function ChangePasswordForm() {
           Current password
         </label>
         <input
-          id="currentPassword"
+          id="currentPassword" {...fieldA11y("currentPassword", state.fieldErrors?.currentPassword)}
           name="currentPassword"
           type="password"
           autoComplete="current-password"
           required
           className={input}
         />
-        <FieldError errors={state.fieldErrors?.currentPassword} />
+        <FieldError id="currentPassword" errors={state.fieldErrors?.currentPassword} />
       </div>
 
       <div>
         <label htmlFor="newPassword" className={label}>
           New password{" "}
-          <span className="font-normal text-zinc-500">(at least 8 characters)</span>
+          <span className="font-normal text-zinc-600 dark:text-zinc-400">(at least 8 characters)</span>
         </label>
         <input
-          id="newPassword"
+          id="newPassword" {...fieldA11y("newPassword", state.fieldErrors?.newPassword)}
           name="newPassword"
           type="password"
           autoComplete="new-password"
           required
           className={input}
         />
-        <FieldError errors={state.fieldErrors?.newPassword} />
+        <FieldError id="newPassword" errors={state.fieldErrors?.newPassword} />
       </div>
 
       <div>
@@ -71,14 +63,14 @@ export function ChangePasswordForm() {
           Confirm new password
         </label>
         <input
-          id="confirmPassword"
+          id="confirmPassword" {...fieldA11y("confirmPassword", state.fieldErrors?.confirmPassword)}
           name="confirmPassword"
           type="password"
           autoComplete="new-password"
           required
           className={input}
         />
-        <FieldError errors={state.fieldErrors?.confirmPassword} />
+        <FieldError id="confirmPassword" errors={state.fieldErrors?.confirmPassword} />
       </div>
 
       <button
@@ -92,7 +84,3 @@ export function ChangePasswordForm() {
   );
 }
 
-function FieldError({ errors }: { errors?: string[] }) {
-  if (!errors?.length) return null;
-  return <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors[0]}</p>;
-}

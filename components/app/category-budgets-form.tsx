@@ -1,7 +1,8 @@
 "use client";
 
+import { FieldError, fieldA11y, useFocusFirstError } from "@/components/ui/field-error";
+import { useToastAction } from "@/components/ui/toast";
 import { useActionState } from "react";
-import { CheckCircle2 } from "lucide-react";
 import {
   saveCategoryBudgetsAction,
   type CategoryBudgetsState,
@@ -26,13 +27,15 @@ export function CategoryBudgetsForm({
   rows: Row[];
 }) {
   const [state, formAction, pending] = useActionState(
-    saveCategoryBudgetsAction,
+    useToastAction(saveCategoryBudgetsAction),
     initialState,
   );
+  const formRef = useFocusFirstError(state);
   const rowErrors = state.rowErrors ?? {};
 
   return (
     <form
+      ref={formRef}
       // New key when saved values change, so fields show the saved amounts
       // after React 19 resets the form.
       key={`${month}|${rows.map((row) => row.amount ?? "").join(",")}`}
@@ -40,17 +43,8 @@ export function CategoryBudgetsForm({
       className="flex flex-col gap-4"
       noValidate
     >
-      {state.status === "success" && state.message ? (
-        <p
-          role="status"
-          className="flex items-center gap-2 rounded-lg bg-green-50 px-3 py-2.5 text-sm text-green-800 ring-1 ring-green-200 dark:bg-green-950 dark:text-green-300 dark:ring-green-900"
-        >
-          <CheckCircle2 className="size-4 shrink-0" aria-hidden="true" />
-          {state.message}
-        </p>
-      ) : null}
       {state.status === "error" && state.message ? (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="text-sm text-red-700 dark:text-red-400">
           {state.message}
         </p>
       ) : null}
@@ -81,21 +75,17 @@ export function CategoryBudgetsForm({
                   autoComplete="off"
                   placeholder="No limit"
                   defaultValue={state.values?.[row.id] ?? row.amount}
-                  aria-invalid={error ? true : undefined}
-                  className="min-h-11 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-right text-base tabular-nums lg:min-h-0 lg:text-sm text-zinc-950 outline-none transition placeholder:text-zinc-400 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+                  {...fieldA11y(inputId, error)}
+                  className="min-h-11 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-right text-base tabular-nums lg:min-h-0 lg:text-sm text-zinc-950 outline-none transition placeholder:text-zinc-500 dark:placeholder:text-zinc-400 focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
                 />
-                {error ? (
-                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                    {error}
-                  </p>
-                ) : null}
+                <FieldError id={inputId} errors={error} />
               </div>
             </li>
           );
         })}
       </ul>
 
-      <p className="text-xs text-zinc-500 dark:text-zinc-400">
+      <p className="text-xs text-zinc-600 dark:text-zinc-400">
         Leave a field blank for no limit on that category.
       </p>
 

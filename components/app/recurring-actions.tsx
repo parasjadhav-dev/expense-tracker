@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Pause, Play, Trash2 } from "lucide-react";
 import { deleteRecurring, setRecurringActive } from "@/app/(app)/recurring/actions";
+import { useToastForm } from "@/components/ui/toast";
 import { button } from "@/lib/ui";
 
 // Pause or resume, and delete with a confirmation step.
@@ -16,12 +17,14 @@ export function RecurringActions({
   name: string;
 }) {
   const [confirming, setConfirming] = useState(false);
+  const remove = useToastForm(deleteRecurring, `Deleted "${name}"`);
+  const toggle = useToastForm(setRecurringActive, `${active ? "Paused" : "Resumed"} "${name}"`);
 
   if (confirming) {
     return (
       <div className="flex flex-wrap items-center gap-2" role="group" aria-label={`Delete ${name}`}>
         <span className="text-sm text-zinc-700 dark:text-zinc-300">Delete this item?</span>
-        <form action={deleteRecurring}>
+        <form action={remove}>
           <input type="hidden" name="id" value={id} />
           <button type="submit" className={button("danger", "sm")} data-testid="recurring-delete-confirm">
             Yes, delete
@@ -36,7 +39,7 @@ export function RecurringActions({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <form action={setRecurringActive}>
+      <form action={toggle}>
         <input type="hidden" name="id" value={id} />
         <input type="hidden" name="active" value={active ? "false" : "true"} />
         <button

@@ -1,7 +1,8 @@
 "use client";
 
+import { fieldA11y, useFocusFirstError } from "@/components/ui/field-error";
 import { useActionState, useEffect, useRef, useState } from "react";
-import { CheckCircle2, Pencil, Plus, Trash2 } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 import {
   createCategory,
   deleteCategory,
@@ -10,6 +11,7 @@ import {
 } from "@/app/(app)/settings/category-actions";
 import { CategoryBadge } from "./category-badge";
 import { CategoryLookPicker } from "./category-look-picker";
+import { useToastAction } from "@/components/ui/toast";
 import { button, input, label } from "@/lib/ui";
 import { CATEGORY_NAME_MAX, MAX_CATEGORIES } from "@/lib/validations/category";
 
@@ -25,10 +27,11 @@ export type CategoryRow = {
 
 const initialState: CategoryState = { status: "idle" };
 
-function Alert({ state, testId }: { state: CategoryState; testId: string }) {
+function Alert({ state, testId, id }: { state: CategoryState; testId: string; id: string }) {
   if (state.status === "error" && state.message) {
     return (
       <p
+        id={id}
         role="alert"
         data-testid={testId}
         className="rounded-lg bg-red-50 px-3 py-2.5 text-sm text-red-800 ring-1 ring-red-200 dark:bg-red-950 dark:text-red-200 dark:ring-red-900"
@@ -58,7 +61,7 @@ export function CategoryManager({ categories }: { categories: CategoryRow[] }) {
           />
         ))}
       </ul>
-      <p className="text-xs text-zinc-500 dark:text-zinc-400">
+      <p className="text-xs text-zinc-600 dark:text-zinc-400">
         {categories.length} of {MAX_CATEGORIES} categories. Editing a category
         keeps all its expenses. Deleting one moves its expenses to a category you
         choose.
@@ -68,27 +71,19 @@ export function CategoryManager({ categories }: { categories: CategoryRow[] }) {
 }
 
 function AddCategoryForm({ disabled }: { disabled: boolean }) {
-  const [state, formAction, pending] = useActionState(createCategory, initialState);
+  const [state, formAction, pending] = useActionState(useToastAction(createCategory), initialState);
+  const formRef = useFocusFirstError(state);
 
   return (
     <form
+      ref={formRef}
       action={formAction}
       className="flex flex-col gap-3"
       noValidate
       // A new key after each save puts the colour and icon back to automatic.
       key={state.status === "success" ? `added-${state.message}` : "add"}
     >
-      {state.status === "success" && state.message ? (
-        <p
-          role="status"
-          data-testid="category-success"
-          className="flex items-center gap-2 rounded-lg bg-green-50 px-3 py-2.5 text-sm text-green-800 ring-1 ring-green-200 dark:bg-green-950 dark:text-green-300 dark:ring-green-900"
-        >
-          <CheckCircle2 className="size-4 shrink-0" aria-hidden="true" />
-          {state.message}
-        </p>
-      ) : null}
-      <Alert state={state} testId="category-error" />
+      <Alert state={state} testId="category-error" id="new-category-error" />
       <div>
         <label htmlFor="new-category" className={label}>
           New category
@@ -96,6 +91,7 @@ function AddCategoryForm({ disabled }: { disabled: boolean }) {
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
           <input
             id="new-category"
+            {...fieldA11y("new-category", state.status === "error" ? state.message : undefined)}
             name="name"
             type="text"
             maxLength={CATEGORY_NAME_MAX}
@@ -120,7 +116,7 @@ function AddCategoryForm({ disabled }: { disabled: boolean }) {
       <details className="group rounded-lg border border-zinc-200 px-3 py-2 dark:border-zinc-800">
         <summary className="cursor-pointer select-none text-sm font-medium text-zinc-700 dark:text-zinc-300">
           Choose a colour and icon{" "}
-          <span className="font-normal text-zinc-500 dark:text-zinc-400">(optional)</span>
+          <span className="font-normal text-zinc-600 dark:text-zinc-400">(optional)</span>
         </summary>
         <div className="mt-3">
           <CategoryLookPicker idPrefix="new" initialColor={null} initialIcon={null} optional />
@@ -166,7 +162,7 @@ function CategoryItem({
             >
               {category.name}
             </p>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">{counts}</p>
+            <p className="text-xs text-zinc-600 dark:text-zinc-400">{counts}</p>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -193,21 +189,23 @@ function EditForm({
   category: CategoryRow;
   onDone: () => void;
 }) {
-  const [state, formAction, pending] = useActionState(updateCategory, initialState);
+  const [state, formAction, pending] = useActionState(useToastAction(updateCategory), initialState);
+  const formRef = useFocusFirstError(state);
 
   useEffect(() => {
     if (state.status === "success") onDone();
   }, [state, onDone]);
 
   return (
-    <form action={formAction} className="flex flex-col gap-2" noValidate>
+    <form ref={formRef} action={formAction} className="flex flex-col gap-2" noValidate>
       <input type="hidden" name="id" value={category.id} />
-      <Alert state={state} testId="rename-error" />
+      <Alert state={state} testId="rename-error" id={`rename-${category.id}-error`} />
       <label htmlFor={`rename-${category.id}`} className="sr-only">
         New name for {category.name}
       </label>
       <input
         id={`rename-${category.id}`}
+        {...fieldA11y(`rename-${category.id}`, state.status === "error" ? state.message : undefined)}
         name="name"
         type="text"
         maxLength={CATEGORY_NAME_MAX}
@@ -252,7 +250,10 @@ function DeleteCategoryButton({
   used: number;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const [state, formAction, pending] = useActionState(deleteCategory, initialState);
+  const [state, formAction, pending] = useActionState(
+    useToastAction(deleteCategory, { success: `Deleted "${category.name}"` }),
+    initialState,
+  );
   const lastOne = others.length === 0;
 
   useEffect(() => {
@@ -321,12 +322,12 @@ function DeleteCategoryButton({
               No expenses use this category.
             </p>
           )}
-          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
             Its monthly budgets are deleted too. This can&apos;t be undone.
           </p>
 
           {state.status === "error" && state.message ? (
-            <p role="alert" className="mt-3 text-sm text-red-600 dark:text-red-400">
+            <p role="alert" className="mt-3 text-sm text-red-700 dark:text-red-400">
               {state.message}
             </p>
           ) : null}

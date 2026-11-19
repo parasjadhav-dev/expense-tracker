@@ -8,6 +8,7 @@ import { MonthPicker } from "@/components/app/month-picker";
 import { BudgetStatus } from "@/components/app/budget-status";
 import { CategoryChart } from "@/components/app/category-chart";
 import { RecentExpenses } from "@/components/app/recent-expenses";
+import { Insights } from "@/components/app/insights";
 import { SummaryCards } from "@/components/app/summary-cards";
 import { TrendChart } from "@/components/app/trend-chart";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -15,12 +16,13 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { auth } from "@/lib/auth";
 import { generateDueExpenses } from "@/lib/recurring-db";
-import { daysLeftInMonth, safeToSpend } from "@/lib/budget";
+import { daysInMonth, daysLeftInMonth, safeToSpend } from "@/lib/budget";
 import { loadMonthBudgets } from "@/lib/budget-summary";
 import { buildCategoryBreakdown } from "@/lib/category-breakdown";
 import { getUserCurrency } from "@/lib/currency-db";
-import { currentMonth, formatMonth, resolveMonth } from "@/lib/expense-filters";
-import { getRecentExpenses, getSpendingByDay } from "@/lib/expenses";
+import { currentMonth, formatMonth, monthRange, resolveMonth } from "@/lib/expense-filters";
+import { getRecentExpenses, getSpendByCategoryBetween, getSpendingByDay } from "@/lib/expenses";
+import { buildInsights, previousMonthOf, spentThroughDay } from "@/lib/insights";
 import { buildMonthlyTrend, lastMonths } from "@/lib/monthly-trend";
 import { todayInAppZone } from "@/lib/time";
 import { button, card } from "@/lib/ui";
@@ -52,7 +54,7 @@ export default function DashboardPage({
   searchParams: SearchParams;
 }) {
   return (
-    <main className="px-4 py-6 md:px-8 md:py-8">
+    <main id="main-content" tabIndex={-1} className="outline-none px-4 py-6 md:px-8 md:py-8">
       <div className="mx-auto w-full max-w-6xl">
         <Suspense fallback={<DashboardSkeleton />}>
           <DashboardContent searchParams={searchParams} />
@@ -73,18 +75,23 @@ function DashboardSkeleton() {
         actions={addExpenseAction}
       />
       <div className="flex flex-col gap-4 md:gap-5">
-        <div className="grid gap-4 sm:grid-cols-3 md:gap-5">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:gap-5">
+          <Skeleton className="col-span-2 h-[132px] rounded-2xl" />
+          <Skeleton className="h-[132px] rounded-2xl" />
+          <Skeleton className="h-[132px] rounded-2xl" />
+        </div>
+        <div className="grid gap-4 md:grid-cols-3 md:gap-5">
           {[0, 1, 2].map((i) => (
-            <Skeleton key={i} className="h-[132px] rounded-2xl" />
+            <Skeleton key={i} className="h-[84px] rounded-2xl" />
           ))}
         </div>
-        <div className="grid gap-4 md:gap-5 lg:grid-cols-2">
-          <Skeleton className="h-[340px] rounded-2xl" />
-          <Skeleton className="h-[340px] rounded-2xl" />
+        <div className="grid gap-4 md:gap-5 lg:grid-cols-5">
+          <Skeleton className="h-[340px] rounded-2xl lg:col-span-3" />
+          <Skeleton className="h-[340px] rounded-2xl lg:col-span-2" />
         </div>
-        <div className="grid gap-4 md:gap-5 lg:grid-cols-2">
-          <Skeleton className="h-[300px] rounded-2xl" />
-          <Skeleton className="h-[300px] rounded-2xl" />
+        <div className="grid gap-4 md:gap-5 lg:grid-cols-5">
+          <Skeleton className="h-[300px] rounded-2xl lg:col-span-3" />
+          <Skeleton className="h-[300px] rounded-2xl lg:col-span-2" />
         </div>
       </div>
     </>
@@ -115,13 +122,28 @@ async function DashboardContent({
   const requested = resolveMonth(first((await searchParams).month)) ?? nowMonth;
   const month = requested > nowMonth ? nowMonth : requested;
   const isCurrentMonth = month === nowMonth;
-  const [currency, { summary, looks }, dailyTotals, recent] = await Promise.all([
-    getUserCurrency(userId),
-    loadMonthBudgets(userId, month),
-    // The six months ending with the current one.
-    getSpendingByDay(userId, lastMonths(month)[0], month),
-    getRecentExpenses(userId, { limit: 6, month }),
-  ]);
+  // How far into the month we are: the insights compare it with the same days of
+  // the month before, so a half-finished month is not set against a whole one.
+  const monthLength = daysInMonth(month);
+  const daysElapsed = isCurrentMonth ? Number(today.slice(8, 10)) : monthLength;
+  const previousMonth = previousMonthOf(month);
+  const previousStart = monthRange(previousMonth).gte;
+  const previousCutoff = new Date(
+    Date.UTC(
+      previousStart.getUTCFullYear(),
+      previousStart.getUTCMonth(),
+      Math.min(daysElapsed, daysInMonth(previousMonth)) + 1,
+    ),
+  );
+  const [currency, { summary, looks }, dailyTotals, recent, previousByCategory] =
+    await Promise.all([
+      getUserCurrency(userId),
+      loadMonthBudgets(userId, month),
+      // The six months ending with the current one.
+      getSpendingByDay(userId, lastMonths(month)[0], month),
+      getRecentExpenses(userId, { limit: 6, month }),
+      getSpendByCategoryBetween(userId, { gte: previousStart, lt: previousCutoff }),
+    ]);
   const trend = buildMonthlyTrend({
     endMonth: month,
     inProgressMonth: nowMonth,
@@ -131,6 +153,24 @@ async function DashboardContent({
     budget: summary.overall.budget,
     spent: summary.overall.spent,
     daysLeft: daysLeftInMonth(month, today),
+  });
+  const previousSpentById = new Map(
+    previousByCategory.map((entry) => [entry.categoryId, entry.amount]),
+  );
+  const insights = buildInsights({
+    month,
+    isCurrentMonth,
+    daysElapsed,
+    spent: summary.overall.spent,
+    previousSpent: spentThroughDay(dailyTotals, previousMonth, daysElapsed),
+    budget: summary.overall.budget,
+    categories: summary.categories.map((category) => ({
+      name: category.name,
+      current: category.spent,
+      previous: previousSpentById.get(category.categoryId) ?? 0,
+    })),
+    currency,
+    budgetsHref: `/budgets?month=${month}`,
   });
   const breakdown = buildCategoryBreakdown(
     summary.categories.map((category) => ({
@@ -173,10 +213,14 @@ async function DashboardContent({
           currency={currency}
         />
 
-        <div className="grid gap-4 md:gap-5 lg:grid-cols-2">
+        <Insights insights={insights} label={formatMonth(month)} />
+
+        {/* The main picture (where it goes) takes the wider column; the
+            actionable budget list sits beside it. */}
+        <div className="grid gap-4 md:gap-5 lg:grid-cols-5">
           <section
             aria-labelledby="category-chart"
-            className={`${card} flex flex-col p-5`}
+            className={`${card} flex flex-col p-5 lg:col-span-3`}
           >
             <h2
               id="category-chart"
@@ -184,7 +228,7 @@ async function DashboardContent({
             >
               Spending by category
             </h2>
-            <p className="mt-0.5 mb-2 text-xs text-zinc-500 dark:text-zinc-400">
+            <p className="mt-0.5 mb-2 text-xs text-zinc-600 dark:text-zinc-400">
               {formatMonth(month)}
             </p>
             {breakdown.rows.length > 0 ? (
@@ -201,9 +245,20 @@ async function DashboardContent({
             )}
           </section>
 
+          <BudgetStatus
+            month={month}
+            summary={summary}
+            currency={currency}
+            looks={looks}
+            className="lg:col-span-2"
+          />
+        </div>
+
+        <div className="grid gap-4 md:gap-5 lg:grid-cols-5">
+          {/* Secondary: the latest entries, beside the longer-term trend. */}
           <section
             aria-labelledby="trend-chart"
-            className={`${card} flex flex-col p-5`}
+            className={`${card} flex flex-col p-5 lg:col-span-3`}
           >
             <h2
               id="trend-chart"
@@ -211,7 +266,7 @@ async function DashboardContent({
             >
               Monthly spending
             </h2>
-            <p className="mt-0.5 mb-2 text-xs text-zinc-500 dark:text-zinc-400">
+            <p className="mt-0.5 mb-2 text-xs text-zinc-600 dark:text-zinc-400">
               Last {trend.points.length} months
             </p>
             {trend.empty ? (
@@ -222,10 +277,8 @@ async function DashboardContent({
               <TrendChart trend={trend} currency={currency} />
             )}
           </section>
-        </div>
-
-        <div className="grid gap-4 md:gap-5 lg:grid-cols-2">
           <RecentExpenses
+            className="lg:col-span-2"
             id="recent-expenses"
             title={isCurrentMonth ? "Recent expenses" : `Expenses in ${formatMonth(month)}`}
             items={recent}
@@ -239,7 +292,6 @@ async function DashboardContent({
             footerHref={`/expenses?month=${month}`}
             footerLabel="View all"
           />
-          <BudgetStatus month={month} summary={summary} currency={currency} looks={looks} />
         </div>
       </div>
     </>

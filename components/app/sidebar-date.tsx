@@ -30,7 +30,7 @@ export async function SidebarDate() {
         <p className="truncate text-sm font-medium text-zinc-950 dark:text-zinc-50">
           {weekday}
         </p>
-        <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">
+        <p className="truncate text-xs text-zinc-600 dark:text-zinc-400">
           {left} {left === 1 ? "day" : "days"} left in {formatMonth(month).split(" ")[0]}
         </p>
       </div>

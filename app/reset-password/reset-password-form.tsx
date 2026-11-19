@@ -1,5 +1,6 @@
 "use client";
 
+import { FieldError, fieldA11y, useFocusFirstError } from "@/components/ui/field-error";
 import Link from "next/link";
 import { useActionState } from "react";
 import { CheckCircle2 } from "lucide-react";
@@ -10,6 +11,7 @@ const initialState: ResetPasswordState = { status: "idle" };
 
 export function ResetPasswordForm({ token }: { token: string }) {
   const [state, formAction, pending] = useActionState(resetPassword, initialState);
+  const formRef = useFocusFirstError(state);
 
   if (state.status === "success") {
     return (
@@ -30,7 +32,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
   }
 
   return (
-    <form action={formAction} className="flex flex-col gap-4" noValidate>
+    <form ref={formRef} action={formAction} className="flex flex-col gap-4" noValidate>
       <input type="hidden" name="token" value={token} />
       {state.status === "error" && state.message ? (
         <div
@@ -50,17 +52,17 @@ export function ResetPasswordForm({ token }: { token: string }) {
       <div>
         <label htmlFor="newPassword" className={label}>
           New password{" "}
-          <span className="font-normal text-zinc-500">(at least 8 characters)</span>
+          <span className="font-normal text-zinc-600 dark:text-zinc-400">(at least 8 characters)</span>
         </label>
         <input
-          id="newPassword"
+          id="newPassword" {...fieldA11y("newPassword", state.fieldErrors?.newPassword)}
           name="newPassword"
           type="password"
           autoComplete="new-password"
           required
           className={input}
         />
-        <FieldError errors={state.fieldErrors?.newPassword} />
+        <FieldError id="newPassword" errors={state.fieldErrors?.newPassword} />
       </div>
 
       <div>
@@ -68,14 +70,14 @@ export function ResetPasswordForm({ token }: { token: string }) {
           Confirm new password
         </label>
         <input
-          id="confirmPassword"
+          id="confirmPassword" {...fieldA11y("confirmPassword", state.fieldErrors?.confirmPassword)}
           name="confirmPassword"
           type="password"
           autoComplete="new-password"
           required
           className={input}
         />
-        <FieldError errors={state.fieldErrors?.confirmPassword} />
+        <FieldError id="confirmPassword" errors={state.fieldErrors?.confirmPassword} />
       </div>
 
       <button
@@ -89,7 +91,3 @@ export function ResetPasswordForm({ token }: { token: string }) {
   );
 }
 
-function FieldError({ errors }: { errors?: string[] }) {
-  if (!errors?.length) return null;
-  return <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors[0]}</p>;
-}

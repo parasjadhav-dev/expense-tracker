@@ -6,6 +6,7 @@ import {
   type DeleteExpenseState,
 } from "@/app/(app)/expenses/actions";
 import { Trash2 } from "lucide-react";
+import { useToastAction } from "@/components/ui/toast";
 import { button } from "@/lib/ui";
 
 const initialState: DeleteExpenseState = { status: "idle" };
@@ -25,7 +26,7 @@ export function DeleteExpenseButton({
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [state, formAction, pending] = useActionState(
-    deleteExpense,
+    useToastAction(deleteExpense, { success: "Expense deleted" }),
     initialState,
   );
 
@@ -43,7 +44,7 @@ export function DeleteExpenseButton({
         className={
           variant === "button"
             ? `${button("dangerOutline")} flex-1`
-            : "inline-flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-red-600 lg:min-h-0 lg:px-2 lg:py-1 transition-colors hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950"
+            : "inline-flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-red-700 lg:min-h-0 lg:px-2 lg:py-1 transition-colors hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950"
         }
       >
         {variant === "button" ? <Trash2 className="size-4" aria-hidden="true" /> : null}
@@ -71,11 +72,11 @@ export function DeleteExpenseButton({
           >
             {summary}
           </p>
-          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
             This can&apos;t be undone.
           </p>
           {state.status === "error" && state.message ? (
-            <p role="alert" className="mt-3 text-sm text-red-600 dark:text-red-400">
+            <p role="alert" className="mt-3 text-sm text-red-700 dark:text-red-400">
               {state.message}
             </p>
           ) : null}
