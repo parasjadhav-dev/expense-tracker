@@ -74,7 +74,7 @@ export default function ExpensesPage({
   searchParams: SearchParams;
 }) {
   return (
-    <main className="px-4 py-6 md:px-8 md:py-8">
+    <main id="main-content" tabIndex={-1} className="outline-none px-4 py-6 md:px-8 md:py-8">
       <div className="mx-auto w-full max-w-6xl">
         <PageHeader
           title="Expenses"
@@ -202,7 +202,7 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
           </label>
           <div className="relative">
             <Search
-              className="pointer-events-none absolute left-3 top-1/2 mt-[3px] size-4 -translate-y-1/2 text-zinc-400"
+              className="pointer-events-none absolute left-3 top-1/2 mt-[3px] size-4 -translate-y-1/2 text-zinc-500 dark:text-zinc-400"
               aria-hidden="true"
             />
             <input
@@ -270,14 +270,14 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
             Reset
           </Link>
         </div>
-        <p className="text-xs text-zinc-500 sm:col-span-6 dark:text-zinc-400">
+        <p className="text-xs text-zinc-600 sm:col-span-6 dark:text-zinc-500 dark:text-zinc-400">
           Clear the month and apply to see all months.
         </p>
       </form>
 
       <section className={`${card} overflow-hidden`}>
         <div className="flex items-baseline justify-between gap-3 border-b border-zinc-100 px-5 py-4 dark:border-zinc-900">
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="text-sm text-zinc-600 dark:text-zinc-500 dark:text-zinc-400">
             {count} {count === 1 ? "expense" : "expenses"}
           </p>
           <p
@@ -308,7 +308,7 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
           <>
             <table className="hidden w-full text-sm md:table">
               <thead>
-                <tr className="border-b border-zinc-100 text-left text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-900">
+                <tr className="border-b border-zinc-100 text-left text-xs uppercase tracking-wide text-zinc-600 dark:text-zinc-400 dark:border-zinc-900">
                   <th className="px-5 py-3 font-medium">Date</th>
                   <th className="px-5 py-3 font-medium">Category</th>
                   <th className="px-5 py-3 font-medium">Note</th>
@@ -325,13 +325,13 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
                     data-testid="expense-row"
                     className="transition-colors hover:bg-zinc-50/80 dark:hover:bg-zinc-900/50"
                   >
-                    <td className="whitespace-nowrap px-5 py-3.5 text-zinc-600 dark:text-zinc-400">
+                    <td className="whitespace-nowrap px-5 py-3.5 text-zinc-600 dark:text-zinc-500 dark:text-zinc-400">
                       {formatDay(expense.date)}
                     </td>
                     <td className="px-5 py-3.5">
                       <CategoryPill name={expense.categoryName} looks={looks} />
                     </td>
-                    <td className="max-w-xs truncate px-5 py-3.5 text-zinc-600 dark:text-zinc-400">
+                    <td className="max-w-xs truncate px-5 py-3.5 text-zinc-600 dark:text-zinc-500 dark:text-zinc-400">
                       {expense.note ?? ""}
                     </td>
                     <td className="whitespace-nowrap px-5 py-3.5 text-right font-semibold tabular-nums text-zinc-950 dark:text-zinc-50">
@@ -365,7 +365,7 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
                       {formatPaise(expense.amount, currency)}
                     </span>
                   </div>
-                  <div className="flex items-baseline justify-between gap-3 text-xs text-zinc-500 dark:text-zinc-400">
+                  <div className="flex items-baseline justify-between gap-3 text-xs text-zinc-600 dark:text-zinc-500 dark:text-zinc-400">
                     <span className="truncate">{expense.note ?? ""}</span>
                     <span className="shrink-0">{formatDay(expense.date)}</span>
                   </div>
@@ -400,7 +400,7 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
         >
           <p
             data-testid="pager-range"
-            className="text-sm text-zinc-600 dark:text-zinc-400"
+            className="text-sm text-zinc-600 dark:text-zinc-500 dark:text-zinc-400"
           >
             Showing {firstShown}–{lastShown} of {count}
           </p>
@@ -423,7 +423,7 @@ async function ExpensesContent({ searchParams }: { searchParams: SearchParams })
               )}
               <span
                 data-testid="pager-page"
-                className="min-w-20 text-center text-sm tabular-nums text-zinc-600 dark:text-zinc-400"
+                className="min-w-20 text-center text-sm tabular-nums text-zinc-600 dark:text-zinc-500 dark:text-zinc-400"
               >
                 Page {page} of {pageCount}
               </span>

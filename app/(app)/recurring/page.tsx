@@ -24,7 +24,7 @@ export const metadata = {
 
 export default function RecurringPage() {
   return (
-    <main className="px-4 py-6 md:px-8 md:py-8">
+    <main id="main-content" tabIndex={-1} className="outline-none px-4 py-6 md:px-8 md:py-8">
       <div className="mx-auto w-full max-w-6xl">
         <PageHeader
           title="Recurring expenses"
@@ -94,7 +94,7 @@ async function RecurringContent() {
           >
             Your recurring expenses
           </h2>
-          <span className="text-sm text-zinc-500 dark:text-zinc-400">
+          <span className="text-sm text-zinc-600 dark:text-zinc-400">
             {items.length} {items.length === 1 ? "item" : "items"}
           </span>
         </div>
@@ -125,7 +125,7 @@ async function RecurringContent() {
                       <p className="truncate text-sm font-medium text-zinc-950 dark:text-zinc-50">
                         {name}
                       </p>
-                      <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+                      <p className="mt-0.5 text-xs text-zinc-600 dark:text-zinc-400">
                         {item.categoryName} · day {item.dayOfMonth} of every month
                       </p>
                     </div>

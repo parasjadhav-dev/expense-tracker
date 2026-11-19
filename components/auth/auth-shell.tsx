@@ -24,7 +24,7 @@ export function AuthShell({
   footer: React.ReactNode;
 }) {
   return (
-    <main className="grid min-h-screen flex-1 bg-white lg:grid-cols-[1.05fr_1fr] dark:bg-zinc-950">
+    <main id="main-content" tabIndex={-1} className="outline-none grid min-h-screen flex-1 bg-white lg:grid-cols-[1.05fr_1fr] dark:bg-zinc-950">
       <div
         aria-hidden="true"
         className="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-[#134e4a] via-[#0f766e] to-[#2dd4bf] p-12 text-white lg:flex"

@@ -149,7 +149,7 @@ export function TrendChart({
         <table data-testid="trend-table" className="mt-3 w-full text-sm">
           <caption className="sr-only">Monthly spending, last {points.length} months</caption>
           <thead>
-            <tr className="border-b border-zinc-200 text-left text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800">
+            <tr className="border-b border-zinc-200 text-left text-xs uppercase tracking-wide text-zinc-600 dark:text-zinc-400 dark:border-zinc-800">
               <th scope="col" className="py-2 pr-3 font-medium">
                 Month
               </th>
@@ -164,7 +164,7 @@ export function TrendChart({
                 <th scope="row" className="py-2 pr-3 text-left font-medium">
                   {point.longLabel}
                   {point.isCurrent ? (
-                    <span className="ml-2 text-xs font-normal text-zinc-500 dark:text-zinc-400">
+                    <span className="ml-2 text-xs font-normal text-zinc-600 dark:text-zinc-400">
                       so far
                     </span>
                   ) : null}
@@ -245,7 +245,7 @@ export function TrendChart({
       )}
 
       {current ? (
-        <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+        <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-400">
           {current.longLabel} is still in progress: {formatPaise(current.amount, currency)}{" "}
           so far.
         </p>

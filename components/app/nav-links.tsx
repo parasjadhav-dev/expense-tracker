@@ -32,7 +32,7 @@ export function NavLinks() {
             className={`${NAV_LINK_BASE} ${active ? NAV_LINK_ACTIVE : NAV_LINK_IDLE}`}
           >
             <Icon
-              className={`size-[18px] ${active ? "" : "text-zinc-400 group-hover:text-zinc-600 dark:text-zinc-500"}`}
+              className={`size-[18px] ${active ? "" : "text-zinc-500 group-hover:text-zinc-700 dark:text-zinc-400 dark:group-hover:text-zinc-200"}`}
               aria-hidden="true"
             />
             {label}

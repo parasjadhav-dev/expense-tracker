@@ -67,7 +67,7 @@ export default function Home() {
         </nav>
       </header>
 
-      <main className="flex-1">
+      <main id="main-content" tabIndex={-1} className="outline-none flex-1">
         <section className="mx-auto grid w-full max-w-6xl items-center gap-12 px-5 pb-16 pt-8 md:px-8 md:pb-24 md:pt-16 lg:grid-cols-[1.1fr_1fr]">
           <div>
             <p className="inline-flex items-center rounded-full bg-[#0f766e]/10 px-3 py-1 text-xs font-medium text-[#0f766e] ring-1 ring-[#0f766e]/15">
@@ -90,7 +90,7 @@ export default function Home() {
                 Log in
               </Link>
             </div>
-            <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
               Free to use. Amounts in rupees.
             </p>
           </div>
@@ -151,7 +151,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="border-t border-zinc-200/80 py-6 text-center text-xs text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+      <footer className="border-t border-zinc-200/80 py-6 text-center text-xs text-zinc-600 dark:border-zinc-800 dark:text-zinc-400">
         Expense Tracker
       </footer>
     </div>

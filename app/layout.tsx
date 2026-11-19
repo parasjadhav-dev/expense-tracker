@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope, Geist_Mono } from "next/font/google";
 import { RegisterServiceWorker } from "@/components/pwa/register-service-worker";
+import { SkipLink } from "@/components/ui/skip-link";
 import { ThemeColorSync } from "@/components/pwa/theme-color-sync";
 import "./globals.css";
 
@@ -58,6 +59,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body className="min-h-full flex flex-col">
+        <SkipLink />
         {children}
         <RegisterServiceWorker />
         <ThemeColorSync />

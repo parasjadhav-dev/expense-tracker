@@ -1,7 +1,8 @@
 "use client";
 
+import { FieldError, fieldA11y, useFocusFirstError } from "@/components/ui/field-error";
+import { useToastAction } from "@/components/ui/toast";
 import { useActionState } from "react";
-import { CheckCircle2 } from "lucide-react";
 import { createRecurring } from "@/app/(app)/recurring/actions";
 import type { RecurringFormState } from "@/lib/recurring-form";
 import { currencySymbol, type CurrencyCode } from "@/lib/currency";
@@ -22,29 +23,21 @@ export function RecurringForm({
   month: string; // the current month: the default first month and the latest allowed
   minMonth: string; // the earliest first month (12 months back)
 }) {
-  const [state, formAction, pending] = useActionState(createRecurring, initialState);
+  const [state, formAction, pending] = useActionState(useToastAction(createRecurring), initialState);
+  const formRef = useFocusFirstError(state);
   const errors = state.fieldErrors ?? {};
   const values = state.values;
 
   return (
     <div className="flex flex-col gap-4">
-      {state.status === "success" && state.message ? (
-        <p
-          role="status"
-          className="flex items-start gap-2 rounded-lg bg-green-50 px-3 py-2.5 text-sm text-green-800 ring-1 ring-green-200 dark:bg-green-950 dark:text-green-300 dark:ring-green-900"
-        >
-          <CheckCircle2 className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-          {state.message}
-        </p>
-      ) : null}
       {state.status === "error" && state.message ? (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="text-sm text-red-700 dark:text-red-400">
           {state.message}
         </p>
       ) : null}
 
       {/* A new key after each save clears the fields for the next item. */}
-      <form
+      <form ref={formRef}
         key={state.savedAt ?? "form"}
         action={formAction}
         className="flex flex-col gap-4"
@@ -63,10 +56,10 @@ export function RecurringForm({
             placeholder="0.00"
             required
             defaultValue={values?.amount}
-            aria-invalid={errors.amount ? true : undefined}
+            {...fieldA11y("amount", errors.amount)}
             className={`${input} tabular-nums`}
           />
-          <FieldError errors={errors.amount} />
+          <FieldError id="amount" errors={errors.amount} />
         </div>
 
         <div>
@@ -79,7 +72,7 @@ export function RecurringForm({
             name="categoryId"
             required
             defaultValue={values?.categoryId ?? ""}
-            aria-invalid={errors.categoryId ? true : undefined}
+            {...fieldA11y("categoryId", errors.categoryId)}
             className={input}
           >
             <option value="" disabled>
@@ -91,7 +84,7 @@ export function RecurringForm({
               </option>
             ))}
           </select>
-          <FieldError errors={errors.categoryId} />
+          <FieldError id="categoryId" errors={errors.categoryId} />
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -108,14 +101,13 @@ export function RecurringForm({
               placeholder="1 to 31"
               required
               defaultValue={values?.dayOfMonth}
-              aria-invalid={errors.dayOfMonth ? true : undefined}
-              aria-describedby="dayOfMonth-hint"
+              {...fieldA11y("dayOfMonth", errors.dayOfMonth, "dayOfMonth-hint")}
               className={input}
             />
-            <p id="dayOfMonth-hint" className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+            <p id="dayOfMonth-hint" className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
               A shorter month uses its last day.
             </p>
-            <FieldError errors={errors.dayOfMonth} />
+            <FieldError id="dayOfMonth" errors={errors.dayOfMonth} />
           </div>
 
           <div>
@@ -133,16 +125,16 @@ export function RecurringForm({
               max={month}
               required
               defaultValue={values?.startMonth ?? month}
-              aria-invalid={errors.startMonth ? true : undefined}
+              {...fieldA11y("startMonth", errors.startMonth)}
               className={input}
             />
-            <FieldError errors={errors.startMonth} />
+            <FieldError id="startMonth" errors={errors.startMonth} />
           </div>
         </div>
 
         <div>
           <label htmlFor="note" className={label}>
-            Note <span className="font-normal text-zinc-500">(optional)</span>
+            Note <span className="font-normal text-zinc-600 dark:text-zinc-400">(optional)</span>
           </label>
           <input
             id="note"
@@ -152,10 +144,10 @@ export function RecurringForm({
             autoComplete="off"
             placeholder="Rent, Netflix, gym..."
             defaultValue={values?.note}
-            aria-invalid={errors.note ? true : undefined}
+            {...fieldA11y("note", errors.note)}
             className={input}
           />
-          <FieldError errors={errors.note} />
+          <FieldError id="note" errors={errors.note} />
         </div>
 
         <button type="submit" disabled={pending} className={`${button("primary")} h-11`}>
@@ -166,7 +158,3 @@ export function RecurringForm({
   );
 }
 
-function FieldError({ errors }: { errors?: string[] }) {
-  if (!errors?.length) return null;
-  return <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors[0]}</p>;
-}

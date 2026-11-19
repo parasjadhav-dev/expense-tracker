@@ -22,7 +22,7 @@ const MAIN_HREFS: string[] = [...MAIN.map((item) => item.href), ADD_HREF];
 const tab =
   "flex min-h-14 flex-col items-center justify-center gap-0.5 px-1 text-xs font-medium transition-colors";
 const tabIdle =
-  "text-zinc-500 active:text-zinc-950 dark:text-zinc-400 dark:active:text-zinc-50";
+  "text-zinc-600 active:text-zinc-950 dark:text-zinc-400 dark:active:text-zinc-50";
 const tabActive = "text-[#0f766e] dark:text-[#99f6e4]";
 
 export function BottomNav({ children }: { children: React.ReactNode }) {

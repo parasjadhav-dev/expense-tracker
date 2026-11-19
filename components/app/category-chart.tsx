@@ -123,7 +123,7 @@ export function CategoryChart({
             Spending by category for {monthLabel}
           </caption>
           <thead>
-            <tr className="border-b border-zinc-200 text-left text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800">
+            <tr className="border-b border-zinc-200 text-left text-xs uppercase tracking-wide text-zinc-600 dark:text-zinc-400 dark:border-zinc-800">
               <th scope="col" className="py-2 pr-3 font-medium">
                 Category
               </th>
@@ -214,7 +214,7 @@ export function CategoryChart({
         </div>
       )}
 
-      <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+      <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-400">
         Total {formatPaise(total, currency)}
         {rows.some((row) => row.isOther)
           ? ". Smaller categories are grouped as “All other”; the table lists each one."

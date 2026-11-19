@@ -10,7 +10,7 @@ export const metadata = {
 // Shown for any address that does not exist (and for another user's expense id).
 export default function NotFound() {
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-8 bg-[#f3f6f5] px-5 py-16 dark:bg-black">
+    <main id="main-content" tabIndex={-1} className="outline-none flex flex-1 flex-col items-center justify-center gap-8 bg-[#f3f6f5] px-5 py-16 dark:bg-black">
       <Logo />
       <div className={`${card} w-full max-w-md p-8 text-center`}>
         <span className={`${iconChip} mx-auto size-12`}>

@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { setFlash } from "@/lib/flash";
 import {
   SAVE_FAILED_MESSAGE,
   expenseFormValues,
@@ -67,5 +68,6 @@ export async function updateExpense(
 
   // Show the list for the edited expense's month, so a date change that moves
   // it to another month does not look like it disappeared.
+  await setFlash("Expense updated");
   redirect(`/expenses?month=${date.toISOString().slice(0, 7)}`);
 }

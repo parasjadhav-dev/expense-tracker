@@ -1,5 +1,6 @@
 "use client";
 
+import { fieldA11y, useFocusFirstError } from "@/components/ui/field-error";
 import Link from "next/link";
 import { useActionState } from "react";
 import { CheckCircle2 } from "lucide-react";
@@ -10,6 +11,9 @@ const initialState: ForgotPasswordState = { status: "idle" };
 
 export function ForgotPasswordForm() {
   const [state, formAction, pending] = useActionState(requestPasswordReset, initialState);
+  const formRef = useFocusFirstError(state);
+  // The message is about the address, so the field points at it.
+  const emailProblem = state.status === "error" && state.message ? state.message : undefined;
 
   if (state.status === "success") {
     return (
@@ -33,9 +37,10 @@ export function ForgotPasswordForm() {
   }
 
   return (
-    <form action={formAction} className="flex flex-col gap-4" noValidate>
+    <form ref={formRef} action={formAction} className="flex flex-col gap-4" noValidate>
       {state.status === "error" && state.message ? (
         <p
+          id="email-error"
           role="alert"
           className="rounded-lg bg-red-50 px-3 py-2.5 text-sm text-red-800 ring-1 ring-red-200 dark:bg-red-950 dark:text-red-200 dark:ring-red-900"
         >
@@ -49,6 +54,7 @@ export function ForgotPasswordForm() {
         </label>
         <input
           id="email"
+          {...fieldA11y("email", emailProblem)}
           name="email"
           type="email"
           autoComplete="email"

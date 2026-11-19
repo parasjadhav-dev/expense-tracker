@@ -109,21 +109,22 @@ export async function createRecurring(
 
 // Pause or resume. A resumed item carries on from this month; the months it was
 // paused are not made up.
-export async function setRecurringActive(formData: FormData): Promise<void> {
+// Both return whether the change was made, so the page can say so (or say it failed).
+export async function setRecurringActive(formData: FormData): Promise<boolean> {
   const session = await auth();
   if (!session?.user?.id) redirect("/login?callbackUrl=/recurring");
   const userId = session.user.id;
 
   const id = read(formData, "id");
   const active = read(formData, "active") === "true";
-  if (id === "") return;
+  if (id === "") return false;
 
   try {
     const item = await db.recurringExpense.findFirst({
       where: { id, userId },
       select: { lastGeneratedMonth: true },
     });
-    if (!item) return;
+    if (!item) return false;
     await db.recurringExpense.updateMany({
       where: { id, userId },
       data: active
@@ -134,25 +135,29 @@ export async function setRecurringActive(formData: FormData): Promise<void> {
         : { active: false },
     });
     refresh();
+    return true;
   } catch (error) {
     logActionError("setRecurringActive", error);
+    return false;
   }
 }
 
 // Removes the item. Expenses it already created stay (they just stop being linked
 // to it).
-export async function deleteRecurring(formData: FormData): Promise<void> {
+export async function deleteRecurring(formData: FormData): Promise<boolean> {
   const session = await auth();
   if (!session?.user?.id) redirect("/login?callbackUrl=/recurring");
   const userId = session.user.id;
 
   const id = read(formData, "id");
-  if (id === "") return;
+  if (id === "") return false;
   try {
     // Ownership is part of the delete itself.
-    await db.recurringExpense.deleteMany({ where: { id, userId } });
+    const { count } = await db.recurringExpense.deleteMany({ where: { id, userId } });
     refresh();
+    return count > 0;
   } catch (error) {
     logActionError("deleteRecurring", error);
+    return false;
   }
 }

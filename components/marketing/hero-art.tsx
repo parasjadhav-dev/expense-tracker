@@ -7,9 +7,9 @@ import { DashboardPreview } from "./dashboard-preview";
 // theme, and these float over a light blob in both themes).
 const PILLS: { name: string; color: string; icon: LucideIcon; position: string }[] = [
   { name: "Rent", color: "#6d28d9", icon: House, position: "left-4 -top-4 rotate-3" },
-  { name: "Food", color: "#c2410c", icon: Utensils, position: "right-8 -top-5 -rotate-3" },
-  { name: "Shopping", color: "#be185d", icon: ShoppingBag, position: "-right-2 top-[4.25rem] rotate-6 sm:-right-6" },
-  { name: "Travel", color: "#0369a1", icon: Plane, position: "left-52 -bottom-5 rotate-3" },
+  { name: "Food", color: "#ac3a0c", icon: Utensils, position: "right-8 -top-5 -rotate-3" },
+  { name: "Shopping", color: "#b61759", icon: ShoppingBag, position: "-right-2 top-[4.25rem] rotate-6 sm:-right-6" },
+  { name: "Travel", color: "#03659b", icon: Plane, position: "left-52 -bottom-5 rotate-3" },
   { name: "Movies", color: "#a21caf", icon: Clapperboard, position: "right-8 -bottom-6 -rotate-6 max-sm:hidden" },
 ];
 
@@ -61,7 +61,7 @@ export function HeroArt({ className = "" }: { className?: string }) {
         </span>
         <div>
           <p className="text-xs font-semibold">Food is at 82%</p>
-          <p className="text-[11px] text-zinc-500">Close to its limit</p>
+          <p className="text-[11px] text-zinc-600">Close to its limit</p>
         </div>
       </div>
     </div>

@@ -18,11 +18,13 @@ export function BudgetStatus({
   summary,
   currency,
   looks,
+  className = "",
 }: {
   month: string;
   summary: BudgetSummary;
   currency: CurrencyCode;
   looks?: CategoryLooks;
+  className?: string;
 }) {
   const withLimit = summary.categories
     .filter((category) => category.budget !== null)
@@ -33,7 +35,7 @@ export function BudgetStatus({
     <section
       aria-labelledby="budget-status"
       data-testid="budget-status"
-      className={`${card} flex flex-col p-5`}
+      className={`${card} flex flex-col p-5 ${className}`}
     >
       <div className="flex items-center justify-between gap-3">
         <h2
@@ -50,7 +52,7 @@ export function BudgetStatus({
           <ArrowRight className="size-3.5" aria-hidden="true" />
         </Link>
       </div>
-      <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+      <p className="mt-0.5 text-xs text-zinc-600 dark:text-zinc-400">
         {formatMonth(month)}, closest to the limit first
       </p>
 

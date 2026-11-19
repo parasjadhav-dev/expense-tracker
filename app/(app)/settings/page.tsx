@@ -18,7 +18,7 @@ export const metadata = {
 
 export default function SettingsPage() {
   return (
-    <main className="px-4 py-6 md:px-8 md:py-8">
+    <main id="main-content" tabIndex={-1} className="outline-none px-4 py-6 md:px-8 md:py-8">
       <div className="mx-auto w-full max-w-6xl">
         <PageHeader
           title="Account"
@@ -78,13 +78,13 @@ async function SettingsContent() {
           </h2>
           <dl className="flex flex-col gap-4 text-sm">
             <div>
-              <dt className="text-zinc-500 dark:text-zinc-400">Name</dt>
+              <dt className="text-zinc-600 dark:text-zinc-400">Name</dt>
               <dd className="mt-0.5 font-medium text-zinc-950 dark:text-zinc-50">
                 {name || "Not set"}
               </dd>
             </div>
             <div>
-              <dt className="text-zinc-500 dark:text-zinc-400">Email</dt>
+              <dt className="text-zinc-600 dark:text-zinc-400">Email</dt>
               <dd
                 className="mt-0.5 break-all font-medium text-zinc-950 dark:text-zinc-50"
                 data-testid="account-email"

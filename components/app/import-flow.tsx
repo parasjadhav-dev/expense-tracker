@@ -121,7 +121,7 @@ function UploadStep({
           <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
             {fileName || "Choose a CSV file"}
           </span>
-          <span className="text-xs text-zinc-500 dark:text-zinc-400">
+          <span className="text-xs text-zinc-600 dark:text-zinc-400">
             .csv, up to {MAX_IMPORT_LABEL} and {MAX_IMPORT_ROWS.toLocaleString("en-IN")} rows
           </span>
           <input
@@ -363,7 +363,7 @@ function PreviewStep({
                 </button>
               ))}
             {filtering ? (
-              <p className="basis-full text-xs text-zinc-500 dark:text-zinc-400" data-testid="import-showing">
+              <p className="basis-full text-xs text-zinc-600 dark:text-zinc-400" data-testid="import-showing">
                 Showing {shown.length} of {preview.rows.length}. Select all, Select none and
                 the category menu apply to these rows only.
               </p>
@@ -514,7 +514,7 @@ function ImportRowItem({
           >
             <span className={`min-w-0 flex-1 ${open ? "break-words" : "truncate"}`}>{description}</span>
             <ChevronDown
-              className={`mt-0.5 size-4 shrink-0 text-zinc-400 transition-transform ${open ? "rotate-180" : ""}`}
+              className={`mt-0.5 size-4 shrink-0 text-zinc-500 dark:text-zinc-400 transition-transform ${open ? "rotate-180" : ""}`}
               aria-hidden="true"
             />
           </button>
@@ -523,7 +523,7 @@ function ImportRowItem({
             {description}
           </p>
         )}
-        <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-zinc-500 dark:text-zinc-400">
+        <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-zinc-600 dark:text-zinc-400">
           <span>{formatDay(new Date(`${row.date}T00:00:00.000Z`))}</span>
           {row.duplicate ? (
             <span

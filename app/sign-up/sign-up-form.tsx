@@ -1,5 +1,6 @@
 "use client";
 
+import { FieldError, fieldA11y, useFocusFirstError } from "@/components/ui/field-error";
 import Link from "next/link";
 import { useActionState } from "react";
 import { CheckCircle2 } from "lucide-react";
@@ -10,6 +11,7 @@ const initialState: SignUpState = { status: "idle" };
 
 export function SignUpForm() {
   const [state, formAction, pending] = useActionState(signUp, initialState);
+  const formRef = useFocusFirstError(state);
 
   if (state.status === "success") {
     return (
@@ -29,7 +31,7 @@ export function SignUpForm() {
   }
 
   return (
-    <form action={formAction} className="flex flex-col gap-4" noValidate>
+    <form ref={formRef} action={formAction} className="flex flex-col gap-4" noValidate>
       {state.status === "error" && state.message ? (
         <p
           role="alert"
@@ -41,10 +43,10 @@ export function SignUpForm() {
 
       <div>
         <label htmlFor="name" className={label}>
-          Name <span className="font-normal text-zinc-500">(optional)</span>
+          Name <span className="font-normal text-zinc-600 dark:text-zinc-400">(optional)</span>
         </label>
         <input
-          id="name"
+          id="name" {...fieldA11y("name", state.fieldErrors?.name)}
           name="name"
           type="text"
           autoComplete="name"
@@ -52,7 +54,7 @@ export function SignUpForm() {
           defaultValue={state.values?.name}
           className={input}
         />
-        <FieldError errors={state.fieldErrors?.name} />
+        <FieldError id="name" errors={state.fieldErrors?.name} />
       </div>
 
       <div>
@@ -60,7 +62,7 @@ export function SignUpForm() {
           Email
         </label>
         <input
-          id="email"
+          id="email" {...fieldA11y("email", state.fieldErrors?.email)}
           name="email"
           type="email"
           autoComplete="email"
@@ -69,23 +71,23 @@ export function SignUpForm() {
           defaultValue={state.values?.email}
           className={input}
         />
-        <FieldError errors={state.fieldErrors?.email} />
+        <FieldError id="email" errors={state.fieldErrors?.email} />
       </div>
 
       <div>
         <label htmlFor="password" className={label}>
           Password{" "}
-          <span className="font-normal text-zinc-500">(at least 8 characters)</span>
+          <span className="font-normal text-zinc-600 dark:text-zinc-400">(at least 8 characters)</span>
         </label>
         <input
-          id="password"
+          id="password" {...fieldA11y("password", state.fieldErrors?.password)}
           name="password"
           type="password"
           autoComplete="new-password"
           required
           className={input}
         />
-        <FieldError errors={state.fieldErrors?.password} />
+        <FieldError id="password" errors={state.fieldErrors?.password} />
       </div>
 
       <button
@@ -99,9 +101,3 @@ export function SignUpForm() {
   );
 }
 
-function FieldError({ errors }: { errors?: string[] }) {
-  if (!errors?.length) return null;
-  return (
-    <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors[0]}</p>
-  );
-}

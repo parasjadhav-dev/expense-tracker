@@ -30,6 +30,24 @@ export async function getMonthSpendByCategory(
   }));
 }
 
+// Total spent per category between two dates (from gte, up to but not including
+// lt). Used to compare a month with the same days of the month before. Scoped to
+// userId, which callers must take from the session.
+export async function getSpendByCategoryBetween(
+  userId: string,
+  range: { gte: Date; lt: Date },
+): Promise<SpendEntry[]> {
+  const rows = await db.expense.groupBy({
+    by: ["categoryId"],
+    where: { userId, date: { gte: range.gte, lt: range.lt } },
+    _sum: { amount: true },
+  });
+  return rows.map((row) => ({
+    categoryId: row.categoryId,
+    amount: row._sum.amount ?? 0,
+  }));
+}
+
 export type ExpenseListItem = {
   id: string;
   amount: number;

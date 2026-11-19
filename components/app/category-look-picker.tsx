@@ -44,7 +44,7 @@ export function CategoryLookPicker({
         <legend className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
           Colour
           {optional && color === null ? (
-            <span className="font-normal text-zinc-500 dark:text-zinc-400"> (automatic)</span>
+            <span className="font-normal text-zinc-600 dark:text-zinc-400"> (automatic)</span>
           ) : null}
         </legend>
         <div className="mt-1.5 flex flex-wrap gap-2" data-testid={`${idPrefix}-colors`}>
@@ -80,7 +80,7 @@ export function CategoryLookPicker({
         <legend className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
           Icon
           {optional && icon === null ? (
-            <span className="font-normal text-zinc-500 dark:text-zinc-400"> (automatic)</span>
+            <span className="font-normal text-zinc-600 dark:text-zinc-400"> (automatic)</span>
           ) : null}
         </legend>
         <div className="mt-1.5 flex flex-wrap gap-2" data-testid={`${idPrefix}-icons`}>

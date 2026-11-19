@@ -23,6 +23,7 @@ export function RecentExpenses({
   footerLabel,
   emptyAction,
   looks,
+  className = "",
 }: {
   id: string;
   title: string;
@@ -34,12 +35,13 @@ export function RecentExpenses({
   // Shown under the empty-state text, for example an "Add an expense" button.
   emptyAction?: React.ReactNode;
   looks?: CategoryLooks;
+  className?: string;
 }) {
   return (
     <section
       aria-labelledby={id}
       data-testid="recent-expenses"
-      className={`${card} flex flex-col p-5`}
+      className={`${card} flex flex-col p-5 ${className}`}
     >
       <div className="flex items-center justify-between gap-3">
         <h2
@@ -77,7 +79,7 @@ export function RecentExpenses({
                 <p className="truncate text-sm font-medium text-zinc-950 dark:text-zinc-50">
                   {item.note || item.categoryName}
                 </p>
-                <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">
+                <p className="truncate text-xs text-zinc-600 dark:text-zinc-400">
                   {item.categoryName} · {formatShortDay(item.date)}
                 </p>
               </div>
