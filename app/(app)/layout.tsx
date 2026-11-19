@@ -55,7 +55,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </Suspense>
         </BottomNav>
       </Suspense>
-      <FlashToast />
+      {/* Reads the current URL, so it sits inside <Suspense> (see above). */}
+      <Suspense fallback={null}>
+        <FlashToast />
+      </Suspense>
     </div>
     </ToastProvider>
   );
